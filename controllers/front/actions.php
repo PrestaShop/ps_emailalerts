@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2015 PrestaShop
+ * 2007-2015 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
@@ -29,120 +29,125 @@
  */
 class MailalertsActionsModuleFrontController extends ModuleFrontController
 {
-	/**
-	 * @var int
-	 */
-	public $id_product;
-	public $id_product_attribute;
+    /**
+     * @var int
+     */
+    public $id_product;
+    public $id_product_attribute;
 
-	public function init()
-	{
-		parent::init();
+    public function init()
+    {
+        parent::init();
 
-		require_once($this->module->getLocalPath().'MailAlert.php');
-		$this->id_product = (int)Tools::getValue('id_product');
-		$this->id_product_attribute = (int)Tools::getValue('id_product_attribute');
-	}
+        require_once $this->module->getLocalPath().'MailAlert.php';
+        $this->id_product = (int) Tools::getValue('id_product');
+        $this->id_product_attribute = (int) Tools::getValue('id_product_attribute');
+    }
 
-	public function postProcess()
-	{
-		if (Tools::getValue('process') == 'remove')
-			$this->processRemove();
-		else if (Tools::getValue('process') == 'add')
-			$this->processAdd();
-		else if (Tools::getValue('process') == 'check')
-			$this->processCheck();
-	}
+    public function postProcess()
+    {
+        if (Tools::getValue('process') == 'remove') {
+            $this->processRemove();
+        } elseif (Tools::getValue('process') == 'add') {
+            $this->processAdd();
+        } elseif (Tools::getValue('process') == 'check') {
+            $this->processCheck();
+        }
+    }
 
-	/**
-	 * Remove a favorite product
-	 */
-	public function processRemove()
-	{
-		// check if product exists
-		$product = new Product($this->id_product);
-		if (!Validate::isLoadedObject($product))
-			die('0');
+    /**
+     * Remove a favorite product.
+     */
+    public function processRemove()
+    {
+        // check if product exists
+        $product = new Product($this->id_product);
+        if (!Validate::isLoadedObject($product)) {
+            die('0');
+        }
 
-		$context = Context::getContext();
-		if (MailAlert::deleteAlert(
-			(int)$context->customer->id,
-			(int)$context->customer->email,
-			(int)$product->id,
-			(int)$this->id_product_attribute,
-			(int)$context->shop->id
-		))
-			die('0');
+        $context = Context::getContext();
+        if (MailAlert::deleteAlert(
+            (int) $context->customer->id,
+            (int) $context->customer->email,
+            (int) $product->id,
+            (int) $this->id_product_attribute,
+            (int) $context->shop->id
+        )) {
+            die('0');
+        }
 
-		die(1);
-	}
+        die(1);
+    }
 
-	/**
-	 * Add a favorite product
-	 */
-	public function processAdd()
-	{
-		$context = Context::getContext();
+    /**
+     * Add a favorite product.
+     */
+    public function processAdd()
+    {
+        $context = Context::getContext();
 
-		if ($context->customer->isLogged())
-		{
-			$id_customer = (int)$context->customer->id;
-			$customer = new Customer($id_customer);
-			$customer_email = (string)$customer->email;
-		}
-		else
-		{
-			$customer_email = (string)Tools::getValue('customer_email');
-			$customer = $context->customer->getByEmail($customer_email);
-			$id_customer = (isset($customer->id) && ($customer->id != null)) ? (int)$customer->id : null;
-		}
+        if ($context->customer->isLogged()) {
+            $id_customer = (int) $context->customer->id;
+            $customer = new Customer($id_customer);
+            $customer_email = (string) $customer->email;
+        } else {
+            $customer_email = (string) Tools::getValue('customer_email');
+            $customer = $context->customer->getByEmail($customer_email);
+            $id_customer = (isset($customer->id) && ($customer->id != null)) ? (int) $customer->id : null;
+        }
 
-		$id_product = (int)Tools::getValue('id_product');
-		$id_product_attribute = (int)Tools::getValue('id_product_attribute');
-		$id_shop = (int)$context->shop->id;
-		$id_lang = (int)$context->language->id;
-		$product = new Product($id_product, false, $id_lang, $id_shop, $context);
+        $id_product = (int) Tools::getValue('id_product');
+        $id_product_attribute = (int) Tools::getValue('id_product_attribute');
+        $id_shop = (int) $context->shop->id;
+        $id_lang = (int) $context->language->id;
+        $product = new Product($id_product, false, $id_lang, $id_shop, $context);
 
-		$mail_alert = MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, $id_shop, null, $customer_email);
+        $mail_alert = MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, $id_shop, null, $customer_email);
 
-		if ($mail_alert)
-			die('2');
-		elseif (!Validate::isLoadedObject($product))
-			die('0');
+        if ($mail_alert) {
+            die('2');
+        } elseif (!Validate::isLoadedObject($product)) {
+            die('0');
+        }
 
-		$mail_alert = new MailAlert();
+        $mail_alert = new MailAlert();
 
-		$mail_alert->id_customer = (int)$id_customer;
-		$mail_alert->customer_email = (string)$customer_email;
-		$mail_alert->id_product = (int)$id_product;
-		$mail_alert->id_product_attribute = (int)$id_product_attribute;
-		$mail_alert->id_shop = (int)$id_shop;
-		$mail_alert->id_lang = (int)$id_lang;
+        $mail_alert->id_customer = (int) $id_customer;
+        $mail_alert->customer_email = (string) $customer_email;
+        $mail_alert->id_product = (int) $id_product;
+        $mail_alert->id_product_attribute = (int) $id_product_attribute;
+        $mail_alert->id_shop = (int) $id_shop;
+        $mail_alert->id_lang = (int) $id_lang;
 
-		if ($mail_alert->add() !== false)
-			die('1');
+        if ($mail_alert->add() !== false) {
+            die('1');
+        }
 
-		die('0');
-	}
+        die('0');
+    }
 
-	/**
-	 * Add a favorite product
-	 */
-	public function processCheck()
-	{
-		if (!(int)$this->context->customer->logged)
-			die('0');
+    /**
+     * Add a favorite product.
+     */
+    public function processCheck()
+    {
+        if (!(int) $this->context->customer->logged) {
+            die('0');
+        }
 
-		$id_customer = (int)$this->context->customer->id;
+        $id_customer = (int) $this->context->customer->id;
 
-		if (!$id_product = (int)Tools::getValue('id_product'))
-			die('0');
+        if (!$id_product = (int) Tools::getValue('id_product')) {
+            die('0');
+        }
 
-		$id_product_attribute = (int)Tools::getValue('id_product_attribute');
+        $id_product_attribute = (int) Tools::getValue('id_product_attribute');
 
-		if (MailAlert::customerHasNotification((int)$id_customer, (int)$id_product, (int)$id_product_attribute, (int)$this->context->shop->id))
-			die('1');
+        if (MailAlert::customerHasNotification((int) $id_customer, (int) $id_product, (int) $id_product_attribute, (int) $this->context->shop->id)) {
+            die('1');
+        }
 
-		die('0');
-	}
+        die('0');
+    }
 }
