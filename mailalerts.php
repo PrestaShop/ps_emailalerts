@@ -462,7 +462,8 @@ class MailAlerts extends Module
 
 	public function hookActionProductOutOfStock($params)
 	{
-		if (!$this->customer_qty ||
+		if (0 < $params['product']['quantity'] ||
+		    !$this->customer_qty ||
 			!Configuration::get('PS_STOCK_MANAGEMENT') ||
 			Product::isAvailableWhenOutOfStock($params['product']['out_of_stock']))
 			return;
