@@ -60,7 +60,7 @@
   </script>
 
   <div id="mailalerts_block_account">
-    <h2>{l s='My alerts' mod='mailalerts'}</h2>
+    <h2>{l s='My alerts' d='Modules.MailAlerts.Shop'}</h2>
     {if $mailAlerts}
       <div>
         {foreach from=$mailAlerts item=mailAlert}
@@ -79,7 +79,7 @@
         {/foreach}
       </div>
     {else}
-      <p class="warning">{l s='No mail alerts yet.' mod='mailalerts'}</p>
+      <p class="warning">{l s='No mail alerts yet.' d='Modules.MailAlerts.Shop'}</p>
     {/if}
   </div>
 {/block}

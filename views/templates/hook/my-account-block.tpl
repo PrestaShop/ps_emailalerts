@@ -24,7 +24,7 @@
 *}
 
 <li class="mailalerts">
-  <a href="{$link->getModuleLink('mailalerts', 'account', array(), true)|escape:'html'}" title="{l s='My alerts' mod='mailalerts'}" rel="nofollow">
-    {l s='My alerts' mod='mailalerts'}
+  <a href="{$link->getModuleLink('mailalerts', 'account', array(), true)|escape:'html'}" title="{l s='My alerts' d='Modules.MailAlerts.Shop'}" rel="nofollow">
+    {l s='My alerts' d='Modules.MailAlerts.Shop'}
   </a>
 </li>

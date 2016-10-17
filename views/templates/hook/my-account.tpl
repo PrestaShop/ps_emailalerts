@@ -25,7 +25,7 @@
 
 <a class="mailalerts col-lg-4 col-md-6 col-sm-6 col-xs-12"
    id="returns-link" href="{$link->getModuleLink('mailalerts', 'account', array(), true)|escape:'html'}"
-   title="{l s='My alerts' mod='mailalerts'}"
+   title="{l s='My alerts' d='Modules.MailAlerts.Shop'}"
    rel="nofollow">
   <span class="link-item">
     <i class="material-icons">&#xE860;</i>

@@ -26,7 +26,7 @@
 <script type="text/javascript">{literal}
 // <![CDATA[
 function clearText() {
-	if ($('#oos_customer_email').val() == '{/literal}{l s='your@email.com' mod='mailalerts'}{literal}')
+	if ($('#oos_customer_email').val() == '{/literal}{l s='your@email.com' d='Modules.MailAlerts.Shop'}{literal}')
 		$('#oos_customer_email').val('');
 }
 
@@ -57,14 +57,14 @@ function  addNotification() {
 			if ($.trim(msg) == '1') {
 				$('#mailalert_link').hide();
 				$('#oos_customer_email').hide();
-				$('#oos_customer_email_result').html("{/literal}{l s='Request notification registered' mod='mailalerts'}{literal}");
+				$('#oos_customer_email_result').html("{/literal}{l s='Request notification registered' d='Modules.MailAlerts.Shop'}{literal}");
 				$('#oos_customer_email_result').css('color', 'green').show();
 			}
 			else if ($.trim(msg) == '2' ) {
-				$('#oos_customer_email_result').html("{/literal}{l s='You already have an alert for this product' mod='mailalerts'}{literal}");
+				$('#oos_customer_email_result').html("{/literal}{l s='You already have an alert for this product' d='Modules.MailAlerts.Shop'}{literal}");
 				$('#oos_customer_email_result').css('color', 'red').show();
 			} else {
-				$('#oos_customer_email_result').html("{/literal}{l s='Your e-mail address is invalid' mod='mailalerts'}{literal}");
+				$('#oos_customer_email_result').html("{/literal}{l s='Your e-mail address is invalid' d='Modules.MailAlerts.Shop'}{literal}");
 				$('#oos_customer_email_result').css('color', 'red').show();
 			}
 		}
@@ -88,8 +88,8 @@ $(document).ready(function() {
 
 <!-- MODULE MailAlerts -->
 	{if isset($email) AND $email}
-		<input type="text" id="oos_customer_email" name="customer_email" size="20" value="{l s='your@email.com' mod='mailalerts'}" class="mailalerts_oos_email" onclick="clearText();" /><br />
+		<input type="text" id="oos_customer_email" name="customer_email" size="20" value="{l s='your@email.com' d='Modules.MailAlerts.Shop'}" class="mailalerts_oos_email" onclick="clearText();" /><br />
 	{/if}
-	<a href="#" title="{l s='Notify me when available' mod='mailalerts'}" onclick="return addNotification();" id="mailalert_link" rel="nofollow">{l s='Notify me when available' mod='mailalerts'}</a>
+	<a href="#" title="{l s='Notify me when available' d='Modules.MailAlerts.Shop'}" onclick="return addNotification();" id="mailalert_link" rel="nofollow">{l s='Notify me when available' d='Modules.MailAlerts.Shop'}</a>
 	<span id="oos_customer_email_result" style="display:none;"></span>
 <!-- END : MODULE MailAlerts -->
