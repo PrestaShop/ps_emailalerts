@@ -1,0 +1,7 @@
+2014-04-17 11:40:47 +0200	Bug fix (PS 1.5): ps_version_compliancy removed
+2014-04-10 17:02:35 +0200	[-] MO : Mailalerts new module version
+2014-04-09 12:18:55 +0200	// mailalerts new module version
+2014-04-02 10:43:52 +0200	// mailalerts : ++version
+2014-04-02 10:43:29 +0200	[-] MO : mailalerts : old delimitor backward compatibility
+2014-03-24 18:26:32 +0100	/ MO mailalerts : ps_versions_compliancy added
+2014-03-21 10:55:09 +0100	Initial commit
