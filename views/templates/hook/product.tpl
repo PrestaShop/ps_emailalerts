@@ -52,7 +52,7 @@ function  addNotification() {
 	$.ajax({
 		type: 'POST',
 		url: "{/literal}{$link->getModuleLink('mailalerts', 'actions', ['process' => 'add'])}{literal}",
-		data: 'id_product={/literal}{$id_product}{literal}&id_product_attribute='+$('#idCombination').val()+'&customer_email='+$('#oos_customer_email').val()+'',
+		data: 'id_product={/literal}{$id_product}{literal}&id_product_attribute='+$('input#mailalert_combination').val()+'&customer_email='+$('#oos_customer_email').val()+'',
 		success: function (msg) {
 			if ($.trim(msg) == '1') {
 				$('#mailalert_link').hide();
@@ -60,7 +60,7 @@ function  addNotification() {
 				$('#oos_customer_email_result').html("{/literal}{l s='Request notification registered' d='Modules.MailAlerts.Shop'}{literal}");
 				$('#oos_customer_email_result').css('color', 'green').show();
 			}
-			else if ($.trim(msg) == '2' ) {
+			else if ($.trim(msg) == '2') {
 				$('#oos_customer_email_result').html("{/literal}{l s='You already have an alert for this product' d='Modules.MailAlerts.Shop'}{literal}");
 				$('#oos_customer_email_result').css('color', 'red').show();
 			} else {
@@ -87,9 +87,12 @@ $(document).ready(function() {
 </script>
 
 <!-- MODULE MailAlerts -->
+<div class="mailalert" style="display: none;">
 	{if isset($email) AND $email}
 		<input type="text" id="oos_customer_email" name="customer_email" size="20" value="{l s='your@email.com' d='Modules.MailAlerts.Shop'}" class="mailalerts_oos_email" onclick="clearText();" /><br />
 	{/if}
+  <input type="hidden" id="mailalert_combination"/>
 	<a href="#" title="{l s='Notify me when available' d='Modules.MailAlerts.Shop'}" onclick="return addNotification();" id="mailalert_link" rel="nofollow">{l s='Notify me when available' d='Modules.MailAlerts.Shop'}</a>
 	<span id="oos_customer_email_result" style="display:none;"></span>
+</div>
 <!-- END : MODULE MailAlerts -->
