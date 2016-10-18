@@ -23,6 +23,26 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
+function  addNotification() {
+  var ids = $('div.js_mailalert > input[type=hidden]');
+
+  $.ajax({
+    type: 'POST',
+    url: $('div.js_mailalert').data('url'),
+    data: 'id_product='+ids[0].value+'&id_product_attribute='+ids[1].value+'&customer_email='+$('div.js_mailalert > input[type=email]').val(),
+    success: function (resp) {
+      resp = JSON.parse(resp);
+
+      $('div.js_mailalert > span').html(resp.message).show();
+      if (!resp.error) {
+        $('div.js_mailalert > a').hide();
+        $('div.js_mailalert > input[type=email]').hide();
+      }
+    }
+  });
+  return false;
+}
+
 $('document').ready(function()
 {
   $('.js_remove_email_alert').click(function()
@@ -52,33 +72,5 @@ $('document').ready(function()
         }
       }
     });
-  });
-
-  function  addNotification() {
-    var ids = $('div.js_mailalert > input[type=hidden]');
-
-    $.ajax({
-      type: 'POST',
-      url: $('div.js_mailalert').data('url'),
-      data: 'id_product='+ids[0].value+'&id_product_attribute='+ids[1].value+'&customer_email='+$('div.js_mailalert > input[type=email]').val(),
-      success: function (resp) {
-        resp = JSON.parse(resp);
-
-        $('div.js_mailalert > span').html(resp.message).show();
-        if (!resp.error) {
-          $('div.js_mailalert > a').hide();
-          $('div.js_mailalert > input[type=email]').hide();
-        }
-      }
-    });
-    return false;
-  }
-
-  $('div.js_mailalert > a').bind('click', addNotification);
-  $('div.js_mailalert > input[type=email]').bind('keypress', function(e) {
-    if(13 === e.keyCode) {
-      addNotification();
-      return false;
-    }
   });
 });

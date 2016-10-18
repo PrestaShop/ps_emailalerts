@@ -29,6 +29,6 @@
 	{/if}
   <input type="hidden" value="{$id_product}"/>
   <input type="hidden" value="{$id_product_attribute}"/>
-	<a href="#" rel="nofollow">{l s='Notify me when available' d='Modules.MailAlerts.Shop'}</a>
+	<a href="#" rel="nofollow" onclick="return addNotification();">{l s='Notify me when available' d='Modules.MailAlerts.Shop'}</a>
 	<span style="display:none;"></span>
 </div>

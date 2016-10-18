@@ -91,10 +91,17 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             $id_customer = (int) $context->customer->id;
             $customer = new Customer($id_customer);
             $customer_email = (string) $customer->email;
-        } else {
+        } else if (Validate::isEmail((string)Tools::getValue('customer_email'))) {
             $customer_email = (string) Tools::getValue('customer_email');
             $customer = $context->customer->getByEmail($customer_email);
             $id_customer = (isset($customer->id) && ($customer->id != null)) ? (int) $customer->id : null;
+        } else {
+            die(json_encode(
+                array(
+                    'error' => true,
+                    'message' => $this->getTranslator()->trans('Your e-mail address is invalid', array(), 'Modules.MailAlerts.Shop'),
+                )
+            ));
         }
 
         $id_product = (int) Tools::getValue('id_product');
