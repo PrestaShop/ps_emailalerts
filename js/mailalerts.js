@@ -22,3 +22,63 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
+
+$('document').ready(function()
+{
+  $('.js_remove_email_alert').click(function()
+  {
+    var self = $(this);
+    var ids = self.attr('rel').replace('js_id_emailalerts_', '');
+    ids = ids.split('_');
+    var id_product_mail_alert = ids[0];
+    var id_product_attribute_mail_alert = ids[1];
+    var parent = self.closest('li');
+
+    $.ajax({
+      url: self.data('url'),
+      type: "POST",
+      data: {
+        'id_product': id_product_mail_alert,
+        'id_product_attribute': id_product_attribute_mail_alert
+      },
+      success: function(result)
+      {
+        if (result == '0')
+        {
+          parent.fadeOut("normal", function()
+          {
+            parent.remove();
+          });
+        }
+      }
+    });
+  });
+
+  function  addNotification() {
+    var ids = $('div.js_mailalert > input[type=hidden]');
+
+    $.ajax({
+      type: 'POST',
+      url: $('div.js_mailalert').data('url'),
+      data: 'id_product='+ids[0].value+'&id_product_attribute='+ids[1].value+'&customer_email='+$('div.js_mailalert > input[type=email]').val(),
+      success: function (resp) {
+        resp = JSON.parse(resp);
+
+        $('div.js_mailalert > span').html(resp.message).show();
+        if (!resp.error) {
+          $('div.js_mailalert > a').hide();
+          $('div.js_mailalert > input[type=email]').hide();
+        }
+      }
+    });
+    return false;
+  }
+
+  $('div.js_mailalert > a').bind('click', addNotification);
+  $('div.js_mailalert > input[type=email]').bind('keypress', function(e) {
+    if(13 === e.keyCode) {
+      addNotification();
+      return false;
+    }
+  });
+});

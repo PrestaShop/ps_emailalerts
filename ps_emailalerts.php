@@ -471,46 +471,23 @@ class Ps_EmailAlerts extends Module
     {
         if (!$this->customer_qty ||
             !Configuration::get('PS_STOCK_MANAGEMENT') ||
-            Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
+            Product::isAvailableWhenOutOfStock($params['product']['out_of_stock']))
             return;
-        }
-
         $context = Context::getContext();
-        $id_product = (int) $params['product']['id'];
-
-        if ((int) $context->customer->id <= 0) {
+        $id_product = (int)$params['product']['id'];
+        $id_product_attribute = 0;
+        $id_customer = (int)$context->customer->id;
+        if ((int)$context->customer->id <= 0)
             $this->context->smarty->assign('email', 1);
-        }
-
+        elseif (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int)$context->shop->id))
+            return;
         $this->context->smarty->assign(
             array(
                 'id_product' => $id_product,
+                'id_product_attribute' => $id_product_attribute
             )
         );
-
         return $this->display(__FILE__, 'product.tpl');
-    }
-
-    public function hookActionProductOutOfStock($params)
-    {
-        $id_product = (int) $params['product']['id'];
-        $id_product_attribute = (int) $params['product']['id_product_attribute'];
-        $quantity = (int) $params['product']['quantity'];
-        $context = Context::getContext();
-        $id_customer = (int) $context->customer->id;
-        $already_subscribed = MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int) $context->shop->id);
-
-        $this->context->smarty->assign(
-            array(
-                'product' => $params['product'],
-                'quantity' => $quantity,
-                'already_subscribed' => $already_subscribed,
-                'id_product' => $id_product,
-                'id_product_attribute' => $id_product_attribute,
-            )
-        );
-
-        return $this->display(__FILE__, 'product.js.tpl');
     }
 
     public function hookActionUpdateQuantity($params)

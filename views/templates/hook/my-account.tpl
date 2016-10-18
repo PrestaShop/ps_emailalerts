@@ -23,12 +23,6 @@
 * International Registered Trademark & Property of PrestaShop SA
 *}
 
-<a class="mailalerts col-lg-4 col-md-6 col-sm-6 col-xs-12"
-   id="returns-link" href="{$link->getModuleLink('mailalerts', 'account', array(), true)|escape:'html'}"
-   title="{l s='My alerts' d='Modules.MailAlerts.Shop'}"
-   rel="nofollow">
-  <span class="link-item">
-    <i class="material-icons">&#xE860;</i>
-    {l s='My alerts' d='Modules.MailAlerts.Shop'}
-  </span>
-</a>
+<li>
+  <a href="{url entity='module' name='ps_emailalerts' controller='account'}">{l s='My alerts' d='Modules.MailAlerts.Shop'}</a>
+</li>

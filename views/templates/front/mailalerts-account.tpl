@@ -26,60 +26,14 @@
 {extends file='page.tpl'}
 
 {block name='page_content'}
-  <script type="text/javascript">
-    $('document').ready(function()
-    {
-      $('i[rel^=ajax_id_mailalert_]').click(function()
-      {
-        var ids =  $(this).attr('rel').replace('ajax_id_mailalert_', '');
-        ids = ids.split('_');
-        var id_product_mail_alert = ids[0];
-        var id_product_attribute_mail_alert = ids[1];
-        var parent = $(this).closest('div.mailalert.clearfix');
-
-        $.ajax({
-          url: "{$link->getModuleLink('mailalerts', 'actions', ['process' => 'remove'])|addslashes}",
-          type: "POST",
-          data: {
-            'id_product': id_product_mail_alert,
-            'id_product_attribute': id_product_attribute_mail_alert
-          },
-          success: function(result)
-          {
-            if (result == '0')
-            {
-              parent.fadeOut("normal", function()
-              {
-                parent.remove();
-              });
-            }
-          }
-        });
-      });
-    });
-  </script>
-
-  <div id="mailalerts_block_account">
-    <h2>{l s='My alerts' d='Modules.MailAlerts.Shop'}</h2>
-    {if $mailAlerts}
-      <div>
-        {foreach from=$mailAlerts item=mailAlert}
-          <div class="mailalert clearfix">
-            <a href="{$link->getProductLink($mailAlert.id_product, null, null, null, null, $mailAlert.id_shop, $mailAlert.id_product_attribute)}" title="{$mailAlert.name|escape:'html':'UTF-8'}" class="product_img_link"><img src="{$link->getImageLink($mailAlert.link_rewrite, $mailAlert.cover, 'small_default')|escape:'html'}" alt=""/></a>
-            <h3><a href="{$link->getProductLink($mailAlert.id_product, null, null, null, null, $mailAlert.id_shop, $mailAlert.id_product_attribute)|escape:'html'}" title="{$mailAlert.name|escape:'html':'UTF-8'}">{$mailAlert.name|escape:'html':'UTF-8'}</a></h3>
-            <div class="product_desc">{$mailAlert.attributes_small|escape:'html':'UTF-8'}</div>
-
-            <div class="remove">
-              <a href="#">
-                <i rel="ajax_id_mailalert_{$mailAlert.id_product|intval}_{$mailAlert.id_product_attribute|intval}"
-                   class="material-icons action-disabled" style="cursor: hand;">clear</i>
-              </a>
-            </div>
-          </div>
-        {/foreach}
-      </div>
-    {else}
-      <p class="warning">{l s='No mail alerts yet.' d='Modules.MailAlerts.Shop'}</p>
-    {/if}
-  </div>
+  <h2>{l s='My alerts' d='Modules.MailAlerts.Shop'}</h2>
+  {if $mailAlerts}
+      <ul>
+      {foreach from=$mailAlerts item=mailAlert}
+        <li>{include 'module:ps_emailalerts/views/templates/front/mailalerts-account-line.tpl' mailAlert=$mailAlert}</li>
+      {/foreach}
+      </ul>
+  {else}
+    <p class="warning">{l s='No mail alerts yet.' d='Modules.MailAlerts.Shop'}</p>
+  {/if}
 {/block}

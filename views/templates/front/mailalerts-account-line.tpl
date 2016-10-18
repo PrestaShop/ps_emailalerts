@@ -23,8 +23,15 @@
 * International Registered Trademark & Property of PrestaShop SA
 *}
 
-<li class="mailalerts">
-  <a href="{$link->getModuleLink('mailalerts', 'account', array(), true)|escape:'html'}" title="{l s='My alerts' d='Modules.MailAlerts.Shop'}" rel="nofollow">
-    {l s='My alerts' d='Modules.MailAlerts.Shop'}
+<a href="{$mailAlert.link}">
+  <img src="{$link->getImageLink($mailAlert.link_rewrite, $mailAlert.cover, 'small_default')|escape:'html'}" alt=""/>
+  <img src="{url entity='image' params=['cover' => $mailAlert.cover, 'link_rewrite' => $mailAlert.link_rewrite]}" alt=""/>
+  {$mailAlert.name|escape:'html':'UTF-8'}
+  <span>{$mailAlert.attributes_small|escape:'html':'UTF-8'}</span>
+  <a href="#"
+     class="js_remove_email_alert"
+     rel="js_id_emailalerts_{$mailAlert.id_product|intval}_{$mailAlert.id_product_attribute|intval}"
+     data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
+    X
   </a>
-</li>
+</a>
