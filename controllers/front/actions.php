@@ -27,7 +27,7 @@
 /**
  * @since 1.5.0
  */
-class MailalertsActionsModuleFrontController extends ModuleFrontController
+class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
 {
     /**
      * @var int
@@ -106,9 +106,19 @@ class MailalertsActionsModuleFrontController extends ModuleFrontController
         $mail_alert = MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, $id_shop, null, $customer_email);
 
         if ($mail_alert) {
-            die('2');
+            die(json_encode(
+                array(
+                    'error' => true,
+                    'message' => $this->getTranslator()->trans('You already have an alert for this product', array(), 'Modules.MailAlerts.Shop'),
+                )
+            ));
         } elseif (!Validate::isLoadedObject($product)) {
-            die('0');
+            die(json_encode(
+                array(
+                    'error' => true,
+                    'message' => $this->getTranslator()->trans('Your e-mail address is invalid', array(), 'Modules.MailAlerts.Shop'),
+                )
+            ));
         }
 
         $mail_alert = new MailAlert();
@@ -121,10 +131,20 @@ class MailalertsActionsModuleFrontController extends ModuleFrontController
         $mail_alert->id_lang = (int) $id_lang;
 
         if ($mail_alert->add() !== false) {
-            die('1');
+            die(json_encode(
+                array(
+                    'error' => false,
+                    'message' => $this->getTranslator()->trans('Request notification registered', array(), 'Modules.MailAlerts.Shop'),
+                )
+            ));
         }
 
-        die('0');
+        die(json_encode(
+            array(
+                'error' => true,
+                'message' => $this->getTranslator()->trans('Your e-mail address is invalid', array(), 'Modules.MailAlerts.Shop'),
+            )
+        ));
     }
 
     /**

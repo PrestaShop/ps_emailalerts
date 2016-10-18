@@ -601,7 +601,7 @@ class Ps_EmailAlerts extends Module
 
     public function hookDisplayMyAccountBlock($params)
     {
-        return $this->customer_qty ? $this->display(__FILE__, 'my-account-block.tpl') : null;
+        return $this->hookDisplayCustomerAccount();
     }
 
     public function hookActionProductDelete($params)

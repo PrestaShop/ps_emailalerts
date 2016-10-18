@@ -27,7 +27,7 @@
 /**
  * @since 1.5.0
  */
-class MailalertsAccountModuleFrontController extends ModuleFrontController
+class Ps_EmailAlertsAccountModuleFrontController extends ModuleFrontController
 {
     public function init()
     {
@@ -41,7 +41,7 @@ class MailalertsAccountModuleFrontController extends ModuleFrontController
         parent::initContent();
 
         if (!Context::getContext()->customer->isLogged()) {
-            Tools::redirect('index.php?controller=authentication&redirect=module&module=mailalerts&action=account');
+            Tools::redirect('index.php?controller=authentication&redirect=module&module=ps_emailalerts&action=account');
         }
 
         if (Context::getContext()->customer->id) {
