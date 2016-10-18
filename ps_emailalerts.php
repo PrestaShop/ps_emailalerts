@@ -64,7 +64,10 @@ class Ps_EmailAlerts extends Module
 
         $this->displayName = $this->getTranslator()->trans('Mail alerts', array(), 'Modules.MailAlerts.Admin');
         $this->description = $this->getTranslator()->trans('Sends e-mail notifications to customers and merchants regarding stock and order modifications.', array(), 'Modules.MailAlerts.Admin');
-        $this->confirmUninstall = $this->getTranslator()->trans('Are you sure you want to delete all customer notifications?', array(), 'Modules.MailAlerts.Admin');
+        $this->ps_versions_compliancy = [
+            'min' => '1.7.0.0',
+            'max' => _PS_VERSION_,
+        ];
     }
 
     protected function init()
