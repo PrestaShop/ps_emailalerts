@@ -30,7 +30,7 @@ if (!defined('_CAN_LOAD_FILES_')) {
 
 include_once dirname(__FILE__).'/MailAlert.php';
 
-class mailalerts extends Module
+class Ps_EmailAlerts extends Module
 {
     protected $html = '';
 
@@ -47,7 +47,7 @@ class mailalerts extends Module
 
     public function __construct()
     {
-        $this->name = 'mailalerts';
+        $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
         $this->version = '3.6.0';
         $this->author = 'PrestaShop';
@@ -63,7 +63,7 @@ class mailalerts extends Module
         }
 
         $this->displayName = $this->getTranslator()->trans('Mail alerts', array(), 'Modules.MailAlerts.Admin');
-        $this->description = $this->getTranslator()->trans('Sends e-mail notifications to customers and merchants.', array(), 'Modules.MailAlerts.Admin');
+        $this->description = $this->getTranslator()->trans('Sends e-mail notifications to customers and merchants regarding stock and order modifications.', array(), 'Modules.MailAlerts.Admin');
         $this->confirmUninstall = $this->getTranslator()->trans('Are you sure you want to delete all customer notifications?', array(), 'Modules.MailAlerts.Admin');
     }
 

@@ -51,7 +51,7 @@ class MailalertsAccountModuleFrontController extends ModuleFrontController
                 MailAlert::getMailAlerts((int) Context::getContext()->customer->id, (int) Context::getContext()->language->id)
             );
 
-            $this->setTemplate('module:mailalerts/views/templates/front/mailalerts-account.tpl');
+            $this->setTemplate('module:ps_emailalerts/views/templates/front/mailalerts-account.tpl');
         }
     }
 }
