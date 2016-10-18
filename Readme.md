@@ -2,7 +2,7 @@
 
 ## About
 
-Sends e-mail notifications to customers and merchants.
+Sends e-mail notifications to customers and merchants regarding stock and order modifications.
 
 ## Contributing
 
