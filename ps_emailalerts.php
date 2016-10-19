@@ -479,7 +479,7 @@ class Ps_EmailAlerts extends Module
             return;
         $context = Context::getContext();
         $id_product = (int)$params['product']['id'];
-        $id_product_attribute = 0;
+        $id_product_attribute = $params['product']['id_product_attribute'];
         $id_customer = (int)$context->customer->id;
         if ((int)$context->customer->id <= 0)
             $this->context->smarty->assign('email', 1);
