@@ -87,7 +87,7 @@ class Ps_EmailAlerts extends Module
         if (!parent::install() ||
             !$this->registerHook('actionValidateOrder') ||
             !$this->registerHook('actionUpdateQuantity') ||
-            !$this->registerHook('displayProductExtra') ||
+            !$this->registerHook('displayProductAdditionalInfo') ||
             !$this->registerHook('displayCustomerAccount') ||
             !$this->registerHook('displayMyAccountBlock') ||
             !$this->registerHook('actionProductDelete') ||
@@ -470,7 +470,7 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookDisplayProductExtra($params)
+    public function hookDisplayProductAdditionalInfo($params)
     {
         if (0 < $params['product']['quantity'] ||
             !$this->customer_qty ||
