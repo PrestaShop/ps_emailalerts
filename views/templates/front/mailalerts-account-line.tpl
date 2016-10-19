@@ -28,8 +28,8 @@
   {$mailAlert.name}
   <span>{$mailAlert.attributes_small}</span>
   <a href="#"
-     class="js_remove_email_alert"
-     rel="js_id_emailalerts_{$mailAlert.id_product|intval}_{$mailAlert.id_product_attribute|intval}"
+     class="js-remove-email-alert"
+     rel="js-id-emailalerts-{$mailAlert.id_product|intval}-{$mailAlert.id_product_attribute|intval}"
      data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
     X
   </a>

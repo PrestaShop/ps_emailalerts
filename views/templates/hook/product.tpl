@@ -23,7 +23,7 @@
 * International Registered Trademark & Property of PrestaShop SA
 *}
 
-<div class="js_mailalert" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
+<div class="js-mailalert" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
 	{if isset($email) AND $email}
 		<input type="email" placeholder="{l s='your@email.com' d='Modules.MailAlerts.Shop'}"/><br />
 	{/if}

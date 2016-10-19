@@ -24,19 +24,19 @@
  */
 
 function  addNotification() {
-  var ids = $('div.js_mailalert > input[type=hidden]');
+  var ids = $('div.js-mailalert > input[type=hidden]');
 
   $.ajax({
     type: 'POST',
-    url: $('div.js_mailalert').data('url'),
-    data: 'id_product='+ids[0].value+'&id_product_attribute='+ids[1].value+'&customer_email='+$('div.js_mailalert > input[type=email]').val(),
+    url: $('div.js-mailalert').data('url'),
+    data: 'id_product='+ids[0].value+'&id_product_attribute='+ids[1].value+'&customer_email='+$('div.js-mailalert > input[type=email]').val(),
     success: function (resp) {
       resp = JSON.parse(resp);
 
-      $('div.js_mailalert > span').html(resp.message).show();
+      $('div.js-mailalert > span').html(resp.message).show();
       if (!resp.error) {
-        $('div.js_mailalert > a').hide();
-        $('div.js_mailalert > input[type=email]').hide();
+        $('div.js-mailalert > a').hide();
+        $('div.js-mailalert > input[type=email]').hide();
       }
     }
   });
@@ -45,11 +45,11 @@ function  addNotification() {
 
 $('document').ready(function()
 {
-  $('.js_remove_email_alert').click(function()
+  $('.js-remove-email-alert').click(function()
   {
     var self = $(this);
-    var ids = self.attr('rel').replace('js_id_emailalerts_', '');
-    ids = ids.split('_');
+    var ids = self.attr('rel').replace('js-id-emailalerts-', '');
+    ids = ids.split('-');
     var id_product_mail_alert = ids[0];
     var id_product_attribute_mail_alert = ids[1];
     var parent = self.closest('li');
