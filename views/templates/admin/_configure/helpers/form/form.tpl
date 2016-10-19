@@ -28,18 +28,18 @@
 {block name="input"}
     {if $input.type == 'switch' && $smarty.const._PS_VERSION_|@addcslashes:'\'' < '1.6'}
 		{foreach $input.values as $value}
-			<input type="radio" name="{$input.name}" id="{$value.id|intval}" value="{$value.value}"
+			<input type="radio" name="{$input.name|escape:'html':'UTF-8'}" id="{$value.id|intval}" value="{$value.value|escape:'html':'UTF-8'}"
 					{if $fields_value[$input.name] == $value.value}checked="checked"{/if}
 					{if isset($input.disabled) && $input.disabled}disabled="disabled"{/if} />
 			<label class="t" for="{$value.id|intval}">
 			 {if isset($input.is_bool) && $input.is_bool == true}
 				{if $value.value == 1}
-					<img src="../img/admin/enabled.gif" alt="{$value.label}" title="{$value.label}" />
+					<img src="../img/admin/enabled.gif" alt="{$value.label}" title="{$value.label|escape:'html':'UTF-8'}" />
 				{else}
-					<img src="../img/admin/disabled.gif" alt="{$value.label}" title="{$value.label}" />
+					<img src="../img/admin/disabled.gif" alt="{$value.label}" title="{$value.label|escape:'html':'UTF-8'}" />
 				{/if}
 			 {else}
-				{$value.label}
+				{$value.label|escape:'html':'UTF-8'}
 			 {/if}
 			</label>
 			{if isset($input.br) && $input.br}<br />{/if}
