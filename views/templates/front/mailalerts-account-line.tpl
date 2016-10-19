@@ -24,10 +24,9 @@
 *}
 
 <a href="{$mailAlert.link}">
-  <img src="{$link->getImageLink($mailAlert.link_rewrite, $mailAlert.cover, 'small_default')|escape:'html'}" alt=""/>
-  <img src="{url entity='image' params=['cover' => $mailAlert.cover, 'link_rewrite' => $mailAlert.link_rewrite]}" alt=""/>
-  {$mailAlert.name|escape:'html':'UTF-8'}
-  <span>{$mailAlert.attributes_small|escape:'html':'UTF-8'}</span>
+  <img src="{$mailAlert.cover_url}" alt=""/>
+  {$mailAlert.name}
+  <span>{$mailAlert.attributes_small}</span>
   <a href="#"
      class="js_remove_email_alert"
      rel="js_id_emailalerts_{$mailAlert.id_product|intval}_{$mailAlert.id_product_attribute|intval}"

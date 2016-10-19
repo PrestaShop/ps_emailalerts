@@ -159,9 +159,9 @@ class MailAlert extends ObjectModel
             if (!isset($products[$i]['cover'])) {
                 $products[$i]['cover'] = Language::getIsoById($id_lang).'-default';
             }
-
             $products[$i]['link'] = $obj->getLink();
-            $products[$i]['link_rewrite'] = $obj->link_rewrite;
+            $context = Context::getContext();
+            $products[$i]['cover_url'] = $context->link->getImageLink($obj->link_rewrite, $products[$i]['cover'], 'small_default');
         }
 
         return $products;
