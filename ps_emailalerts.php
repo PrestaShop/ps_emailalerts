@@ -182,6 +182,8 @@ class Ps_EmailAlerts extends Module
         if (Tools::isSubmit('submitMailAlert')) {
             if (!Configuration::updateValue('MA_CUSTOMER_QTY', (int) Tools::getValue('MA_CUSTOMER_QTY'))) {
                 $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+            } elseif (!Configuration::updateGlobalValue('MA_ORDER_EDIT', (int) Tools::getValue('MA_ORDER_EDIT'))) {
+                $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
             }
         } elseif (Tools::isSubmit('submitMAMerchant')) {
             $emails = (string) Tools::getValue('MA_MERCHANT_MAILS');
@@ -217,8 +219,6 @@ class Ps_EmailAlerts extends Module
                     $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_PRODUCT_COVERAGE', (int) Tools::getValue('MA_PRODUCT_COVERAGE'))) {
                     $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
-                } elseif (!Configuration::updateGlobalValue('MA_ORDER_EDIT', (int) Tools::getValue('MA_ORDER_EDIT'))) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_RETURN_SLIP', (int) Tools::getValue('MA_RETURN_SLIP'))) {
                     $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
                 }
@@ -227,7 +227,7 @@ class Ps_EmailAlerts extends Module
 
         if (count($errors) > 0) {
             $this->html .= $this->displayError(implode('<br />', $errors));
-        } else {
+        } else if (Tools::isSubmit('submitMailAlert') || Tools::isSubmit('submitMAMerchant')) {
             $this->html .= $this->displayConfirmation($this->getTranslator()->trans('Settings updated successfully', array(), 'Modules.MailAlerts.Admin'));
         }
 
