@@ -1029,7 +1029,7 @@ class Ps_EmailAlerts extends Module
                     ),
                 ),
         );
-        $inpus[] = array(
+        $inputs[] = array(
                 'type' => 'textarea',
                 'cols' => 36,
                 'rows' => 4,
