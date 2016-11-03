@@ -575,14 +575,14 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookDisplayCustomerAccount()
+    public function hookDisplayCustomerAccount($params)
     {
         return $this->customer_qty ? $this->display(__FILE__, 'my-account.tpl') : null;
     }
 
     public function hookDisplayMyAccountBlock($params)
     {
-        return $this->hookDisplayCustomerAccount();
+        return $this->customer_qty ? $this->display(__FILE__, 'my-account-footer.tpl') : null;
     }
 
     public function hookActionProductDelete($params)
