@@ -62,10 +62,10 @@ class Ps_EmailAlerts extends Module
             $this->init();
         }
 
-        $this->displayName = $this->getTranslator()->trans('Mail alerts', array(), 'Modules.MailAlerts.Admin');
-        $this->description = $this->getTranslator()->trans('Sends e-mail notifications to customers and merchants regarding stock and order modifications.', array(), 'Modules.MailAlerts.Admin');
+        $this->displayName = $this->trans('Mail alerts', array(), 'Modules.Mailalerts.Admin');
+        $this->description = $this->trans('Sends e-mail notifications to customers and merchants regarding stock and order modifications.', array(), 'Modules.Mailalerts.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.0.0',
+            'min' => '1.7.1.0',
             'max' => _PS_VERSION_,
         ];
     }
@@ -181,22 +181,22 @@ class Ps_EmailAlerts extends Module
 
         if (Tools::isSubmit('submitMailAlert')) {
             if (!Configuration::updateValue('MA_CUSTOMER_QTY', (int) Tools::getValue('MA_CUSTOMER_QTY'))) {
-                $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
             } elseif (!Configuration::updateGlobalValue('MA_ORDER_EDIT', (int) Tools::getValue('MA_ORDER_EDIT'))) {
-                $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
             }
         } elseif (Tools::isSubmit('submitMAMerchant')) {
             $emails = (string) Tools::getValue('MA_MERCHANT_MAILS');
 
             if (!$emails || empty($emails)) {
-                $errors[] = $this->getTranslator()->trans('Please type one (or more) e-mail address', array(), 'Modules.MailAlerts.Admin');
+                $errors[] = $this->trans('Please type one (or more) e-mail address', array(), 'Modules.Mailalerts.Admin');
             } else {
                 $emails = str_replace(',', self::__MA_MAIL_DELIMITOR__, $emails);
                 $emails = explode(self::__MA_MAIL_DELIMITOR__, $emails);
                 foreach ($emails as $k => $email) {
                     $email = trim($email);
                     if (!empty($email) && !Validate::isEmail($email)) {
-                        $errors[] = $this->getTranslator()->trans('Invalid e-mail:', array(), 'Modules.MailAlerts.Admin').' '.Tools::safeOutput($email);
+                        $errors[] = $this->trans('Invalid e-mail:', array(), 'Modules.Mailalerts.Admin').' '.Tools::safeOutput($email);
                         break;
                     } elseif (!empty($email) && count($email) > 0) {
                         $emails[$k] = $email;
@@ -208,19 +208,19 @@ class Ps_EmailAlerts extends Module
                 $emails = implode(self::__MA_MAIL_DELIMITOR__, $emails);
 
                 if (!Configuration::updateValue('MA_MERCHANT_MAILS', (string) $emails)) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
                 } elseif (!Configuration::updateValue('MA_MERCHANT_ORDER', (int) Tools::getValue('MA_MERCHANT_ORDER'))) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
                 } elseif (!Configuration::updateValue('MA_MERCHANT_OOS', (int) Tools::getValue('MA_MERCHANT_OOS'))) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
                 } elseif (!Configuration::updateValue('MA_LAST_QTIES', (int) Tools::getValue('MA_LAST_QTIES'))) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_MERCHANT_COVERAGE', (int) Tools::getValue('MA_MERCHANT_COVERAGE'))) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_PRODUCT_COVERAGE', (int) Tools::getValue('MA_PRODUCT_COVERAGE'))) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_RETURN_SLIP', (int) Tools::getValue('MA_RETURN_SLIP'))) {
-                    $errors[] = $this->getTranslator()->trans('Cannot update settings', array(), 'Modules.MailAlerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Mailalerts.Admin');
                 }
             }
         }
@@ -228,7 +228,7 @@ class Ps_EmailAlerts extends Module
         if (count($errors) > 0) {
             $this->html .= $this->displayError(implode('<br />', $errors));
         } else if (Tools::isSubmit('submitMailAlert') || Tools::isSubmit('submitMAMerchant')) {
-            $this->html .= $this->displayConfirmation($this->getTranslator()->trans('Settings updated successfully', array(), 'Modules.MailAlerts.Admin'));
+            $this->html .= $this->displayConfirmation($this->trans('Settings updated successfully', array(), 'Modules.Mailalerts.Admin'));
         }
 
         $this->init();
@@ -280,7 +280,7 @@ class Ps_EmailAlerts extends Module
         $message = $this->getAllMessages($order->id);
 
         if (!$message || empty($message)) {
-            $message = $this->getTranslator()->trans('No message', array(), 'Modules.MailAlerts.Admin');
+            $message = $this->trans('No message', array(), 'Modules.Mailalerts.Admin');
         }
 
         $items_table = '';
@@ -301,7 +301,7 @@ class Ps_EmailAlerts extends Module
                     }
 
                     if (isset($customization['datas'][Product::CUSTOMIZE_FILE])) {
-                        $customization_text .= count($customization['datas'][Product::CUSTOMIZE_FILE]).' '.$this->getTranslator()->trans('image(s)', array(), 'Modules.MailAlerts.Admin').'<br />';
+                        $customization_text .= count($customization['datas'][Product::CUSTOMIZE_FILE]).' '.$this->trans('image(s)', array(), 'Modules.Mailalerts.Admin').'<br />';
                     }
 
                     $customization_text .= '---<br />';
@@ -333,7 +333,7 @@ class Ps_EmailAlerts extends Module
         foreach ($params['order']->getCartRules() as $discount) {
             $items_table .=
                 '<tr style="background-color:#EBECEE;">
-						<td colspan="4" style="padding:0.6em 0.4em; text-align:right;">'.$this->getTranslator()->trans('Voucher code:', array(), 'Modules.MailAlerts.Admin').' '.$discount['name'].'</td>
+						<td colspan="4" style="padding:0.6em 0.4em; text-align:right;">'.$this->trans('Voucher code:', array(), 'Modules.Mailalerts.Admin').' '.$discount['name'].'</td>
 					<td style="padding:0.6em 0.4em; text-align:right;">-'.Tools::displayPrice($discount['value'], $currency, false).'</td>
 			</tr>';
         }
@@ -882,51 +882,51 @@ class Ps_EmailAlerts extends Module
         $fields_form_1 = array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->getTranslator()->trans('Customer notifications', array(), 'Modules.MailAlerts.Admin'),
+                    'title' => $this->trans('Customer notifications', array(), 'Modules.Mailalerts.Admin'),
                     'icon' => 'icon-cogs',
                 ),
                 'input' => array(
                     array(
                         'type' => 'switch',
                         'is_bool' => true, //retro compat 1.5
-                        'label' => $this->getTranslator()->trans('Product availability', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Product availability', array(), 'Modules.Mailalerts.Admin'),
                         'name' => 'MA_CUSTOMER_QTY',
-                        'desc' => $this->getTranslator()->trans('Gives the customer the option of receiving a notification when an out-of-stock product is available again.', array(), 'Modules.MailAlerts.Admin'),
+                        'desc' => $this->trans('Gives the customer the option of receiving a notification when an out-of-stock product is available again.', array(), 'Modules.Mailalerts.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->getTranslator()->trans('Enabled', array(), 'Modules.MailAlerts.Admin'),
+                                'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                             ),
                             array(
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->getTranslator()->trans('Disabled', array(), 'Modules.MailAlerts.Admin'),
+                                'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                             ),
                         ),
                     ),
                     array(
                         'type' => 'switch',
                         'is_bool' => true, //retro compat 1.5
-                        'label' => $this->getTranslator()->trans('Order edit', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Order edit', array(), 'Modules.Mailalerts.Admin'),
                         'name' => 'MA_ORDER_EDIT',
-                        'desc' => $this->getTranslator()->trans('Send a notification to the customer when an order is edited.', array(), 'Modules.MailAlerts.Admin'),
+                        'desc' => $this->trans('Send a notification to the customer when an order is edited.', array(), 'Modules.Mailalerts.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->getTranslator()->trans('Enabled', array(), 'Modules.MailAlerts.Admin'),
+                                'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                             ),
                             array(
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->getTranslator()->trans('Disabled', array(), 'Modules.MailAlerts.Admin'),
+                                'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                             ),
                         ),
                     ),
                 ),
                 'submit' => array(
-                    'title' => $this->getTranslator()->trans('Save', array(), 'Modules.MailAlerts.Admin'),
+                    'title' => $this->trans('Save', array(), 'Admin.Actions'),
                     'class' => 'btn btn-default pull-right',
                     'name' => 'submitMailAlert',
                 ),
@@ -937,47 +937,47 @@ class Ps_EmailAlerts extends Module
             array(
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->getTranslator()->trans('New order', array(), 'Modules.MailAlerts.Admin'),
+                'label' => $this->trans('New order', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_MERCHANT_ORDER',
-                'desc' => $this->getTranslator()->trans('Receive a notification when an order is placed.', array(), 'Modules.MailAlerts.Admin'),
+                'desc' => $this->trans('Receive a notification when an order is placed.', array(), 'Modules.Mailalerts.Admin'),
                 'values' => array(
                     array(
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->getTranslator()->trans('Enabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                     ),
                     array(
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->getTranslator()->trans('Disabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                     ),
                 ),
             ),
             array(
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->getTranslator()->trans('Out of stock', array(), 'Modules.MailAlerts.Admin'),
+                'label' => $this->trans('Out of stock', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_MERCHANT_OOS',
-                'desc' => $this->getTranslator()->trans('Receive a notification if the available quantity of a product is below the following threshold.', array(), 'Modules.MailAlerts.Admin'),
+                'desc' => $this->trans('Receive a notification if the available quantity of a product is below the following threshold.', array(), 'Modules.Mailalerts.Admin'),
                 'values' => array(
                     array(
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->getTranslator()->trans('Enabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                     ),
                     array(
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->getTranslator()->trans('Disabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                     ),
                 ),
             ),
             array(
                 'type' => 'text',
-                'label' => $this->getTranslator()->trans('Threshold', array(), 'Modules.MailAlerts.Admin'),
+                'label' => $this->trans('Threshold', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_LAST_QTIES',
                 'class' => 'fixed-width-xs',
-                'desc' => $this->getTranslator()->trans('Quantity for which a product is considered out of stock.', array(), 'Modules.MailAlerts.Admin'),
+                'desc' => $this->trans('Quantity for which a product is considered out of stock.', array(), 'Modules.Mailalerts.Admin'),
             ),
         );
 
@@ -985,47 +985,47 @@ class Ps_EmailAlerts extends Module
             $inputs[] = array(
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->getTranslator()->trans('Coverage warning', array(), 'Modules.MailAlerts.Admin'),
+                'label' => $this->trans('Coverage warning', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_MERCHANT_COVERAGE',
-                'desc' => $this->getTranslator()->trans('Receive a notification when a product has insufficient coverage.', array(), 'Modules.MailAlerts.Admin'),
+                'desc' => $this->trans('Receive a notification when a product has insufficient coverage.', array(), 'Modules.Mailalerts.Admin'),
                 'values' => array(
                     array(
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->getTranslator()->trans('Enabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                     ),
                     array(
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->getTranslator()->trans('Disabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                     ),
                 ),
             );
             $inputs[] = array(
                 'type' => 'text',
-                'label' => $this->getTranslator()->trans('Coverage', array(), 'Modules.MailAlerts.Admin'),
+                'label' => $this->trans('Coverage', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_PRODUCT_COVERAGE',
                 'class' => 'fixed-width-xs',
-                'desc' => $this->getTranslator()->trans('Stock coverage, in days. Also, the stock coverage of a given product will be calculated based on this number.', array(), 'Modules.MailAlerts.Admin'),
+                'desc' => $this->trans('Stock coverage, in days. Also, the stock coverage of a given product will be calculated based on this number.', array(), 'Modules.Mailalerts.Admin'),
             );
         }
 
         $inputs[] = array(
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->getTranslator()->trans('Returns', array(), 'Modules.MailAlerts.Admin'),
+                'label' => $this->trans('Returns', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_RETURN_SLIP',
-                'desc' => $this->getTranslator()->trans('Receive a notification when a customer requests a merchandise return.', array(), 'Modules.MailAlerts.Admin'),
+                'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', array(), 'Modules.Mailalerts.Admin'),
                 'values' => array(
                     array(
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->getTranslator()->trans('Enabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                     ),
                     array(
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->getTranslator()->trans('Disabled', array(), 'Modules.MailAlerts.Admin'),
+                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                     ),
                 ),
         );
@@ -1033,20 +1033,20 @@ class Ps_EmailAlerts extends Module
                 'type' => 'textarea',
                 'cols' => 36,
                 'rows' => 4,
-                'label' => $this->getTranslator()->trans('E-mail addresses', array(), 'Modules.MailAlerts.Admin'),
+                'label' => $this->trans('E-mail addresses', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_MERCHANT_MAILS',
-                'desc' => $this->getTranslator()->trans('One e-mail address per line (e.g. bob@example.com).', array(), 'Modules.MailAlerts.Admin'),
+                'desc' => $this->trans('One e-mail address per line (e.g. bob@example.com).', array(), 'Modules.Mailalerts.Admin'),
         );
 
         $fields_form_2 = array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->getTranslator()->trans('Merchant notifications', array(), 'Modules.MailAlerts.Admin'),
+                    'title' => $this->trans('Merchant notifications', array(), 'Modules.Mailalerts.Admin'),
                     'icon' => 'icon-cogs',
                 ),
                 'input' => $inputs,
                 'submit' => array(
-                    'title' => $this->getTranslator()->trans('Save', array(), 'Modules.MailAlerts.Admin'),
+                    'title' => $this->trans('Save', array(), 'Admin.Actions'),
                     'class' => 'btn btn-default pull-right',
                     'name' => 'submitMAMerchant',
                 ),
