@@ -99,7 +99,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             die(json_encode(
                 array(
                     'error' => true,
-                    'message' => $this->getTranslator()->trans('Your e-mail address is invalid', array(), 'Modules.MailAlerts.Shop'),
+                    'message' => $this->trans('Your e-mail address is invalid', array(), 'Modules.Mailalerts.Shop'),
                 )
             ));
         }
@@ -116,14 +116,14 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             die(json_encode(
                 array(
                     'error' => true,
-                    'message' => $this->getTranslator()->trans('You already have an alert for this product', array(), 'Modules.MailAlerts.Shop'),
+                    'message' => $this->trans('You already have an alert for this product', array(), 'Modules.Mailalerts.Shop'),
                 )
             ));
         } elseif (!Validate::isLoadedObject($product)) {
             die(json_encode(
                 array(
                     'error' => true,
-                    'message' => $this->getTranslator()->trans('Your e-mail address is invalid', array(), 'Modules.MailAlerts.Shop'),
+                    'message' => $this->trans('Your e-mail address is invalid', array(), 'Modules.Mailalerts.Shop'),
                 )
             ));
         }
@@ -141,7 +141,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             die(json_encode(
                 array(
                     'error' => false,
-                    'message' => $this->getTranslator()->trans('Request notification registered', array(), 'Modules.MailAlerts.Shop'),
+                    'message' => $this->trans('Request notification registered', array(), 'Modules.Mailalerts.Shop'),
                 )
             ));
         }
@@ -149,7 +149,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
         die(json_encode(
             array(
                 'error' => true,
-                'message' => $this->getTranslator()->trans('Your e-mail address is invalid', array(), 'Modules.MailAlerts.Shop'),
+                'message' => $this->trans('Your e-mail address is invalid', array(), 'Modules.Mailalerts.Shop'),
             )
         ));
     }

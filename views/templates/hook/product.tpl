@@ -25,10 +25,10 @@
 
 <div class="js-mailalert" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
 	{if isset($email) AND $email}
-		<input type="email" placeholder="{l s='your@email.com' d='Modules.MailAlerts.Shop'}"/><br />
+		<input type="email" placeholder="{l s='your@email.com' d='Modules.Mailalerts.Shop'}"/><br />
 	{/if}
   <input type="hidden" value="{$id_product}"/>
   <input type="hidden" value="{$id_product_attribute}"/>
-	<a href="#" rel="nofollow" onclick="return addNotification();">{l s='Notify me when available' d='Modules.MailAlerts.Shop'}</a>
+	<a href="#" rel="nofollow" onclick="return addNotification();">{l s='Notify me when available' d='Modules.Mailalerts.Shop'}</a>
 	<span style="display:none;"></span>
 </div>
