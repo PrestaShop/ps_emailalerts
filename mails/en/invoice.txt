@@ -1,0 +1,13 @@
+
+[{shop_url}] 
+
+Order Completed! 
+
+The order placed on {shop_name} by the following customer: {firstname} {lastname} ({email}) was completed. See the attached invoice.
+
+
+{message} 
+
+{shop_name} [{shop_url}] powered by
+PrestaShop(tm) [http://www.prestashop.com/] 
+
