@@ -1088,7 +1088,7 @@ class Ps_EmailAlerts extends Module
             array(
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->trans('Send Invoice', array(), 'Modules.Mailalerts.Admin'),
+                'label' => $this->trans('Invoice', array(), 'Modules.Mailalerts.Admin'),
                 'name' => 'MA_MERCHANT_INVOICE',
                 'desc' => $this->trans('Send an invoice when the order is paid.', array(), 'Modules.Mailalerts.Admin'),
                 'values' => array(

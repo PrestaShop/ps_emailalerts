@@ -1,7 +1,7 @@
 
 [{shop_url}] 
 
-Order Completed! 
+Order paid! 
 
 The order placed on {shop_name} by the following customer: {firstname} {lastname} ({email}) was completed. See the attached invoice.
 
