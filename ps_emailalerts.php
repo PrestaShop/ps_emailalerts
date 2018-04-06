@@ -92,7 +92,7 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('displayCustomerAccount') ||
             !$this->registerHook('displayMyAccountBlock') ||
             !$this->registerHook('actionProductDelete') ||
-            !$this->registerHook('actionPaymentConfirmation') ||
+            !$this->registerHook('actionOrderStatusPostUpdate') ||
             !$this->registerHook('actionProductAttributeDelete') ||
             !$this->registerHook('actionProductAttributeUpdate') ||
             !$this->registerHook('actionProductCoverage') ||
@@ -327,7 +327,7 @@ class Ps_EmailAlerts extends Module
         // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
         $merchant_mails = explode(self::__MA_MAIL_DELIMITOR__, $this->merchant_mails);
         
-        if ($order_status->paid) {
+        if ($order_status->pdf_invoice) {
         
             foreach ($merchant_mails as $merchant_mail) {
                 // Default language
