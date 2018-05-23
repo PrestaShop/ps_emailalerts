@@ -37,6 +37,7 @@ function  addNotification() {
       if (!resp.error) {
         $('div.js-mailalert > button').hide();
         $('div.js-mailalert > input[type=email]').hide();
+        $('div.js-mailalert > #gdpr_consent').hide();
       }
     }
   });
