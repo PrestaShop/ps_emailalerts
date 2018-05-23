@@ -98,6 +98,8 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionOrderReturn') ||
             !$this->registerHook('actionOrderEdited') ||
             !$this->registerHook('registerGDPRConsent') ||
+            !$this->registerHook('actionDeleteGDPRCustomer') ||
+            !$this->registerHook('actionExportGDPRData') ||
             !$this->registerHook('displayProductAdditionalInfo') ||
             !$this->registerHook('displayHeader')) {
             return false;
@@ -1077,6 +1079,28 @@ class Ps_EmailAlerts extends Module
         );
 
         return $helper->generateForm(array($fields_form_1, $fields_form_2));
+    }
+
+    public function hookActionDeleteGDPRCustomer($customer)
+    {
+        if (!empty($customer['email']) && Validate::isEmail($customer['email'])) {
+            $sql = "DELETE FROM "._DB_PREFIX_."mailalert_customer_oos WHERE customer_email = '".pSQL($customer['email'])."'";
+            if (Db::getInstance()->execute($sql)) {
+                return json_encode(true);
+            }
+            return json_encode($this->l('Mail alert: Unable to delete customer using email.'));
+        }
+    }
+
+    public function hookActionExportGDPRData($customer)
+    {
+        if (!Tools::isEmpty($customer['email']) && Validate::isEmail($customer['email'])) {
+            $sql = "SELECT * FROM "._DB_PREFIX_."mailalert_customer_oos WHERE customer_email = '".pSQL($customer['email'])."'";
+            if ($res = Db::getInstance()->ExecuteS($sql)) {
+                return json_encode($res);
+            }
+            return json_encode($this->l('Mail alert: Unable to export customer using email.'));
+        }
     }
 
     public function getConfigFieldsValues()
