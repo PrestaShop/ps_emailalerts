@@ -97,6 +97,8 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionProductOutOfStock') ||
             !$this->registerHook('actionOrderReturn') ||
             !$this->registerHook('actionOrderEdited') ||
+            !$this->registerHook('registerGDPRConsent') ||
+            !$this->registerHook('displayProductAdditionalInfo') ||
             !$this->registerHook('displayHeader')) {
             return false;
         }
@@ -470,7 +472,7 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookDisplayProductButtons($params)
+    public function hookDisplayProductAdditionalInfo($params)
     {
         if (0 < $params['product']['quantity'] ||
             !$this->customer_qty ||
@@ -488,7 +490,8 @@ class Ps_EmailAlerts extends Module
         $this->context->smarty->assign(
             array(
                 'id_product' => $id_product,
-                'id_product_attribute' => $id_product_attribute
+                'id_product_attribute' => $id_product_attribute,
+                'id_module' => $this->id
             )
         );
         return $this->display(__FILE__, 'product.tpl');

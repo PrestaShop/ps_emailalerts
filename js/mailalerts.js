@@ -33,9 +33,9 @@ function  addNotification() {
     success: function (resp) {
       resp = JSON.parse(resp);
 
-      $('div.js-mailalert > span').html(resp.message).show();
+      $('div.js-mailalert > span').html('<article class="alert alert-info" role="alert" data-alert="success">'+resp.message+'</article>').show();
       if (!resp.error) {
-        $('div.js-mailalert > a').hide();
+        $('div.js-mailalert > button').hide();
         $('div.js-mailalert > input[type=email]').hide();
       }
     }
