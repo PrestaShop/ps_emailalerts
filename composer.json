@@ -2,7 +2,7 @@
   "name": "prestashop/ps_emailalerts",
   "description": "PrestaShop module ps_emailalerts",
   "homepage": "https://github.com/PrestaShop/ps_emailalerts",
-  "license": "AFL - Academic Free License (AFL 3.0)",
+  "license": "AFL-3.0",
   "authors": [
     {
       "name": "PrestaShop SA",
