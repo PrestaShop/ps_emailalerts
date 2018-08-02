@@ -22,20 +22,25 @@
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 * International Registered Trademark & Property of PrestaShop SA
 *}
-
 <div class="tabs">
-    <form>
-        <div class="js-mailalert" style="text-align:center;" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
-            {if isset($email) AND $email}
-                <input class="form-control" type="email" placeholder="{l s='your@email.com' d='Modules.Mailalerts.Shop'}"/><br />
-            {/if}
-            {if isset($id_module)}
-                {hook h='displayGDPRConsent' id_module=$id_module}
-            {/if}
-            <input type="hidden" value="{$id_product}"/>
-            <input type="hidden" value="{$id_product_attribute}"/>
-            <button class="btn btn-primary" type="submit" rel="nofollow" onclick="return addNotification();">{l s='Notify me when available' d='Modules.Mailalerts.Shop'}</button>
-            <span style="display:none;padding:5px"></span>
+    {if !$has_notification}
+        <form>
+            <div class="js-mailalert" style="text-align:center;" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
+                {if isset($email) AND $email}
+                    <input class="form-control" type="email" placeholder="{l s='your@email.com' d='Modules.Mailalerts.Shop'}"/><br />
+                {/if}
+                {if isset($id_module)}
+                    {hook h='displayGDPRConsent' id_module=$id_module}
+                {/if}
+                <input type="hidden" value="{$id_product}"/>
+                <input type="hidden" value="{$id_product_attribute}"/>
+                <button class="btn btn-primary" type="submit" rel="nofollow" onclick="return addNotification();">{l s='Notify me when available' d='Modules.Mailalerts.Shop'}</button>
+                <span style="display:none;padding:5px"></span>
+            </div>
+        </form>
+    {else}
+        <div class="alert alert-info">
+            {l s='You will be notified when product becomes available.' d='Modules.Mailalerts.Shop'}
         </div>
-    </form>
+    {/if}
 </div>

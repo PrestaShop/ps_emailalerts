@@ -479,23 +479,31 @@ class Ps_EmailAlerts extends Module
         if (0 < $params['product']['quantity'] ||
             !$this->customer_qty ||
             !Configuration::get('PS_STOCK_MANAGEMENT') ||
-            Product::isAvailableWhenOutOfStock($params['product']['out_of_stock']))
+            Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
             return;
+        }
+
         $context = Context::getContext();
         $id_product = (int)$params['product']['id'];
         $id_product_attribute = $params['product']['id_product_attribute'];
         $id_customer = (int)$context->customer->id;
-        if ((int)$context->customer->id <= 0)
+        $has_notification = false;
+
+        if ((int)$context->customer->id <= 0) {
             $this->context->smarty->assign('email', 1);
-        elseif (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int)$context->shop->id))
-            return;
+        } elseif (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int)$context->shop->id)) {
+            $has_notification = true;
+        }
+
         $this->context->smarty->assign(
             array(
                 'id_product' => $id_product,
                 'id_product_attribute' => $id_product_attribute,
-                'id_module' => $this->id
+                'id_module' => $this->id,
+                'has_notification' => $has_notification,
             )
         );
+
         return $this->display(__FILE__, 'product.tpl');
     }
 
