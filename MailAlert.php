@@ -199,32 +199,56 @@ class MailAlert extends ObjectModel
 
             if (file_exists(dirname(__FILE__).'/mails/'.$iso.'/customer_qty.txt') &&
                 file_exists(dirname(__FILE__).'/mails/'.$iso.'/customer_qty.html')) {
-                Mail::Send(
-                    $id_lang,
-                    'customer_qty',
-                    Mail::l('Product available', $id_lang),
-                    $template_vars,
-                    (string) $customer_email,
-                    null,
-                    (string) Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
-                    (string) Configuration::get('PS_SHOP_NAME', null, null, $id_shop),
-                    null,
-                    null,
-                    dirname(__FILE__).'/mails/',
-                    false,
-                    $id_shop
-                );
+
+                try {
+                    Mail::Send(
+                        $id_lang,
+                        'customer_qty',
+                        Mail::l('Product available', $id_lang),
+                        $template_vars,
+                        (string) $customer_email,
+                        null,
+                        (string) Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
+                        (string) Configuration::get('PS_SHOP_NAME', null, null, $id_shop),
+                        null,
+                        null,
+                        dirname(__FILE__).'/mails/',
+                        false,
+                        $id_shop
+                    );
+                } catch (Exception $e) {
+                    /*
+                     * Something went wrong but don't care we need to continue.
+                     * This can be caused by an invalid e-mail address.
+                     */
+                    PrestaShopLogger::addLog(
+                        sprintf(
+                            'Mailalert error: Could not send email to address [%s] because %s',
+                            $customer_email,
+                            $e->getMessage()
+                        ),
+                        3 // It means error
+                    );
+                }
             }
 
             Hook::exec(
                 'actionModuleMailAlertSendCustomer',
-                array('product' => (is_array($product->name) ? $product->name[$id_lang] : $product->name),
-                'link' => $product_link,
-                'customer' => $customer,
-                'product_obj' => $product, )
+                array(
+                    'product' => (is_array($product->name) ? $product->name[$id_lang] : $product->name),
+                    'link' => $product_link,
+                    'customer' => $customer,
+                    'product_obj' => $product,
+                )
             );
 
-            self::deleteAlert((int) $customer_id, (string) $customer_email, (int) $id_product, (int) $id_product_attribute, $id_shop);
+            self::deleteAlert(
+                (int) $customer_id,
+                (string) $customer_email,
+                (int) $id_product,
+                (int) $id_product_attribute,
+                $id_shop
+            );
         }
     }
 
