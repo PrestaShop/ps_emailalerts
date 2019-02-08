@@ -202,7 +202,7 @@ class Ps_EmailAlerts extends Module
                     if (!empty($email) && !Validate::isEmail($email)) {
                         $errors[] = $this->trans('Invalid e-mail:', array(), 'Modules.Mailalerts.Admin').' '.Tools::safeOutput($email);
                         break;
-                    } elseif (!empty($email) && count($email) > 0) {
+                    } elseif (!empty($email)) {
                         $emails[$k] = $email;
                     } else {
                         unset($emails[$k]);
