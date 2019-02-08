@@ -180,9 +180,10 @@ class MailAlert extends ObjectModel
             $context->language->id = $id_lang;
 
             $product = new Product((int) $id_product, false, $id_lang, $id_shop);
-            $product_link = $link->getProductLink($product, $product->link_rewrite, null, null, $id_lang, $id_shop);
+	    $product_name = Product::getProductName($product->id, $id_product_attribute, $id_lang);
+            $product_link = $link->getProductLink($product, $product->link_rewrite, null, null, $id_lang, $id_shop, $id_product_attribute);
             $template_vars = array(
-                '{product}' => (is_array($product->name) ? $product->name[$id_lang] : $product->name),
+                '{product}' => $product_name,
                 '{product_link}' => $product_link,
             );
 
@@ -235,7 +236,7 @@ class MailAlert extends ObjectModel
             Hook::exec(
                 'actionModuleMailAlertSendCustomer',
                 array(
-                    'product' => (is_array($product->name) ? $product->name[$id_lang] : $product->name),
+                    'product' => $product_name,
                     'link' => $product_link,
                     'customer' => $customer,
                     'product_obj' => $product,
