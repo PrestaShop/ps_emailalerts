@@ -204,7 +204,7 @@ class MailAlert extends ObjectModel
                     Mail::Send(
                         $id_lang,
                         'customer_qty',
-                        Mail::l('Product available', $id_lang),
+                        Module::getInstanceByName('ps_emailalerts')->l('Product available', 'MailAlert'),
                         $template_vars,
                         (string) $customer_email,
                         null,
