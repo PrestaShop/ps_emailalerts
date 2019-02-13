@@ -180,7 +180,7 @@ class MailAlert extends ObjectModel
             $context->language->id = $id_lang;
 
             $product = new Product((int) $id_product, false, $id_lang, $id_shop);
-	    $product_name = Product::getProductName($product->id, $id_product_attribute, $id_lang);
+            $product_name = Product::getProductName($product->id, $id_product_attribute, $id_lang);
             $product_link = $link->getProductLink($product, $product->link_rewrite, null, null, $id_lang, $id_shop, $id_product_attribute);
             $template_vars = array(
                 '{product}' => $product_name,
