@@ -264,7 +264,8 @@ class Ps_EmailAlerts extends Module
         }
         // Getting differents vars
         $context = Context::getContext();
-        $id_lang = (int) $context->language->id;
+        
+        $id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
         $id_shop = (int) $context->shop->id;
         
         $id_order = $params['id_order'];
