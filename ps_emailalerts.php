@@ -303,8 +303,6 @@ class Ps_EmailAlerts extends Module
         $iso = Language::getIsoById((int) Configuration::get('PS_LANG_DEFAULT'));
         
         // Join PDF invoice
-        $language = new Language(1);
-        $this->context->language = $language;
         if ((int)Configuration::get('PS_INVOICE') && $order_status->invoice && $order->invoice_number) {
             $order_invoice_list = $order->getInvoicesCollection();
             Hook::exec('actionPDFInvoiceRender', array('order_invoice_list' => $order_invoice_list));
