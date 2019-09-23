@@ -306,7 +306,7 @@ class Ps_EmailAlerts extends Module
         if ((int)Configuration::get('PS_INVOICE') && $order_status->invoice && $order->invoice_number) {
             $order_invoice_list = $order->getInvoicesCollection();
             Hook::exec('actionPDFInvoiceRender', array('order_invoice_list' => $order_invoice_list));
-            $pdf = new PDF($order_invoice_list, PDF::TEMPLATE_INVOICE, new Context()->smarty);
+            $pdf = new PDF($order_invoice_list, PDF::TEMPLATE_INVOICE, $this->context->smarty);
             $file_attachement['content'] = $pdf->render(false);
             $file_attachement['name'] = Configuration::get('PS_INVOICE_PREFIX', $id_lang, null, $order->id_shop).sprintf('%06d', $order->invoice_number).'.pdf';
             $file_attachement['mime'] = 'application/pdf';
