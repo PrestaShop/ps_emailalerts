@@ -77,7 +77,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             die('0');
         }
 
-        die(1);
+        die('1');
     }
 
     /**
