@@ -1125,7 +1125,7 @@ class Ps_EmailAlerts extends Module
             if ($res = Db::getInstance()->ExecuteS($sql)) {
                 return json_encode($res);
             }
-            return json_encode($this->trans('Mail alert: Unable to export customer using email.', array(), 'Modules.Mailalerts.Admin));
+            return json_encode($this->trans('Mail alert: Unable to export customer using email.', array(), 'Modules.Mailalerts.Admin'));
         }
     }
 
