@@ -408,6 +408,8 @@ class Ps_EmailAlerts extends Module
             '{total_products}' => Tools::displayPrice($total_products, $currency),
             '{total_discounts}' => Tools::displayPrice($order->total_discounts, $currency),
             '{total_shipping}' => Tools::displayPrice($order->total_shipping, $currency),
+            '{total_shipping_tax_excl}' => Tools::displayPrice($order->total_shipping_tax_excl, $currency, false),
+            '{total_shipping_tax_incl}' => Tools::displayPrice($order->total_shipping_tax_incl, $currency, false),
             '{total_tax_paid}' => Tools::displayPrice(
                 ($order->total_products_wt - $order->total_products) + ($order->total_shipping_tax_incl - $order->total_shipping_tax_excl),
                 $currency,
