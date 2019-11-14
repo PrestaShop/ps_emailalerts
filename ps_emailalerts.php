@@ -1114,7 +1114,7 @@ class Ps_EmailAlerts extends Module
             if (Db::getInstance()->execute($sql)) {
                 return json_encode(true);
             }
-            return json_encode($this->l('Mail alert: Unable to delete customer using email.'));
+            return json_encode($this->trans('Mail alert: Unable to delete customer using email.', array(), 'Modules.Mailalerts.Admin'));
         }
     }
 
@@ -1125,7 +1125,7 @@ class Ps_EmailAlerts extends Module
             if ($res = Db::getInstance()->ExecuteS($sql)) {
                 return json_encode($res);
             }
-            return json_encode($this->l('Mail alert: Unable to export customer using email.'));
+            return json_encode($this->trans('Mail alert: Unable to export customer using email.', array(), 'Modules.Mailalerts.Admin'));
         }
     }
 
