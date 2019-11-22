@@ -56,14 +56,15 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
     }
 
     /**
-     * Remove a favorite product.
+     * Remove product alert.
+     * Prints 0 if success
      */
     public function processRemove()
     {
         // check if product exists
         $product = new Product($this->id_product);
         if (!Validate::isLoadedObject($product)) {
-            die('0');
+            die('1');
         }
 
         $context = Context::getContext();
@@ -77,7 +78,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             die('0');
         }
 
-        die(1);
+        die('1');
     }
 
     /**
