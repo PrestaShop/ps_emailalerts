@@ -322,7 +322,7 @@ class Ps_EmailAlerts extends Module
             $unit_price = Product::getTaxCalculationMethod($customer->id) == PS_TAX_EXC ? $product['product_price'] : $product['product_price_wt'];
 
             $customization_text = '';
-            if (isset($customized_datas[$product['product_id']][$product['product_attribute_id']])) {
+            if (isset($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery][$product['id_customization']])) {
                 foreach ($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery][$product['id_customization']] as $customization) {
                     if (isset($customization[Product::CUSTOMIZE_TEXTFIELD])) {
                         foreach ($customization[Product::CUSTOMIZE_TEXTFIELD] as $text) {
