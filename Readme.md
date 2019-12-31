@@ -4,10 +4,6 @@
 
 Sends e-mail notifications to customers and merchants regarding stock and order modifications.
 
-## Reporting issues
-
-You can report issues with this module in the main PrestaShop repository. [Click here to report an issue][report-issue]. 
-
 ## Contributing
 
 PrestaShop modules are open source extensions to the [PrestaShop e-commerce platform][prestashop]. Everyone is welcome and even encouraged to contribute with their own improvements!
