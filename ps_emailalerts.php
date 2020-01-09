@@ -437,7 +437,7 @@ class Ps_EmailAlerts extends Module
             '{total_shipping_tax_excl}' => Tools::displayPrice($order->total_shipping_tax_excl, $currency, false),
             '{total_shipping_tax_incl}' => Tools::displayPrice($order->total_shipping_tax_incl, $currency, false),
             '{total_tax_paid}' => Tools::displayPrice(
-                ($order->total_products_wt - $order->total_products) + ($order->total_shipping_tax_incl - $order->total_shipping_tax_excl),
+                $order->total_paid_tax_incl - $order->total_paid_tax_excl,
                 $currency,
                 false
             ),
