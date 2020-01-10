@@ -486,7 +486,7 @@ class Ps_EmailAlerts extends Module
                 Mail::Send(
                     $mail_id_lang,
                     'new_order',
-                    sprintf(Mail::l('New order : #%d - %s', $mail_id_lang), $order->id, $order->reference),
+                    $this->trans('New order : #%d - %s', array($order->id, $order->reference), 'Emails.Subject'),
                     $template_vars,
                     $merchant_mail,
                     null,
@@ -573,7 +573,7 @@ class Ps_EmailAlerts extends Module
                     Mail::Send(
                         $id_lang,
                         'productoutofstock',
-                        Mail::l('Product out of stock', $id_lang),
+                        $this->trans('Product out of stock', array(), 'Emails.Subject'),
                         $template_vars,
                         $merchant_mail,
                         null,
@@ -699,7 +699,7 @@ class Ps_EmailAlerts extends Module
                     Mail::Send(
                         $id_lang,
                         'productcoverage',
-                        Mail::l('Stock coverage', $id_lang),
+                        $this->trans('Stock coverage', array(), 'Emails.Subject'),
                         $template_vars,
                         $merchant_mail,
                         null,
@@ -864,7 +864,7 @@ class Ps_EmailAlerts extends Module
                 Mail::Send(
                     $mail_id_lang,
                     'return_slip',
-                    sprintf(Mail::l('New return from order #%d - %s', $mail_id_lang), $order->id, $order->reference),
+                    $this->trans('New return from order #%d - %s', array($order->id, $order->reference), 'Emails.Subject'),
                     $template_vars,
                     $merchant_mail,
                     null,
@@ -903,7 +903,7 @@ class Ps_EmailAlerts extends Module
         Mail::Send(
             (int) $order->id_lang,
             'order_changed',
-            Mail::l('Your order has been changed', (int) $order->id_lang),
+            $this->trans('Your order has been changed', array(), 'Emails.Subject'),
             $data,
             $order->getCustomer()->email,
             $order->getCustomer()->firstname.' '.$order->getCustomer()->lastname,
