@@ -122,18 +122,18 @@ class Ps_EmailAlerts extends Module
             Configuration::updateGlobalValue('MA_PRODUCT_COVERAGE', 0);
 
             $sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.MailAlert::$definition['table'].'`
-                (
-                    `id_mailalert` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                    `id_customer` int(10) unsigned NOT NULL,
-                    `customer_email` varchar(128) NOT NULL,
-                    `id_product` int(10) unsigned NOT NULL,
-                    `id_product_attribute` int(10) unsigned NOT NULL,
-                    `id_shop` int(10) unsigned NOT NULL,
-                    `id_lang` int(10) unsigned NOT NULL,
+				(
+					`id_mailalert` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`id_customer` int(10) unsigned NOT NULL,
+					`customer_email` varchar(128) NOT NULL,
+					`id_product` int(10) unsigned NOT NULL,
+					`id_product_attribute` int(10) unsigned NOT NULL,
+					`id_shop` int(10) unsigned NOT NULL,
+					`id_lang` int(10) unsigned NOT NULL,
                     `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY  (`id_customer`,`customer_email`,`id_product`,`id_product_attribute`,`id_shop`),
+					PRIMARY KEY  (`id_customer`,`customer_email`,`id_product`,`id_product_attribute`,`id_shop`),
                     INDEX `id_mailalert` (`id_mailalert`)
-                ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci';
+				) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci';
 
             if (!Db::getInstance()->execute($sql)) {
                 return false;
@@ -270,10 +270,10 @@ class Ps_EmailAlerts extends Module
     public function getAllMessages($id)
     {
         $messages = Db::getInstance()->executeS('
-            SELECT `message`
-            FROM `'._DB_PREFIX_.'message`
-            WHERE `id_order` = '.(int) $id.'
-            ORDER BY `id_message` ASC');
+			SELECT `message`
+			FROM `'._DB_PREFIX_.'message`
+			WHERE `id_order` = '.(int) $id.'
+			ORDER BY `id_message` ASC');
         $result = array();
         foreach ($messages as $message) {
             $result[] = $message['message'];
@@ -349,26 +349,26 @@ class Ps_EmailAlerts extends Module
             $url = $context->link->getProductLink($product['product_id']);
             $items_table .=
                 '<tr style="background-color:'.($key % 2 ? '#DDE2E6' : '#EBECEE').';">
-                    <td style="padding:0.6em 0.4em;">'.$product['product_reference'].'</td>
-                    <td style="padding:0.6em 0.4em;">
-                        <strong><a href="'.$url.'">'.$product['product_name'].'</a>'
+					<td style="padding:0.6em 0.4em;">'.$product['product_reference'].'</td>
+					<td style="padding:0.6em 0.4em;">
+						<strong><a href="'.$url.'">'.$product['product_name'].'</a>'
                             .(isset($product['attributes_small']) ? ' '.$product['attributes_small'] : '')
                             .(!empty($customization_text) ? '<br />'.$customization_text : '')
                         .'</strong>
-                    </td>
-                    <td style="padding:0.6em 0.4em; text-align:right;">'.Tools::displayPrice($unit_price, $currency, false).'</td>
-                    <td style="padding:0.6em 0.4em; text-align:center;">'.(int) $product['product_quantity'].'</td>
-                    <td style="padding:0.6em 0.4em; text-align:right;">'
+					</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">'.Tools::displayPrice($unit_price, $currency, false).'</td>
+					<td style="padding:0.6em 0.4em; text-align:center;">'.(int) $product['product_quantity'].'</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">'
                         .Tools::displayPrice(($unit_price * $product['product_quantity']), $currency, false)
                     .'</td>
-                </tr>';
+				</tr>';
         }
         foreach ($params['order']->getCartRules() as $discount) {
             $items_table .=
                 '<tr style="background-color:#EBECEE;">
-                        <td colspan="4" style="padding:0.6em 0.4em; text-align:right;">'.$this->trans('Voucher code:', array(), 'Modules.Mailalerts.Admin').' '.$discount['name'].'</td>
-                    <td style="padding:0.6em 0.4em; text-align:right;">-'.Tools::displayPrice($discount['value'], $currency, false).'</td>
-            </tr>';
+						<td colspan="4" style="padding:0.6em 0.4em; text-align:right;">'.$this->trans('Voucher code:', array(), 'Modules.Mailalerts.Admin').' '.$discount['name'].'</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">-'.Tools::displayPrice($discount['value'], $currency, false).'</td>
+			</tr>';
         }
         if ($delivery->id_state) {
             $delivery_state = new State((int) $delivery->id_state);
@@ -463,9 +463,9 @@ class Ps_EmailAlerts extends Module
 
             // Use the merchant lang if he exists as an employee
             $results = Db::getInstance()->executeS('
-                SELECT `id_lang` FROM `'._DB_PREFIX_.'employee`
-                WHERE `email` = \''.pSQL($merchant_mail).'\'
-            ');
+				SELECT `id_lang` FROM `'._DB_PREFIX_.'employee`
+				WHERE `email` = \''.pSQL($merchant_mail).'\'
+			');
             if ($results) {
                 $user_iso = Language::getIsoById((int) $results[0]['id_lang']);
                 if ($user_iso) {
@@ -600,9 +600,9 @@ class Ps_EmailAlerts extends Module
     public function hookActionProductAttributeUpdate($params)
     {
         $sql = '
-            SELECT `id_product`, `quantity`
-            FROM `'._DB_PREFIX_.'stock_available`
-            WHERE `id_product_attribute` = '.(int) $params['id_product_attribute'];
+			SELECT `id_product`, `quantity`
+			FROM `'._DB_PREFIX_.'stock_available`
+			WHERE `id_product_attribute` = '.(int) $params['id_product_attribute'];
 
         $result = Db::getInstance()->getRow($sql);
 
@@ -624,8 +624,8 @@ class Ps_EmailAlerts extends Module
     public function hookActionProductDelete($params)
     {
         $sql = '
-            DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
-            WHERE `id_product` = '.(int) $params['product']->id;
+			DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
+			WHERE `id_product` = '.(int) $params['product']->id;
 
         Db::getInstance()->execute($sql);
     }
@@ -634,13 +634,13 @@ class Ps_EmailAlerts extends Module
     {
         if ($params['deleteAllAttributes']) {
             $sql = '
-                DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
-                WHERE `id_product` = '.(int) $params['id_product'];
+				DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
+				WHERE `id_product` = '.(int) $params['id_product'];
         } else {
             $sql = '
-                DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
-                WHERE `id_product_attribute` = '.(int) $params['id_product_attribute'].'
-                AND `id_product` = '.(int) $params['id_product'];
+				DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
+				WHERE `id_product_attribute` = '.(int) $params['id_product_attribute'].'
+				AND `id_product` = '.(int) $params['id_product'];
         }
 
         Db::getInstance()->execute($sql);
@@ -776,13 +776,13 @@ class Ps_EmailAlerts extends Module
             $url = $context->link->getProductLink($product['product_id']);
             $items_table .=
                 '<tr style="background-color:'.($key % 2 ? '#DDE2E6' : '#EBECEE').';">
-                    <td style="padding:0.6em 0.4em;">'.$product['product_reference'].'</td>
-                    <td style="padding:0.6em 0.4em;">
-                        <strong><a href="'.$url.'">'.$product['product_name'].'</a>
-                    </strong>
-                    </td>
-                    <td style="padding:0.6em 0.4em; text-align:center;">'.(int) $product['product_quantity'].'</td>
-                </tr>';
+					<td style="padding:0.6em 0.4em;">'.$product['product_reference'].'</td>
+					<td style="padding:0.6em 0.4em;">
+						<strong><a href="'.$url.'">'.$product['product_name'].'</a>
+					</strong>
+					</td>
+					<td style="padding:0.6em 0.4em; text-align:center;">'.(int) $product['product_quantity'].'</td>
+				</tr>';
         }
 
         $template_vars = array(
@@ -841,9 +841,9 @@ class Ps_EmailAlerts extends Module
 
             // Use the merchant lang if he exists as an employee
             $results = Db::getInstance()->executeS('
-                SELECT `id_lang` FROM `'._DB_PREFIX_.'employee`
-                WHERE `email` = \''.pSQL($merchant_mail).'\'
-            ');
+				SELECT `id_lang` FROM `'._DB_PREFIX_.'employee`
+				WHERE `email` = \''.pSQL($merchant_mail).'\'
+			');
             if ($results) {
                 $user_iso = Language::getIsoById((int) $results[0]['id_lang']);
                 if ($user_iso) {
