@@ -54,7 +54,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.1.1';
+        $this->version = '2.1.2';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -123,7 +123,7 @@ class Ps_EmailAlerts extends Module
 
             $sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.MailAlert::$definition['table'].'`
                 (
-                    `id_mailalert` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                    `id_emailalert` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                     `id_customer` int(10) unsigned NOT NULL,
                     `customer_email` varchar(128) NOT NULL,
                     `id_product` int(10) unsigned NOT NULL,
