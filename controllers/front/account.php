@@ -35,6 +35,13 @@ class Ps_EmailAlertsAccountModuleFrontController extends ModuleFrontController
 
         require_once $this->module->getLocalPath().'MailAlert.php';
     }
+    
+    public function getBreadcrumbLinks()
+    {
+        $breadcrumb = parent::getBreadcrumbLinks();
+        $breadcrumb['links'][] = $this->addMyAccountToBreadcrumb();
+        return $breadcrumb;
+    }
 
     public function initContent()
     {
