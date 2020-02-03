@@ -22,18 +22,20 @@
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 * International Registered Trademark & Property of PrestaShop SA
 *}
+{extends file='customer/page.tpl'}
 
-{extends file='page.tpl'}
+{block name='page_title'}
+  {l s='My alerts' d='Modules.Mailalerts.Shop'}
+{/block}
 
 {block name='page_content'}
-  <h2>{l s='My alerts' d='Modules.Mailalerts.Shop'}</h2>
   {if $mailAlerts}
-      <ul>
+    <ul>
       {foreach from=$mailAlerts item=mailAlert}
         <li>{include 'module:ps_emailalerts/views/templates/front/mailalerts-account-line.tpl' mailAlert=$mailAlert}</li>
       {/foreach}
-      </ul>
+    </ul>
   {else}
-    <p class="warning">{l s='No mail alerts yet.' d='Modules.Mailalerts.Shop'}</p>
+    <p class="alert alert-warning">{l s='No mail alerts yet.' d='Modules.Mailalerts.Shop'}</p>
   {/if}
 {/block}
