@@ -131,8 +131,7 @@ class Ps_EmailAlerts extends Module
                     `id_shop` int(10) unsigned NOT NULL,
                     `id_lang` int(10) unsigned NOT NULL,
                     `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY  (`id_customer`,`customer_email`,`id_product`,`id_product_attribute`,`id_shop`),
-                    INDEX `id_mailalert` (`id_mailalert`)
+                    PRIMARY KEY  (`id_mailalert`)
                 ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci';
 
             if (!Db::getInstance()->execute($sql)) {
