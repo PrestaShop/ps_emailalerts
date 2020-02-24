@@ -4,6 +4,10 @@
 
 Sends e-mail notifications to customers and merchants regarding stock and order modifications.
 
+## Multistore compatibility
+
+This module is not completely compatible with the multistore, some features are not available with the multistore
+
 ## Contributing
 
 PrestaShop modules are open source extensions to the [PrestaShop e-commerce platform][prestashop]. Everyone is welcome and even encouraged to contribute with their own improvements!
