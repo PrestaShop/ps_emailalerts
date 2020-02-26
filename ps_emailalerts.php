@@ -537,6 +537,7 @@ class Ps_EmailAlerts extends Module
         $id_shop = (int) $context->shop->id;
         $id_lang = (int) $context->language->id;
         $product = new Product($id_product, false, $id_lang, $id_shop, $context);
+	  $minimal_quantity = $product->minimal_quantity;
         $product_has_attributes = $product->hasAttributes();
         $configuration = Configuration::getMultiple(
             array(
@@ -589,21 +590,37 @@ class Ps_EmailAlerts extends Module
             }
         }
 
-        if ($this->customer_qty && $quantity > 0) {
-            MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+        if($product_has_attributes) {
+            $sql = '
+			SELECT sa.id_product, sa.quantity, pa.minimal_quantity, sa.id_product_attribute
+            		FROM '._DB_PREFIX_.'stock_available sa join '._DB_PREFIX_.'product_attribute pa
+            		ON sa.id_product_attribute = pa.id_product_attribute
+			WHERE sa.id_product_attribute = '. $id_product_attribute;
+
+             $result = Db::getInstance()->getRow($sql);
+
+            if ($this->customer_qty && $result['quantity'] >= $result['minimal_quantity']) {
+                MailAlert::sendCustomerAlert((int) $result['id_product'], (int) $params['id_product_attribute']);
+            }
+        }
+        else{
+            if ($this->customer_qty && $quantity >= $minimal_quantity) {
+                    MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+                }
         }
     }
 
     public function hookActionProductAttributeUpdate($params)
     {
         $sql = '
-			SELECT `id_product`, `quantity`
-			FROM `'._DB_PREFIX_.'stock_available`
-			WHERE `id_product_attribute` = '.(int) $params['id_product_attribute'];
+			SELECT sa.id_product, sa.quantity, pa.minimal_quantity, sa.id_product_attribute
+            		FROM '._DB_PREFIX_.'stock_available sa join '._DB_PREFIX_.'product_attribute pa
+            		ON sa.id_product_attribute = pa.id_product_attribute
+			WHERE sa.id_product_attribute = '.(int) $params['id_product_attribute'];
 
         $result = Db::getInstance()->getRow($sql);
 
-        if ($this->customer_qty && $result['quantity'] > 0) {
+        if ($this->customer_qty && $result['quantity'] >= $result['minimal_quantity']) {
             MailAlert::sendCustomerAlert((int) $result['id_product'], (int) $params['id_product_attribute']);
         }
     }
