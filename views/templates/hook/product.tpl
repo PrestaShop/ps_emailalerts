@@ -26,7 +26,7 @@
     {if !$has_notification}
         <form>
             <div class="js-mailalert" style="text-align:center;" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
-                {if isset($email) AND $email}
+                {if !empty($email)}
                     <input class="form-control" type="email" placeholder="{l s='your@email.com' d='Modules.Mailalerts.Shop'}"/><br />
                 {/if}
                 {if isset($id_module)}
