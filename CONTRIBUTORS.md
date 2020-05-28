@@ -1,0 +1,11 @@
+GitHub contributors:
+--------------------------------
+- aleeks
+- antoin-m
+- AntoineMille
+- eternoendless
+- matks
+- maximebiloe
+- PierreRambaud
+- Progi1984
+- v4lux
