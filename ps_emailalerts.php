@@ -28,6 +28,11 @@ if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
 
+$autoloadPath = __DIR__ . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+}
+
 include_once dirname(__FILE__).'/MailAlert.php';
 
 class Ps_EmailAlerts extends Module
