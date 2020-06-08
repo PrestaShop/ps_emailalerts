@@ -26,10 +26,9 @@ function upgrade_module_2_1_2($object)
 {
     return Db::getInstance()->execute(
         'ALTER TABLE `' . _DB_PREFIX_.MailAlert::$definition['table'] . '`
-        ADD COLUMN `id_emailalert` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT FIRST,
-        ADD COLUMN `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `id_lang`,
-        DROP PRIMARY KEY,
-        DROP INDEX `id_emailalert`,
-        ADD PRIMARY KEY (`id_emailalert`);'
-    );
+         ADD COLUMN `id_emailalert` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT FIRST,
+         ADD COLUMN `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() AFTER `id_lang`,
+         DROP PRIMARY KEY,
+         ADD PRIMARY KEY (`id_emailalert`) USING BTREE;'
+     );
 }
