@@ -1,13 +1,13 @@
 <?php
 /**
- * 2007-2015 PrestaShop.
+ * 2007-2020 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License (AFL 3.0)
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/afl-3.0.php
+ * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
@@ -19,8 +19,8 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2015 PrestaShop SA
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ * @copyright 2007-2020 PrestaShop SA
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 
@@ -28,10 +28,20 @@ if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
 
+$autoloadPath = __DIR__ . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+}
+
 include_once dirname(__FILE__).'/MailAlert.php';
 
 class Ps_EmailAlerts extends Module
 {
+    /**
+     * @var string Name of the module running on PS 1.6.x. Used for data migration.
+     */
+    const PS_16_EQUIVALENT_MODULE = 'mailalerts';
+
     protected $html = '';
 
     protected $merchant_mails;
@@ -49,7 +59,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.1.1';
+        $this->version = '2.2.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -105,7 +115,7 @@ class Ps_EmailAlerts extends Module
             return false;
         }
 
-        if ($delete_params) {
+        if ($delete_params && $this->uninstallPrestaShop16Module()) {
             Configuration::updateValue('MA_MERCHANT_ORDER', 1);
             Configuration::updateValue('MA_MERCHANT_OOS', 1);
             Configuration::updateValue('MA_CUSTOMER_QTY', 1);
@@ -156,6 +166,27 @@ class Ps_EmailAlerts extends Module
         return parent::uninstall();
     }
 
+    /**
+     * Migrate data from 1.6 equivalent module (if applicable), then uninstall
+     */
+    public function uninstallPrestaShop16Module()
+    {
+        if (!Module::isInstalled(self::PS_16_EQUIVALENT_MODULE)) {
+            return false;
+        }
+        $oldModule = Module::getInstanceByName(self::PS_16_EQUIVALENT_MODULE);
+        if ($oldModule) {
+            // This closure calls the parent class to prevent data to be erased
+            // It allows the new module to be configured without migration
+            $parentUninstallClosure = function() {
+                return parent::uninstall();
+            };
+            $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
+            $parentUninstallClosure();
+        }
+        return true;
+    }
+
     public function reset()
     {
         if (!$this->uninstall(false)) {
@@ -202,7 +233,7 @@ class Ps_EmailAlerts extends Module
                     if (!empty($email) && !Validate::isEmail($email)) {
                         $errors[] = $this->trans('Invalid e-mail:', array(), 'Modules.Mailalerts.Admin').' '.Tools::safeOutput($email);
                         break;
-                    } elseif (!empty($email) && count($email) > 0) {
+                    } elseif (!empty($email)) {
                         $emails[$k] = $email;
                     } else {
                         unset($emails[$k]);
@@ -408,8 +439,10 @@ class Ps_EmailAlerts extends Module
             '{total_products}' => Tools::displayPrice($total_products, $currency),
             '{total_discounts}' => Tools::displayPrice($order->total_discounts, $currency),
             '{total_shipping}' => Tools::displayPrice($order->total_shipping, $currency),
+            '{total_shipping_tax_excl}' => Tools::displayPrice($order->total_shipping_tax_excl, $currency, false),
+            '{total_shipping_tax_incl}' => Tools::displayPrice($order->total_shipping_tax_incl, $currency, false),
             '{total_tax_paid}' => Tools::displayPrice(
-                ($order->total_products_wt - $order->total_products) + ($order->total_shipping_tax_incl - $order->total_shipping_tax_excl),
+                $order->total_paid_tax_incl - $order->total_paid_tax_excl,
                 $currency,
                 false
             ),
@@ -1088,7 +1121,7 @@ class Ps_EmailAlerts extends Module
             if (Db::getInstance()->execute($sql)) {
                 return json_encode(true);
             }
-            return json_encode($this->l('Mail alert: Unable to delete customer using email.'));
+            return json_encode($this->trans('Mail alert: Unable to delete customer using email.', array(), 'Modules.Mailalerts.Admin'));
         }
     }
 
@@ -1099,7 +1132,7 @@ class Ps_EmailAlerts extends Module
             if ($res = Db::getInstance()->ExecuteS($sql)) {
                 return json_encode($res);
             }
-            return json_encode($this->l('Mail alert: Unable to export customer using email.'));
+            return json_encode($this->trans('Mail alert: Unable to export customer using email.', array(), 'Modules.Mailalerts.Admin'));
         }
     }
 

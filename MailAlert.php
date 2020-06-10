@@ -1,13 +1,13 @@
 <?php
 /**
- * 2007-2015 PrestaShop.
+ * 2007-2020 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License (AFL 3.0)
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/afl-3.0.php
+ * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
@@ -19,8 +19,8 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2015 PrestaShop SA
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ * @copyright 2007-2020 PrestaShop SA
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 class MailAlert extends ObjectModel
@@ -180,9 +180,10 @@ class MailAlert extends ObjectModel
             $context->language->id = $id_lang;
 
             $product = new Product((int) $id_product, false, $id_lang, $id_shop);
-            $product_link = $link->getProductLink($product, $product->link_rewrite, null, null, $id_lang, $id_shop);
+            $product_name = Product::getProductName($product->id, $id_product_attribute, $id_lang);
+            $product_link = $link->getProductLink($product, $product->link_rewrite, null, null, $id_lang, $id_shop, $id_product_attribute);
             $template_vars = array(
-                '{product}' => (is_array($product->name) ? $product->name[$id_lang] : $product->name),
+                '{product}' => $product_name,
                 '{product_link}' => $product_link,
             );
 
@@ -235,7 +236,7 @@ class MailAlert extends ObjectModel
             Hook::exec(
                 'actionModuleMailAlertSendCustomer',
                 array(
-                    'product' => (is_array($product->name) ? $product->name[$id_lang] : $product->name),
+                    'product' => $product_name,
                     'link' => $product_link,
                     'customer' => $customer,
                     'product_obj' => $product,
