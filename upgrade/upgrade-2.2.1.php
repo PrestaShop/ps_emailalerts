@@ -22,7 +22,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-function upgrade_module_2_1_2($object)
+function upgrade_module_2_2_1($object)
 {
     return Db::getInstance()->execute(
         'ALTER TABLE `' . _DB_PREFIX_.MailAlert::$definition['table'] . '`
