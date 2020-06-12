@@ -197,6 +197,9 @@ class MailAlert extends ObjectModel
             }
 
             $iso = Language::getIsoById($id_lang);
+            $locale = Language::getLocaleByIso($iso);
+
+            $translator = Context::getContext()->getTranslatorFromLocale($locale);
 
             if (file_exists(dirname(__FILE__).'/mails/'.$iso.'/customer_qty.txt') &&
                 file_exists(dirname(__FILE__).'/mails/'.$iso.'/customer_qty.html')) {
@@ -205,7 +208,7 @@ class MailAlert extends ObjectModel
                     Mail::Send(
                         $id_lang,
                         'customer_qty',
-                        Mail::l('Product available', $id_lang),
+                        $translator->trans('Product available', array(), 'Emails.Subject', $locale),
                         $template_vars,
                         (string) $customer_email,
                         null,
