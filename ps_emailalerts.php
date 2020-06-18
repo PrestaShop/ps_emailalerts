@@ -172,7 +172,7 @@ class Ps_EmailAlerts extends Module
     public function uninstallPrestaShop16Module()
     {
         if (!Module::isInstalled(self::PS_16_EQUIVALENT_MODULE)) {
-            return false;
+            return true;
         }
         $oldModule = Module::getInstanceByName(self::PS_16_EQUIVALENT_MODULE);
         if ($oldModule) {
