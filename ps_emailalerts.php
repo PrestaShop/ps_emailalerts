@@ -587,7 +587,7 @@ class Ps_EmailAlerts extends Module
                     Mail::Send(
                         $id_lang,
                         'productoutofstock',
-                        $this->trans('Product out of stock', array(),'Emails.Subject',  $locale),
+                        $this->trans('Product out of stock', array(), 'Emails.Subject', $locale),
                         $template_vars,
                         $merchant_mail,
                         null,
@@ -919,11 +919,11 @@ class Ps_EmailAlerts extends Module
 
         $order = $params['order'];
         $id_lang = (int) $order->id_lang;
-        $locale = $this->context->language->getLocale();
         $lang = new Language($id_lang);
-
         if (Validate::isLoadedObject($lang)) {
             $locale = $lang->getLocale();
+        } else {
+            $locale = $this->context->language->getLocale();
         }
 
         $data = array(
