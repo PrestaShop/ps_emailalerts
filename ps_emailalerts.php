@@ -59,7 +59,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.2.0';
+        $this->version = '2.2.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
