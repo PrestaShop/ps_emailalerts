@@ -602,8 +602,7 @@ class Ps_EmailAlerts extends Module
             if ($this->customer_qty && $result['quantity'] >= $result['minimal_quantity']) {
                 MailAlert::sendCustomerAlert((int) $result['id_product'], (int) $params['id_product_attribute']);
             }
-        }
-        else{
+        } else {
             if ($this->customer_qty && $quantity >= $minimal_quantity) {
                     MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
                 }
