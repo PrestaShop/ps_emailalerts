@@ -590,7 +590,7 @@ class Ps_EmailAlerts extends Module
             }
         }
 
-        if($product_has_attributes) {
+        if ($product_has_attributes) {
             $sql = '
 			SELECT sa.id_product, sa.quantity, pa.minimal_quantity, sa.id_product_attribute
             		FROM '._DB_PREFIX_.'stock_available sa join '._DB_PREFIX_.'product_attribute pa
