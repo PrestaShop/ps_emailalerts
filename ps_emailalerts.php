@@ -115,7 +115,13 @@ class Ps_EmailAlerts extends Module
             return false;
         }
 
-        if ($delete_params && $this->uninstallPrestaShop16Module()) {
+        // handle PS16
+        $moduleInstalledOn16 = (Module::isInstalled(self::PS_16_EQUIVALENT_MODULE));
+        if ($moduleInstalledOn16 && (!$this->uninstallPrestaShop16Module())) {
+            return false;
+        }
+
+        if ($delete_params) {
             Configuration::updateValue('MA_MERCHANT_ORDER', 1);
             Configuration::updateValue('MA_MERCHANT_OOS', 1);
             Configuration::updateValue('MA_CUSTOMER_QTY', 1);
@@ -171,9 +177,6 @@ class Ps_EmailAlerts extends Module
      */
     public function uninstallPrestaShop16Module()
     {
-        if (!Module::isInstalled(self::PS_16_EQUIVALENT_MODULE)) {
-            return true;
-        }
         $oldModule = Module::getInstanceByName(self::PS_16_EQUIVALENT_MODULE);
         if ($oldModule) {
             // This closure calls the parent class to prevent data to be erased
