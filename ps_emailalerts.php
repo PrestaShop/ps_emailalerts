@@ -185,7 +185,7 @@ class Ps_EmailAlerts extends Module
                 return parent::uninstall();
             };
             $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
-            $parentUninstallClosure();
+            return $parentUninstallClosure();
         }
         return true;
     }
