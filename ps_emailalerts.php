@@ -1150,4 +1150,9 @@ class Ps_EmailAlerts extends Module
             'MA_RETURN_SLIP' => Tools::getValue('MA_RETURN_SLIP', Configuration::get('MA_RETURN_SLIP')),
         );
     }
+
+    public function isUsingNewTranslationSystem()
+    {
+        return true;
+    }
 }
