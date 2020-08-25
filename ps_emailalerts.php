@@ -73,7 +73,7 @@ class Ps_EmailAlerts extends Module
         }
 
         $this->displayName = $this->trans('Mail alerts', array(), 'Modules.Emailalerts.Admin');
-        $this->description = $this->trans('Sends e-mail notifications to customers and merchants regarding stock and order modifications.', array(), 'Modules.Emailalerts.Admin');
+        $this->description = $this->trans('Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.', array(), 'Modules.Emailalerts.Admin');
         $this->ps_versions_compliancy = [
             'min' => '1.7.1.0',
             'max' => _PS_VERSION_,
@@ -224,14 +224,14 @@ class Ps_EmailAlerts extends Module
             $emails = (string) Tools::getValue('MA_MERCHANT_MAILS');
 
             if (!$emails || empty($emails)) {
-                $errors[] = $this->trans('Please type one (or more) e-mail address', array(), 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Please type one (or more) email address', array(), 'Modules.Emailalerts.Admin');
             } else {
                 $emails = str_replace(',', self::__MA_MAIL_DELIMITOR__, $emails);
                 $emails = explode(self::__MA_MAIL_DELIMITOR__, $emails);
                 foreach ($emails as $k => $email) {
                     $email = trim($email);
                     if (!empty($email) && !Validate::isEmail($email)) {
-                        $errors[] = $this->trans('Invalid e-mail:', array(), 'Modules.Emailalerts.Admin').' '.Tools::safeOutput($email);
+                        $errors[] = $this->trans('Invalid email:', array(), 'Modules.Emailalerts.Admin').' '.Tools::safeOutput($email);
                         break;
                     } elseif (!empty($email)) {
                         $emails[$k] = $email;
@@ -929,7 +929,7 @@ class Ps_EmailAlerts extends Module
                         'is_bool' => true, //retro compat 1.5
                         'label' => $this->trans('Product availability', array(), 'Modules.Emailalerts.Admin'),
                         'name' => 'MA_CUSTOMER_QTY',
-                        'desc' => $this->trans('Gives the customer the option of receiving a notification when an out-of-stock product is available again.', array(), 'Modules.Emailalerts.Admin'),
+                        'desc' => $this->trans('Give the customer the option of receiving a notification when an out of stock product is available again.', array(), 'Modules.Emailalerts.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -1071,9 +1071,9 @@ class Ps_EmailAlerts extends Module
                 'type' => 'textarea',
                 'cols' => 36,
                 'rows' => 4,
-                'label' => $this->trans('E-mail addresses', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('Email addresses', array(), 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_MAILS',
-                'desc' => $this->trans('One e-mail address per line (e.g. bob@example.com).', array(), 'Modules.Emailalerts.Admin'),
+                'desc' => $this->trans('One email address per line (e.g. bob@example.com).', array(), 'Modules.Emailalerts.Admin'),
         );
 
         $fields_form_2 = array(
