@@ -25,7 +25,7 @@
 {extends file='customer/page.tpl'}
 
 {block name='page_title'}
-  {l s='My alerts' d='Modules.Mailalerts.Shop'}
+  {l s='My alerts' d='Modules.Emailalerts.Shop'}
 {/block}
 
 {block name='page_content'}
@@ -36,6 +36,6 @@
       {/foreach}
     </ul>
   {else}
-    <p class="alert alert-warning">{l s='No mail alerts yet.' d='Modules.Mailalerts.Shop'}</p>
+    <p class="alert alert-warning">{l s='No mail alerts yet.' d='Modules.Emailalerts.Shop'}</p>
   {/if}
 {/block}

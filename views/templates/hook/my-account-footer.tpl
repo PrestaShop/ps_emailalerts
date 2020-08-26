@@ -24,5 +24,5 @@
 *}
 
 <li>
-  <a href="{url entity='module' name='ps_emailalerts' controller='account'}">{l s='My alerts' d='Modules.Mailalerts.Shop'}</a>
+  <a href="{url entity='module' name='ps_emailalerts' controller='account'}">{l s='My alerts' d='Modules.Emailalerts.Shop'}</a>
 </li>
