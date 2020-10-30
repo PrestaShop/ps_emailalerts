@@ -2,7 +2,7 @@
 
 ## About
 
-Sends e-mail notifications to customers and merchants regarding stock and order modifications.
+Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.
 
 ## Multistore compatibility
 
