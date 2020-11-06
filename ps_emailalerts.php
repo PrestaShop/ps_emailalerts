@@ -293,6 +293,7 @@ class Ps_EmailAlerts extends Module
         // Getting differents vars
         $context = Context::getContext();
         $id_lang = (int) $context->language->id;
+        $locale = $context->language->getLocale();
         $id_shop = (int) $context->shop->id;
         $currency = $params['currency'];
         $order = $params['order'];
@@ -491,7 +492,14 @@ class Ps_EmailAlerts extends Module
                 Mail::Send(
                     $mail_id_lang,
                     'new_order',
-                    sprintf(Mail::l('New order : #%d - %s', $mail_id_lang), $order->id, $order->reference),
+                    $this->trans(
+                        'New order : #%d - %s',
+                        array(
+                            $order->id,
+                            $order->reference
+                        ),
+                        'Emails.Subject',
+                        $locale),
                     $template_vars,
                     $merchant_mail,
                     null,
@@ -541,6 +549,7 @@ class Ps_EmailAlerts extends Module
         $context = Context::getContext();
         $id_shop = (int) $context->shop->id;
         $id_lang = (int) $context->language->id;
+        $locale = $context->language->getLocale();
         $product = new Product($id_product, false, $id_lang, $id_shop, $context);
         $product_has_attributes = $product->hasAttributes();
         $configuration = Configuration::getMultiple(
@@ -578,7 +587,7 @@ class Ps_EmailAlerts extends Module
                     Mail::Send(
                         $id_lang,
                         'productoutofstock',
-                        Mail::l('Product out of stock', $id_lang),
+                        $this->trans('Product out of stock', array(), 'Emails.Subject', $locale),
                         $template_vars,
                         $merchant_mail,
                         null,
@@ -687,6 +696,7 @@ class Ps_EmailAlerts extends Module
             Configuration::getGlobalValue('MA_MERCHANT_COVERAGE')) {
             $context = Context::getContext();
             $id_lang = (int) $context->language->id;
+            $locale = $context->language->getLocale();
             $id_shop = (int) $context->shop->id;
             $iso = Language::getIsoById($id_lang);
             $product_name = Product::getProductName($id_product, $id_product_attribute, $id_lang);
@@ -704,7 +714,7 @@ class Ps_EmailAlerts extends Module
                     Mail::Send(
                         $id_lang,
                         'productcoverage',
-                        Mail::l('Stock coverage', $id_lang),
+                        $this->trans('Stock coverage', array(), 'Emails.Subject', $locale),
                         $template_vars,
                         $merchant_mail,
                         null,
@@ -743,6 +753,7 @@ class Ps_EmailAlerts extends Module
 
         $context = Context::getContext();
         $id_lang = (int) $context->language->id;
+        $locale = $context->language->getLocale();
         $id_shop = (int) $context->shop->id;
         $configuration = Configuration::getMultiple(
             array(
@@ -840,6 +851,7 @@ class Ps_EmailAlerts extends Module
             // Default language
             $mail_id_lang = $id_lang;
             $mail_iso = $iso;
+            $mail_locale = $locale;
 
             // Use the merchant lang if he exists as an employee
             $results = Db::getInstance()->executeS('
@@ -851,6 +863,7 @@ class Ps_EmailAlerts extends Module
                 if ($user_iso) {
                     $mail_id_lang = (int) $results[0]['id_lang'];
                     $mail_iso = $user_iso;
+                    $mail_locale = Language::getLocaleByIso($user_iso);
                 }
             }
 
@@ -869,7 +882,15 @@ class Ps_EmailAlerts extends Module
                 Mail::Send(
                     $mail_id_lang,
                     'return_slip',
-                    sprintf(Mail::l('New return from order #%d - %s', $mail_id_lang), $order->id, $order->reference),
+                    $this->trans(
+                        'New return from order #%d - %s',
+                        array(
+                            $order->id,
+                            $order->reference
+                        ),
+                        'Emails.Subject',
+                        $mail_locale
+                    ),
                     $template_vars,
                     $merchant_mail,
                     null,
@@ -897,6 +918,13 @@ class Ps_EmailAlerts extends Module
         }
 
         $order = $params['order'];
+        $id_lang = (int) $order->id_lang;
+        $lang = new Language($id_lang);
+        if (Validate::isLoadedObject($lang)) {
+            $locale = $lang->getLocale();
+        } else {
+            $locale = $this->context->language->getLocale();
+        }
 
         $data = array(
             '{lastname}' => $order->getCustomer()->lastname,
@@ -908,7 +936,7 @@ class Ps_EmailAlerts extends Module
         Mail::Send(
             (int) $order->id_lang,
             'order_changed',
-            Mail::l('Your order has been changed', (int) $order->id_lang),
+            $this->trans('Your order has been changed', array(), 'Emails.Subject', $locale),
             $data,
             $order->getCustomer()->email,
             $order->getCustomer()->firstname.' '.$order->getCustomer()->lastname,
