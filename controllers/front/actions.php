@@ -70,7 +70,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
         $context = Context::getContext();
         if (MailAlert::deleteAlert(
             (int) $context->customer->id,
-            (int) $context->customer->email,
+            (string) $context->customer->email,
             (int) $product->id,
             (int) $this->id_product_attribute,
             (int) $context->shop->id
