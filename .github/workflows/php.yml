@@ -73,27 +73,3 @@ jobs:
             # Docker images prestashop/prestashop may be used, even if the shop remains uninstalled
             - name: Execute PHPStan on PrestaShop (Tag ${{ matrix.presta-versions }})
               run: ./tests/php/phpstan.sh ${{ matrix.presta-versions }}
-
-    phpunit:
-        name: PHPUnit
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2.0.0
-
-            # Add vendor folder in cache to make next builds faster
-            - name: Cache vendor folder
-              uses: actions/cache@v1
-              with:
-                  path: vendor
-                  key: php-${{ hashFiles('composer.lock') }}
-
-            # Add composer local folder in cache to make next builds faster
-            - name: Cache composer folder
-              uses: actions/cache@v1
-              with:
-                  path: ~/.composer/cache
-                  key: php-composer-cache
-
-            - run: composer install
-            - run: composer run test
