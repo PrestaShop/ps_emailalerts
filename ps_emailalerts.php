@@ -37,6 +37,9 @@ include_once dirname(__FILE__).'/MailAlert.php';
 
 class Ps_EmailAlerts extends Module
 {
+    /** @var string Page name */
+    public $page_name;
+
     /**
      * @var string Name of the module running on PS 1.6.x. Used for data migration.
      */
@@ -75,7 +78,7 @@ class Ps_EmailAlerts extends Module
         $this->displayName = $this->trans('Mail alerts', array(), 'Modules.Emailalerts.Admin');
         $this->description = $this->trans('Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.', array(), 'Modules.Emailalerts.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.1.0',
+            'min' => '1.7.6.0',
             'max' => _PS_VERSION_,
         ];
     }
@@ -415,7 +418,7 @@ class Ps_EmailAlerts extends Module
             '{delivery_city}' => $delivery->city,
             '{delivery_postal_code}' => $delivery->postcode,
             '{delivery_country}' => $delivery->country,
-            '{delivery_state}' => $delivery->id_state ? $delivery_state->name : '',
+            '{delivery_state}' => isset($delivery_state->name) ? $delivery_state->name : '',
             '{delivery_phone}' => $delivery->phone ? $delivery->phone : $delivery->phone_mobile,
             '{delivery_other}' => $delivery->other,
             '{invoice_company}' => $invoice->company,
@@ -426,7 +429,7 @@ class Ps_EmailAlerts extends Module
             '{invoice_city}' => $invoice->city,
             '{invoice_postal_code}' => $invoice->postcode,
             '{invoice_country}' => $invoice->country,
-            '{invoice_state}' => $invoice->id_state ? $invoice_state->name : '',
+            '{invoice_state}' => isset($invoice_state->name) ? $invoice_state->name : '',
             '{invoice_phone}' => $invoice->phone ? $invoice->phone : $invoice->phone_mobile,
             '{invoice_other}' => $invoice->other,
             '{order_name}' => $order->reference,
@@ -489,7 +492,7 @@ class Ps_EmailAlerts extends Module
             }
 
             if ($dir_mail) {
-                Mail::Send(
+                Mail::send(
                     $mail_id_lang,
                     'new_order',
                     $this->trans(
@@ -508,7 +511,7 @@ class Ps_EmailAlerts extends Module
                     null,
                     null,
                     $dir_mail,
-                    null,
+                    false,
                     $id_shop
                 );
             }
@@ -711,7 +714,7 @@ class Ps_EmailAlerts extends Module
                 // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
                 $merchant_mails = explode(self::__MA_MAIL_DELIMITOR__, $this->merchant_mails);
                 foreach ($merchant_mails as $merchant_mail) {
-                    Mail::Send(
+                    Mail::send(
                         $id_lang,
                         'productcoverage',
                         $this->trans('Stock coverage', array(), 'Emails.Subject', $locale),
@@ -723,7 +726,7 @@ class Ps_EmailAlerts extends Module
                         null,
                         null,
                         dirname(__FILE__).'/mails/',
-                        null,
+                        false,
                         $id_shop
                     );
                 }
@@ -824,8 +827,8 @@ class Ps_EmailAlerts extends Module
             '{delivery_city}' => $delivery->city,
             '{delivery_postal_code}' => $delivery->postcode,
             '{delivery_country}' => $delivery->country,
-            '{delivery_state}' => $delivery->id_state ? $delivery_state->name : '',
-            '{delivery_phone}' => $delivery->phone ? $delivery->phone : $delivery->phone_mobile,
+            '{delivery_state}' => isset($delivery_state->name) ? $delivery_state->name : '',
+            '{delivery_phone}' => $delivery->phone ??  $delivery->phone_mobile,
             '{delivery_other}' => $delivery->other,
             '{invoice_company}' => $invoice->company,
             '{invoice_firstname}' => $invoice->firstname,
@@ -835,7 +838,7 @@ class Ps_EmailAlerts extends Module
             '{invoice_city}' => $invoice->city,
             '{invoice_postal_code}' => $invoice->postcode,
             '{invoice_country}' => $invoice->country,
-            '{invoice_state}' => $invoice->id_state ? $invoice_state->name : '',
+            '{invoice_state}' => isset($invoice_state->name) ? $invoice_state->name : '',
             '{invoice_phone}' => $invoice->phone ? $invoice->phone : $invoice->phone_mobile,
             '{invoice_other}' => $invoice->other,
             '{order_name}' => $order->reference,
@@ -879,7 +882,7 @@ class Ps_EmailAlerts extends Module
             }
 
             if ($dir_mail) {
-                Mail::Send(
+                Mail::send(
                     $mail_id_lang,
                     'return_slip',
                     $this->trans(
@@ -899,7 +902,7 @@ class Ps_EmailAlerts extends Module
                     null,
                     null,
                     $dir_mail,
-                    null,
+                    false,
                     $id_shop
                 );
             }

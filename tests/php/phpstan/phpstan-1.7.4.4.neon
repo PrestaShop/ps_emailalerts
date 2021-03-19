@@ -1,5 +1,0 @@
-includes:
-	- %currentWorkingDirectory%/tests/php/phpstan/phpstan.neon
-
-parameters:
-  ignoreErrors: ~
