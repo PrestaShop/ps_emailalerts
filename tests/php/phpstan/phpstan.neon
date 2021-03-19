@@ -1,0 +1,15 @@
+includes:
+	- %currentWorkingDirectory%/vendor/prestashop/php-dev-tools/phpstan/ps-module-extension.neon
+
+parameters:
+  paths:
+    # From PHPStan 0.12, paths to check are relative to the neon file
+    - ../../../ps_emailalerts.php
+    - ../../../ps_emailalerts-account.php
+    - ../../../ps_emailalerts-ajax.php
+    - ../../../ps_emailalerts-extra.php
+    - ../../../upgrade
+    - ../../../MailAlert.php
+    - ../../../controllers
+  reportUnmatchedIgnoredErrors: false
+  level: 5
