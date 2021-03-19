@@ -23,13 +23,13 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 function upgrade_module_2_1_0($object)
 {
-	return ($object->registerHook('registerGDPRConsent') &&
-		$object->registerHook('actionDeleteGDPRCustomer') &&
-		$object->registerHook('actionExportGDPRData'));
+    return $object->registerHook('registerGDPRConsent') &&
+        $object->registerHook('actionDeleteGDPRCustomer') &&
+        $object->registerHook('actionExportGDPRData');
 }
