@@ -1,0 +1,16 @@
+includes:
+	- %currentWorkingDirectory%/vendor/prestashop/php-dev-tools/phpstan/ps-module-extension.neon
+
+parameters:
+  paths:
+    # From PHPStan 0.12, paths to check are relative to the neon file
+    - ../../../ps_emailalerts.php
+    - ../../../upgrade
+    - ../../../MailAlert.php
+    - ../../../controllers
+  reportUnmatchedIgnoredErrors: false
+  level: 5
+  ignoreErrors:
+    - '~^Parameter #1 \$master of static method DbCore::getInstance\(\) expects bool, int given\.$~'
+    - '~^Parameter #1 \$share of static method ShopCore::getContextListShopID\(\) expects string, false given\.$~'
+    - '~^Parameter #1 \$share of static method ShopCore::addSqlRestriction\(\) expects int, false given\.$~'
