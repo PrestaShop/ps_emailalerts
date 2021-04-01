@@ -1,0 +1,7 @@
+includes:
+	- %currentWorkingDirectory%/tests/php/phpstan/phpstan.neon
+
+parameters:
+  ignoreErrors:
+    - '~^Parameter #4 \$templateVars of static method MailCore::send\(\) expects string, array<string, (mixed|int|string|\|)+> given\.$~'
+    - '~^Parameter #1 \$id of class Customer constructor expects null, int given\.$~'

@@ -23,7 +23,6 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
 if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
@@ -33,10 +32,13 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
-include_once dirname(__FILE__).'/MailAlert.php';
+include_once dirname(__FILE__) . '/MailAlert.php';
 
 class Ps_EmailAlerts extends Module
 {
+    /** @var string Page name */
+    public $page_name;
+
     /**
      * @var string Name of the module running on PS 1.6.x. Used for data migration.
      */
@@ -59,11 +61,11 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.2.2';
+        $this->version = '2.3.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
-        $this->controllers = array('account');
+        $this->controllers = ['account'];
 
         $this->bootstrap = true;
         parent::__construct();
@@ -72,10 +74,10 @@ class Ps_EmailAlerts extends Module
             $this->init();
         }
 
-        $this->displayName = $this->trans('Mail alerts', array(), 'Modules.Emailalerts.Admin');
-        $this->description = $this->trans('Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.', array(), 'Modules.Emailalerts.Admin');
+        $this->displayName = $this->trans('Mail alerts', [], 'Modules.Emailalerts.Admin');
+        $this->description = $this->trans('Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.', [], 'Modules.Emailalerts.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.1.0',
+            'min' => '1.7.6.0',
             'max' => _PS_VERSION_,
         ];
     }
@@ -126,7 +128,7 @@ class Ps_EmailAlerts extends Module
             Configuration::updateGlobalValue('MA_MERCHANT_COVERAGE', 0);
             Configuration::updateGlobalValue('MA_PRODUCT_COVERAGE', 0);
 
-            $sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.MailAlert::$definition['table'].'`
+            $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
 				(
 					`id_customer` int(10) unsigned NOT NULL,
 					`customer_email` varchar(128) NOT NULL,
@@ -135,7 +137,7 @@ class Ps_EmailAlerts extends Module
 					`id_shop` int(10) unsigned NOT NULL,
 					`id_lang` int(10) unsigned NOT NULL,
 					PRIMARY KEY  (`id_customer`,`customer_email`,`id_product`,`id_product_attribute`,`id_shop`)
-				) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci';
+				) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci';
 
             if (!Db::getInstance()->execute($sql)) {
                 return false;
@@ -158,7 +160,7 @@ class Ps_EmailAlerts extends Module
             Configuration::deleteByName('MA_ORDER_EDIT');
             Configuration::deleteByName('MA_RETURN_SLIP');
 
-            if (!Db::getInstance()->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.MailAlert::$definition['table'])) {
+            if (!Db::getInstance()->execute('DROP TABLE IF EXISTS ' . _DB_PREFIX_ . MailAlert::$definition['table'])) {
                 return false;
             }
         }
@@ -178,12 +180,13 @@ class Ps_EmailAlerts extends Module
         if ($oldModule) {
             // This closure calls the parent class to prevent data to be erased
             // It allows the new module to be configured without migration
-            $parentUninstallClosure = function() {
+            $parentUninstallClosure = function () {
                 return parent::uninstall();
             };
             $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
             $parentUninstallClosure();
         }
+
         return true;
     }
 
@@ -212,26 +215,26 @@ class Ps_EmailAlerts extends Module
 
     protected function postProcess()
     {
-        $errors = array();
+        $errors = [];
 
         if (Tools::isSubmit('submitMailAlert')) {
             if (!Configuration::updateValue('MA_CUSTOMER_QTY', (int) Tools::getValue('MA_CUSTOMER_QTY'))) {
-                $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
             } elseif (!Configuration::updateGlobalValue('MA_ORDER_EDIT', (int) Tools::getValue('MA_ORDER_EDIT'))) {
-                $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
             }
         } elseif (Tools::isSubmit('submitMAMerchant')) {
             $emails = (string) Tools::getValue('MA_MERCHANT_MAILS');
 
             if (!$emails || empty($emails)) {
-                $errors[] = $this->trans('Please type one (or more) email address', array(), 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Please type one (or more) email address', [], 'Modules.Emailalerts.Admin');
             } else {
                 $emails = str_replace(',', self::__MA_MAIL_DELIMITOR__, $emails);
                 $emails = explode(self::__MA_MAIL_DELIMITOR__, $emails);
                 foreach ($emails as $k => $email) {
                     $email = trim($email);
                     if (!empty($email) && !Validate::isEmail($email)) {
-                        $errors[] = $this->trans('Invalid email:', array(), 'Modules.Emailalerts.Admin').' '.Tools::safeOutput($email);
+                        $errors[] = $this->trans('Invalid email:', [], 'Modules.Emailalerts.Admin') . ' ' . Tools::safeOutput($email);
                         break;
                     } elseif (!empty($email)) {
                         $emails[$k] = $email;
@@ -243,27 +246,27 @@ class Ps_EmailAlerts extends Module
                 $emails = implode(self::__MA_MAIL_DELIMITOR__, $emails);
 
                 if (!Configuration::updateValue('MA_MERCHANT_MAILS', (string) $emails)) {
-                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
                 } elseif (!Configuration::updateValue('MA_MERCHANT_ORDER', (int) Tools::getValue('MA_MERCHANT_ORDER'))) {
-                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
                 } elseif (!Configuration::updateValue('MA_MERCHANT_OOS', (int) Tools::getValue('MA_MERCHANT_OOS'))) {
-                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
                 } elseif (!Configuration::updateValue('MA_LAST_QTIES', (int) Tools::getValue('MA_LAST_QTIES'))) {
-                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_MERCHANT_COVERAGE', (int) Tools::getValue('MA_MERCHANT_COVERAGE'))) {
-                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_PRODUCT_COVERAGE', (int) Tools::getValue('MA_PRODUCT_COVERAGE'))) {
-                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
                 } elseif (!Configuration::updateGlobalValue('MA_RETURN_SLIP', (int) Tools::getValue('MA_RETURN_SLIP'))) {
-                    $errors[] = $this->trans('Cannot update settings', array(), 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
                 }
             }
         }
 
         if (count($errors) > 0) {
             $this->html .= $this->displayError(implode('<br />', $errors));
-        } else if (Tools::isSubmit('submitMailAlert') || Tools::isSubmit('submitMAMerchant')) {
-            $this->html .= $this->displayConfirmation($this->trans('Settings updated successfully', array(), 'Modules.Emailalerts.Admin'));
+        } elseif (Tools::isSubmit('submitMailAlert') || Tools::isSubmit('submitMAMerchant')) {
+            $this->html .= $this->displayConfirmation($this->trans('Settings updated successfully', [], 'Modules.Emailalerts.Admin'));
         }
 
         $this->init();
@@ -273,10 +276,10 @@ class Ps_EmailAlerts extends Module
     {
         $messages = Db::getInstance()->executeS('
 			SELECT `message`
-			FROM `'._DB_PREFIX_.'message`
-			WHERE `id_order` = '.(int) $id.'
+			FROM `' . _DB_PREFIX_ . 'message`
+			WHERE `id_order` = ' . (int) $id . '
 			ORDER BY `id_message` ASC');
-        $result = array();
+        $result = [];
         foreach ($messages as $message) {
             $result[] = $message['message'];
         }
@@ -299,7 +302,7 @@ class Ps_EmailAlerts extends Module
         $order = $params['order'];
         $customer = $params['customer'];
         $configuration = Configuration::getMultiple(
-            array(
+            [
                 'PS_SHOP_EMAIL',
                 'PS_MAIL_METHOD',
                 'PS_MAIL_SERVER',
@@ -307,7 +310,7 @@ class Ps_EmailAlerts extends Module
                 'PS_MAIL_PASSWD',
                 'PS_SHOP_NAME',
                 'PS_MAIL_COLOR',
-            ), $id_lang, null, $id_shop
+            ], $id_lang, null, $id_shop
         );
         $delivery = new Address((int) $order->id_address_delivery);
         $invoice = new Address((int) $order->id_address_invoice);
@@ -316,7 +319,7 @@ class Ps_EmailAlerts extends Module
         $message = $this->getAllMessages($order->id);
 
         if (!$message || empty($message)) {
-            $message = $this->trans('No message', array(), 'Modules.Emailalerts.Admin');
+            $message = $this->trans('No message', [], 'Modules.Emailalerts.Admin');
         }
 
         $items_table = '';
@@ -332,12 +335,12 @@ class Ps_EmailAlerts extends Module
                 foreach ($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery] as $customization) {
                     if (isset($customization['datas'][Product::CUSTOMIZE_TEXTFIELD])) {
                         foreach ($customization['datas'][Product::CUSTOMIZE_TEXTFIELD] as $text) {
-                            $customization_text .= $text['name'].': '.$text['value'].'<br />';
+                            $customization_text .= $text['name'] . ': ' . $text['value'] . '<br />';
                         }
                     }
 
                     if (isset($customization['datas'][Product::CUSTOMIZE_FILE])) {
-                        $customization_text .= count($customization['datas'][Product::CUSTOMIZE_FILE]).' '.$this->trans('image(s)', array(), 'Modules.Emailalerts.Admin').'<br />';
+                        $customization_text .= count($customization['datas'][Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Emailalerts.Admin') . '<br />';
                     }
 
                     $customization_text .= '---<br />';
@@ -351,26 +354,26 @@ class Ps_EmailAlerts extends Module
 
             $url = $context->link->getProductLink($product['product_id']);
             $items_table .=
-                '<tr style="background-color:'.($key % 2 ? '#DDE2E6' : '#EBECEE').';">
-					<td style="padding:0.6em 0.4em;">'.$product['product_reference'].'</td>
+                '<tr style="background-color:' . ($key % 2 ? '#DDE2E6' : '#EBECEE') . ';">
+					<td style="padding:0.6em 0.4em;">' . $product['product_reference'] . '</td>
 					<td style="padding:0.6em 0.4em;">
-						<strong><a href="'.$url.'">'.$product['product_name'].'</a>'
-                            .(isset($product['attributes_small']) ? ' '.$product['attributes_small'] : '')
-                            .(!empty($customization_text) ? '<br />'.$customization_text : '')
-                        .'</strong>
+						<strong><a href="' . $url . '">' . $product['product_name'] . '</a>'
+                            . (isset($product['attributes_small']) ? ' ' . $product['attributes_small'] : '')
+                            . (!empty($customization_text) ? '<br />' . $customization_text : '')
+                        . '</strong>
 					</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">'.Tools::displayPrice($unit_price, $currency, false).'</td>
-					<td style="padding:0.6em 0.4em; text-align:center;">'.(int) $product['product_quantity'].'</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">' . Tools::displayPrice($unit_price, $currency, false) . '</td>
+					<td style="padding:0.6em 0.4em; text-align:center;">' . (int) $product['product_quantity'] . '</td>
 					<td style="padding:0.6em 0.4em; text-align:right;">'
-                        .Tools::displayPrice(($unit_price * $product['product_quantity']), $currency, false)
-                    .'</td>
+                        . Tools::displayPrice(($unit_price * $product['product_quantity']), $currency, false)
+                    . '</td>
 				</tr>';
         }
         foreach ($params['order']->getCartRules() as $discount) {
             $items_table .=
                 '<tr style="background-color:#EBECEE;">
-						<td colspan="4" style="padding:0.6em 0.4em; text-align:right;">'.$this->trans('Voucher code:', array(), 'Modules.Emailalerts.Admin').' '.$discount['name'].'</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">-'.Tools::displayPrice($discount['value'], $currency, false).'</td>
+						<td colspan="4" style="padding:0.6em 0.4em; text-align:right;">' . $this->trans('Voucher code:', [], 'Modules.Emailalerts.Admin') . ' ' . $discount['name'] . '</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">-' . Tools::displayPrice($discount['value'], $currency, false) . '</td>
 			</tr>';
         }
         if ($delivery->id_state) {
@@ -389,23 +392,23 @@ class Ps_EmailAlerts extends Module
         $order_state = $params['orderStatus'];
 
         // Filling-in vars for email
-        $template_vars = array(
+        $template_vars = [
             '{firstname}' => $customer->firstname,
             '{lastname}' => $customer->lastname,
             '{email}' => $customer->email,
             '{delivery_block_txt}' => MailAlert::getFormatedAddress($delivery, "\n"),
             '{invoice_block_txt}' => MailAlert::getFormatedAddress($invoice, "\n"),
             '{delivery_block_html}' => MailAlert::getFormatedAddress(
-                $delivery, '<br />', array(
-                    'firstname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                    'lastname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                )
+                $delivery, '<br />', [
+                    'firstname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                    'lastname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                ]
             ),
             '{invoice_block_html}' => MailAlert::getFormatedAddress(
-                $invoice, '<br />', array(
-                    'firstname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                    'lastname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                )
+                $invoice, '<br />', [
+                    'firstname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                    'lastname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                ]
             ),
             '{delivery_company}' => $delivery->company,
             '{delivery_firstname}' => $delivery->firstname,
@@ -415,7 +418,7 @@ class Ps_EmailAlerts extends Module
             '{delivery_city}' => $delivery->city,
             '{delivery_postal_code}' => $delivery->postcode,
             '{delivery_country}' => $delivery->country,
-            '{delivery_state}' => $delivery->id_state ? $delivery_state->name : '',
+            '{delivery_state}' => isset($delivery_state->name) ? $delivery_state->name : '',
             '{delivery_phone}' => $delivery->phone ? $delivery->phone : $delivery->phone_mobile,
             '{delivery_other}' => $delivery->other,
             '{invoice_company}' => $invoice->company,
@@ -426,7 +429,7 @@ class Ps_EmailAlerts extends Module
             '{invoice_city}' => $invoice->city,
             '{invoice_postal_code}' => $invoice->postcode,
             '{invoice_country}' => $invoice->country,
-            '{invoice_state}' => $invoice->id_state ? $invoice_state->name : '',
+            '{invoice_state}' => isset($invoice_state->name) ? $invoice_state->name : '',
             '{invoice_phone}' => $invoice->phone ? $invoice->phone : $invoice->phone_mobile,
             '{invoice_other}' => $invoice->other,
             '{order_name}' => $order->reference,
@@ -452,7 +455,7 @@ class Ps_EmailAlerts extends Module
             '{gift}' => (bool) $order->gift,
             '{gift_message}' => $order->gift_message,
             '{message}' => $message,
-        );
+        ];
 
         // Shop iso
         $iso = Language::getIsoById((int) Configuration::get('PS_LANG_DEFAULT'));
@@ -466,8 +469,8 @@ class Ps_EmailAlerts extends Module
 
             // Use the merchant lang if he exists as an employee
             $results = Db::getInstance()->executeS('
-				SELECT `id_lang` FROM `'._DB_PREFIX_.'employee`
-				WHERE `email` = \''.pSQL($merchant_mail).'\'
+				SELECT `id_lang` FROM `' . _DB_PREFIX_ . 'employee`
+				WHERE `email` = \'' . pSQL($merchant_mail) . '\'
 			');
             if ($results) {
                 $user_iso = Language::getIsoById((int) $results[0]['id_lang']);
@@ -478,26 +481,26 @@ class Ps_EmailAlerts extends Module
             }
 
             $dir_mail = false;
-            if (file_exists(dirname(__FILE__).'/mails/'.$mail_iso.'/new_order.txt') &&
-                file_exists(dirname(__FILE__).'/mails/'.$mail_iso.'/new_order.html')) {
-                $dir_mail = dirname(__FILE__).'/mails/';
+            if (file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/new_order.txt') &&
+                file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/new_order.html')) {
+                $dir_mail = dirname(__FILE__) . '/mails/';
             }
 
-            if (file_exists(_PS_MAIL_DIR_.$mail_iso.'/new_order.txt') &&
-                file_exists(_PS_MAIL_DIR_.$mail_iso.'/new_order.html')) {
+            if (file_exists(_PS_MAIL_DIR_ . $mail_iso . '/new_order.txt') &&
+                file_exists(_PS_MAIL_DIR_ . $mail_iso . '/new_order.html')) {
                 $dir_mail = _PS_MAIL_DIR_;
             }
 
             if ($dir_mail) {
-                Mail::Send(
+                Mail::send(
                     $mail_id_lang,
                     'new_order',
                     $this->trans(
                         'New order : #%d - %s',
-                        array(
+                        [
                             $order->id,
-                            $order->reference
-                        ),
+                            $order->reference,
+                        ],
                         'Emails.Subject',
                         $locale),
                     $template_vars,
@@ -508,7 +511,7 @@ class Ps_EmailAlerts extends Module
                     null,
                     null,
                     $dir_mail,
-                    null,
+                    false,
                     $id_shop
                 );
             }
@@ -520,23 +523,26 @@ class Ps_EmailAlerts extends Module
         if (0 < $params['product']['quantity'] ||
             !$this->customer_qty ||
             !Configuration::get('PS_STOCK_MANAGEMENT') ||
-            Product::isAvailableWhenOutOfStock($params['product']['out_of_stock']))
+            Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
             return;
+        }
         $context = Context::getContext();
-        $id_product = (int)$params['product']['id'];
+        $id_product = (int) $params['product']['id'];
         $id_product_attribute = $params['product']['id_product_attribute'];
-        $id_customer = (int)$context->customer->id;
-        if ((int)$context->customer->id <= 0)
+        $id_customer = (int) $context->customer->id;
+        if ((int) $context->customer->id <= 0) {
             $this->context->smarty->assign('email', 1);
-        elseif (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int)$context->shop->id))
+        } elseif (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int) $context->shop->id)) {
             return;
+        }
         $this->context->smarty->assign(
-            array(
+            [
                 'id_product' => $id_product,
                 'id_product_attribute' => $id_product_attribute,
-                'id_module' => $this->id
-            )
+                'id_module' => $this->id,
+            ]
         );
+
         return $this->display(__FILE__, 'product.tpl');
     }
 
@@ -553,12 +559,12 @@ class Ps_EmailAlerts extends Module
         $product = new Product($id_product, false, $id_lang, $id_shop, $context);
         $product_has_attributes = $product->hasAttributes();
         $configuration = Configuration::getMultiple(
-            array(
+            [
                 'MA_LAST_QTIES',
                 'PS_STOCK_MANAGEMENT',
                 'PS_SHOP_EMAIL',
                 'PS_SHOP_NAME',
-            ), null, null, $id_shop
+            ], null, null, $id_shop
         );
         $ma_last_qties = (int) $configuration['MA_LAST_QTIES'];
 
@@ -571,23 +577,23 @@ class Ps_EmailAlerts extends Module
             $configuration['PS_STOCK_MANAGEMENT']) {
             $iso = Language::getIsoById($id_lang);
             $product_name = Product::getProductName($id_product, $id_product_attribute, $id_lang);
-            $template_vars = array(
+            $template_vars = [
                 '{qty}' => $quantity,
                 '{last_qty}' => $ma_last_qties,
                 '{product}' => $product_name,
-            );
+            ];
 
             // Do not send mail if multiples product are created / imported.
             if (!defined('PS_MASS_PRODUCT_CREATION') &&
-                file_exists(dirname(__FILE__).'/mails/'.$iso.'/productoutofstock.txt') &&
-                file_exists(dirname(__FILE__).'/mails/'.$iso.'/productoutofstock.html')) {
+                file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productoutofstock.txt') &&
+                file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productoutofstock.html')) {
                 // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
                 $merchant_mails = explode(self::__MA_MAIL_DELIMITOR__, $this->merchant_mails);
                 foreach ($merchant_mails as $merchant_mail) {
                     Mail::Send(
                         $id_lang,
                         'productoutofstock',
-                        $this->trans('Product out of stock', array(), 'Emails.Subject', $locale),
+                        $this->trans('Product out of stock', [], 'Emails.Subject', $locale),
                         $template_vars,
                         $merchant_mail,
                         null,
@@ -595,7 +601,7 @@ class Ps_EmailAlerts extends Module
                         (string) $configuration['PS_SHOP_NAME'],
                         null,
                         null,
-                        dirname(__FILE__).'/mails/',
+                        dirname(__FILE__) . '/mails/',
                         false,
                         $id_shop
                     );
@@ -612,8 +618,8 @@ class Ps_EmailAlerts extends Module
     {
         $sql = '
 			SELECT `id_product`, `quantity`
-			FROM `'._DB_PREFIX_.'stock_available`
-			WHERE `id_product_attribute` = '.(int) $params['id_product_attribute'];
+			FROM `' . _DB_PREFIX_ . 'stock_available`
+			WHERE `id_product_attribute` = ' . (int) $params['id_product_attribute'];
 
         $result = Db::getInstance()->getRow($sql);
 
@@ -635,8 +641,8 @@ class Ps_EmailAlerts extends Module
     public function hookActionProductDelete($params)
     {
         $sql = '
-			DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
-			WHERE `id_product` = '.(int) $params['product']->id;
+			DELETE FROM `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
+			WHERE `id_product` = ' . (int) $params['product']->id;
 
         Db::getInstance()->execute($sql);
     }
@@ -645,13 +651,13 @@ class Ps_EmailAlerts extends Module
     {
         if ($params['deleteAllAttributes']) {
             $sql = '
-				DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
-				WHERE `id_product` = '.(int) $params['id_product'];
+				DELETE FROM `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
+				WHERE `id_product` = ' . (int) $params['id_product'];
         } else {
             $sql = '
-				DELETE FROM `'._DB_PREFIX_.MailAlert::$definition['table'].'`
-				WHERE `id_product_attribute` = '.(int) $params['id_product_attribute'].'
-				AND `id_product` = '.(int) $params['id_product'];
+				DELETE FROM `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
+				WHERE `id_product_attribute` = ' . (int) $params['id_product_attribute'] . '
+				AND `id_product` = ' . (int) $params['id_product'];
         }
 
         Db::getInstance()->execute($sql);
@@ -700,21 +706,21 @@ class Ps_EmailAlerts extends Module
             $id_shop = (int) $context->shop->id;
             $iso = Language::getIsoById($id_lang);
             $product_name = Product::getProductName($id_product, $id_product_attribute, $id_lang);
-            $template_vars = array(
+            $template_vars = [
                 '{current_coverage}' => $coverage,
                 '{warning_coverage}' => $warning_coverage,
                 '{product}' => pSQL($product_name),
-            );
+            ];
 
-            if (file_exists(dirname(__FILE__).'/mails/'.$iso.'/productcoverage.txt') &&
-                file_exists(dirname(__FILE__).'/mails/'.$iso.'/productcoverage.html')) {
+            if (file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.txt') &&
+                file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.html')) {
                 // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
                 $merchant_mails = explode(self::__MA_MAIL_DELIMITOR__, $this->merchant_mails);
                 foreach ($merchant_mails as $merchant_mail) {
-                    Mail::Send(
+                    Mail::send(
                         $id_lang,
                         'productcoverage',
-                        $this->trans('Stock coverage', array(), 'Emails.Subject', $locale),
+                        $this->trans('Stock coverage', [], 'Emails.Subject', $locale),
                         $template_vars,
                         $merchant_mail,
                         null,
@@ -722,8 +728,8 @@ class Ps_EmailAlerts extends Module
                         (string) Configuration::get('PS_SHOP_NAME'),
                         null,
                         null,
-                        dirname(__FILE__).'/mails/',
-                        null,
+                        dirname(__FILE__) . '/mails/',
+                        false,
                         $id_shop
                     );
                 }
@@ -734,9 +740,9 @@ class Ps_EmailAlerts extends Module
     public function hookDisplayHeader()
     {
         $this->page_name = Dispatcher::getInstance()->getController();
-        if (in_array($this->page_name, array('product', 'account'))) {
-            $this->context->controller->addJS($this->_path.'js/mailalerts.js');
-            $this->context->controller->addCSS($this->_path.'css/mailalerts.css', 'all');
+        if (in_array($this->page_name, ['product', 'account'])) {
+            $this->context->controller->addJS($this->_path . 'js/mailalerts.js');
+            $this->context->controller->addCSS($this->_path . 'css/mailalerts.css', 'all');
         }
     }
 
@@ -756,7 +762,7 @@ class Ps_EmailAlerts extends Module
         $locale = $context->language->getLocale();
         $id_shop = (int) $context->shop->id;
         $configuration = Configuration::getMultiple(
-            array(
+            [
                 'PS_SHOP_EMAIL',
                 'PS_MAIL_METHOD',
                 'PS_MAIL_SERVER',
@@ -764,7 +770,7 @@ class Ps_EmailAlerts extends Module
                 'PS_MAIL_PASSWD',
                 'PS_SHOP_NAME',
                 'PS_MAIL_COLOR',
-            ), $id_lang, null, $id_shop
+            ], $id_lang, null, $id_shop
         );
 
         // Shop iso
@@ -788,33 +794,33 @@ class Ps_EmailAlerts extends Module
         foreach ($order_return_products as $key => $product) {
             $url = $context->link->getProductLink($product['product_id']);
             $items_table .=
-                '<tr style="background-color:'.($key % 2 ? '#DDE2E6' : '#EBECEE').';">
-					<td style="padding:0.6em 0.4em;">'.$product['product_reference'].'</td>
+                '<tr style="background-color:' . ($key % 2 ? '#DDE2E6' : '#EBECEE') . ';">
+					<td style="padding:0.6em 0.4em;">' . $product['product_reference'] . '</td>
 					<td style="padding:0.6em 0.4em;">
-						<strong><a href="'.$url.'">'.$product['product_name'].'</a>
+						<strong><a href="' . $url . '">' . $product['product_name'] . '</a>
 					</strong>
 					</td>
-					<td style="padding:0.6em 0.4em; text-align:center;">'.(int) $product['product_quantity'].'</td>
+					<td style="padding:0.6em 0.4em; text-align:center;">' . (int) $product['product_quantity'] . '</td>
 				</tr>';
         }
 
-        $template_vars = array(
+        $template_vars = [
             '{firstname}' => $customer->firstname,
             '{lastname}' => $customer->lastname,
             '{email}' => $customer->email,
             '{delivery_block_txt}' => MailAlert::getFormatedAddress($delivery, "\n"),
             '{invoice_block_txt}' => MailAlert::getFormatedAddress($invoice, "\n"),
             '{delivery_block_html}' => MailAlert::getFormatedAddress(
-                $delivery, '<br />', array(
-                    'firstname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                    'lastname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                )
+                $delivery, '<br />', [
+                    'firstname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                    'lastname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                ]
             ),
             '{invoice_block_html}' => MailAlert::getFormatedAddress(
-                $invoice, '<br />', array(
-                    'firstname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                    'lastname' => '<span style="color:'.$configuration['PS_MAIL_COLOR'].'; font-weight:bold;">%s</span>',
-                )
+                $invoice, '<br />', [
+                    'firstname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                    'lastname' => '<span style="color:' . $configuration['PS_MAIL_COLOR'] . '; font-weight:bold;">%s</span>',
+                ]
             ),
             '{delivery_company}' => $delivery->company,
             '{delivery_firstname}' => $delivery->firstname,
@@ -824,8 +830,8 @@ class Ps_EmailAlerts extends Module
             '{delivery_city}' => $delivery->city,
             '{delivery_postal_code}' => $delivery->postcode,
             '{delivery_country}' => $delivery->country,
-            '{delivery_state}' => $delivery->id_state ? $delivery_state->name : '',
-            '{delivery_phone}' => $delivery->phone ? $delivery->phone : $delivery->phone_mobile,
+            '{delivery_state}' => isset($delivery_state->name) ? $delivery_state->name : '',
+            '{delivery_phone}' => isset($delivery->phone) ? $delivery->phone : $delivery->phone_mobile,
             '{delivery_other}' => $delivery->other,
             '{invoice_company}' => $invoice->company,
             '{invoice_firstname}' => $invoice->firstname,
@@ -835,15 +841,15 @@ class Ps_EmailAlerts extends Module
             '{invoice_city}' => $invoice->city,
             '{invoice_postal_code}' => $invoice->postcode,
             '{invoice_country}' => $invoice->country,
-            '{invoice_state}' => $invoice->id_state ? $invoice_state->name : '',
-            '{invoice_phone}' => $invoice->phone ? $invoice->phone : $invoice->phone_mobile,
+            '{invoice_state}' => isset($invoice_state->name) ? $invoice_state->name : '',
+            '{invoice_phone}' => isset($invoice->phone) ? $invoice->phone : $invoice->phone_mobile,
             '{invoice_other}' => $invoice->other,
             '{order_name}' => $order->reference,
             '{shop_name}' => $configuration['PS_SHOP_NAME'],
             '{date}' => $order_date_text,
             '{items}' => $items_table,
             '{message}' => Tools::purifyHTML($params['orderReturn']->question),
-        );
+        ];
 
         // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
         $merchant_mails = explode(self::__MA_MAIL_DELIMITOR__, $this->merchant_mails);
@@ -855,8 +861,8 @@ class Ps_EmailAlerts extends Module
 
             // Use the merchant lang if he exists as an employee
             $results = Db::getInstance()->executeS('
-				SELECT `id_lang` FROM `'._DB_PREFIX_.'employee`
-				WHERE `email` = \''.pSQL($merchant_mail).'\'
+				SELECT `id_lang` FROM `' . _DB_PREFIX_ . 'employee`
+				WHERE `email` = \'' . pSQL($merchant_mail) . '\'
 			');
             if ($results) {
                 $user_iso = Language::getIsoById((int) $results[0]['id_lang']);
@@ -868,26 +874,26 @@ class Ps_EmailAlerts extends Module
             }
 
             $dir_mail = false;
-            if (file_exists(dirname(__FILE__).'/mails/'.$mail_iso.'/return_slip.txt') &&
-                file_exists(dirname(__FILE__).'/mails/'.$mail_iso.'/return_slip.html')) {
-                $dir_mail = dirname(__FILE__).'/mails/';
+            if (file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/return_slip.txt') &&
+                file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/return_slip.html')) {
+                $dir_mail = dirname(__FILE__) . '/mails/';
             }
 
-            if (file_exists(_PS_MAIL_DIR_.$mail_iso.'/return_slip.txt') &&
-                file_exists(_PS_MAIL_DIR_.$mail_iso.'/return_slip.html')) {
+            if (file_exists(_PS_MAIL_DIR_ . $mail_iso . '/return_slip.txt') &&
+                file_exists(_PS_MAIL_DIR_ . $mail_iso . '/return_slip.html')) {
                 $dir_mail = _PS_MAIL_DIR_;
             }
 
             if ($dir_mail) {
-                Mail::Send(
+                Mail::send(
                     $mail_id_lang,
                     'return_slip',
                     $this->trans(
                         'New return from order #%d - %s',
-                        array(
+                        [
                             $order->id,
-                            $order->reference
-                        ),
+                            $order->reference,
+                        ],
                         'Emails.Subject',
                         $mail_locale
                     ),
@@ -899,7 +905,7 @@ class Ps_EmailAlerts extends Module
                     null,
                     null,
                     $dir_mail,
-                    null,
+                    false,
                     $id_shop
                 );
             }
@@ -926,198 +932,198 @@ class Ps_EmailAlerts extends Module
             $locale = $this->context->language->getLocale();
         }
 
-        $data = array(
+        $data = [
             '{lastname}' => $order->getCustomer()->lastname,
             '{firstname}' => $order->getCustomer()->firstname,
             '{id_order}' => (int) $order->id,
             '{order_name}' => $order->getUniqReference(),
-        );
+        ];
 
         Mail::Send(
             (int) $order->id_lang,
             'order_changed',
-            $this->trans('Your order has been changed', array(), 'Emails.Subject', $locale),
+            $this->trans('Your order has been changed', [], 'Emails.Subject', $locale),
             $data,
             $order->getCustomer()->email,
-            $order->getCustomer()->firstname.' '.$order->getCustomer()->lastname,
+            $order->getCustomer()->firstname . ' ' . $order->getCustomer()->lastname,
             null, null, null, null, _PS_MAIL_DIR_, true, (int) $order->id_shop);
     }
 
     public function renderForm()
     {
-        $fields_form_1 = array(
-            'form' => array(
-                'legend' => array(
-                    'title' => $this->trans('Customer notifications', array(), 'Modules.Emailalerts.Admin'),
+        $fields_form_1 = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->trans('Customer notifications', [], 'Modules.Emailalerts.Admin'),
                     'icon' => 'icon-cogs',
-                ),
-                'input' => array(
-                    array(
+                ],
+                'input' => [
+                    [
                         'type' => 'switch',
                         'is_bool' => true, //retro compat 1.5
-                        'label' => $this->trans('Product availability', array(), 'Modules.Emailalerts.Admin'),
+                        'label' => $this->trans('Product availability', [], 'Modules.Emailalerts.Admin'),
                         'name' => 'MA_CUSTOMER_QTY',
-                        'desc' => $this->trans('Give the customer the option of receiving a notification when an out of stock product is available again.', array(), 'Modules.Emailalerts.Admin'),
-                        'values' => array(
-                            array(
+                        'desc' => $this->trans('Give the customer the option of receiving a notification when an out of stock product is available again.', [], 'Modules.Emailalerts.Admin'),
+                        'values' => [
+                            [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Enabled', array(), 'Admin.Global'),
-                            ),
-                            array(
+                                'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                            ],
+                            [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Disabled', array(), 'Admin.Global'),
-                            ),
-                        ),
-                    ),
-                    array(
+                                'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                            ],
+                        ],
+                    ],
+                    [
                         'type' => 'switch',
                         'is_bool' => true, //retro compat 1.5
-                        'label' => $this->trans('Order edit', array(), 'Modules.Emailalerts.Admin'),
+                        'label' => $this->trans('Order edit', [], 'Modules.Emailalerts.Admin'),
                         'name' => 'MA_ORDER_EDIT',
-                        'desc' => $this->trans('Send a notification to the customer when an order is edited.', array(), 'Modules.Emailalerts.Admin'),
-                        'values' => array(
-                            array(
+                        'desc' => $this->trans('Send a notification to the customer when an order is edited.', [], 'Modules.Emailalerts.Admin'),
+                        'values' => [
+                            [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Enabled', array(), 'Admin.Global'),
-                            ),
-                            array(
+                                'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                            ],
+                            [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Disabled', array(), 'Admin.Global'),
-                            ),
-                        ),
-                    ),
-                ),
-                'submit' => array(
-                    'title' => $this->trans('Save', array(), 'Admin.Actions'),
+                                'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                            ],
+                        ],
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->trans('Save', [], 'Admin.Actions'),
                     'class' => 'btn btn-default pull-right',
                     'name' => 'submitMailAlert',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
-        $inputs = array(
-            array(
+        $inputs = [
+            [
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->trans('New order', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('New order', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_ORDER',
-                'desc' => $this->trans('Receive a notification when an order is placed.', array(), 'Modules.Emailalerts.Admin'),
-                'values' => array(
-                    array(
+                'desc' => $this->trans('Receive a notification when an order is placed.', [], 'Modules.Emailalerts.Admin'),
+                'values' => [
+                    [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
-                    ),
-                    array(
+                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                    ],
+                    [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
-                    ),
-                ),
-            ),
-            array(
+                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                    ],
+                ],
+            ],
+            [
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->trans('Out of stock', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('Out of stock', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_OOS',
-                'desc' => $this->trans('Receive a notification if the available quantity of a product is below the following threshold.', array(), 'Modules.Emailalerts.Admin'),
-                'values' => array(
-                    array(
+                'desc' => $this->trans('Receive a notification if the available quantity of a product is below the following threshold.', [], 'Modules.Emailalerts.Admin'),
+                'values' => [
+                    [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
-                    ),
-                    array(
+                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                    ],
+                    [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
-                    ),
-                ),
-            ),
-            array(
+                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                    ],
+                ],
+            ],
+            [
                 'type' => 'text',
-                'label' => $this->trans('Threshold', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('Threshold', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_LAST_QTIES',
                 'class' => 'fixed-width-xs',
-                'desc' => $this->trans('Quantity for which a product is considered out of stock.', array(), 'Modules.Emailalerts.Admin'),
-            ),
-        );
+                'desc' => $this->trans('Quantity for which a product is considered out of stock.', [], 'Modules.Emailalerts.Admin'),
+            ],
+        ];
 
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-            $inputs[] = array(
+            $inputs[] = [
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->trans('Coverage warning', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('Coverage warning', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_COVERAGE',
-                'desc' => $this->trans('Receive a notification when a product has insufficient coverage.', array(), 'Modules.Emailalerts.Admin'),
-                'values' => array(
-                    array(
+                'desc' => $this->trans('Receive a notification when a product has insufficient coverage.', [], 'Modules.Emailalerts.Admin'),
+                'values' => [
+                    [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
-                    ),
-                    array(
+                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                    ],
+                    [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
-                    ),
-                ),
-            );
-            $inputs[] = array(
+                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                    ],
+                ],
+            ];
+            $inputs[] = [
                 'type' => 'text',
-                'label' => $this->trans('Coverage', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('Coverage', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_PRODUCT_COVERAGE',
                 'class' => 'fixed-width-xs',
-                'desc' => $this->trans('Stock coverage, in days. Also, the stock coverage of a given product will be calculated based on this number.', array(), 'Modules.Emailalerts.Admin'),
-            );
+                'desc' => $this->trans('Stock coverage, in days. Also, the stock coverage of a given product will be calculated based on this number.', [], 'Modules.Emailalerts.Admin'),
+            ];
         }
 
-        $inputs[] = array(
+        $inputs[] = [
                 'type' => 'switch',
                 'is_bool' => true, //retro compat 1.5
-                'label' => $this->trans('Returns', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('Returns', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_RETURN_SLIP',
-                'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', array(), 'Modules.Emailalerts.Admin'),
-                'values' => array(
-                    array(
+                'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', [], 'Modules.Emailalerts.Admin'),
+                'values' => [
+                    [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', array(), 'Admin.Global'),
-                    ),
-                    array(
+                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                    ],
+                    [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', array(), 'Admin.Global'),
-                    ),
-                ),
-        );
-        $inputs[] = array(
+                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                    ],
+                ],
+        ];
+        $inputs[] = [
                 'type' => 'textarea',
                 'cols' => 36,
                 'rows' => 4,
-                'label' => $this->trans('Email addresses', array(), 'Modules.Emailalerts.Admin'),
+                'label' => $this->trans('Email addresses', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_MAILS',
-                'desc' => $this->trans('One email address per line (e.g. bob@example.com).', array(), 'Modules.Emailalerts.Admin'),
-        );
+                'desc' => $this->trans('One email address per line (e.g. bob@example.com).', [], 'Modules.Emailalerts.Admin'),
+        ];
 
-        $fields_form_2 = array(
-            'form' => array(
-                'legend' => array(
-                    'title' => $this->trans('Merchant notifications', array(), 'Modules.Emailalerts.Admin'),
+        $fields_form_2 = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->trans('Merchant notifications', [], 'Modules.Emailalerts.Admin'),
                     'icon' => 'icon-cogs',
-                ),
+                ],
                 'input' => $inputs,
-                'submit' => array(
-                    'title' => $this->trans('Save', array(), 'Admin.Actions'),
+                'submit' => [
+                    'title' => $this->trans('Save', [], 'Admin.Actions'),
                     'class' => 'btn btn-default pull-right',
                     'name' => 'submitMAMerchant',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         $helper = new HelperForm();
         $helper->show_toolbar = false;
@@ -1129,44 +1135,46 @@ class Ps_EmailAlerts extends Module
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'submitMailAlertConfiguration';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            .'&configure='.$this->name
-            .'&tab_module='.$this->tab
-            .'&module_name='.$this->name;
+            . '&configure=' . $this->name
+            . '&tab_module=' . $this->tab
+            . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->tpl_vars = array(
+        $helper->tpl_vars = [
             'fields_value' => $this->getConfigFieldsValues(),
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id,
-        );
+        ];
 
-        return $helper->generateForm(array($fields_form_1, $fields_form_2));
+        return $helper->generateForm([$fields_form_1, $fields_form_2]);
     }
 
     public function hookActionDeleteGDPRCustomer($customer)
     {
         if (!empty($customer['email']) && Validate::isEmail($customer['email'])) {
-            $sql = "DELETE FROM "._DB_PREFIX_."mailalert_customer_oos WHERE customer_email = '".pSQL($customer['email'])."'";
+            $sql = 'DELETE FROM ' . _DB_PREFIX_ . "mailalert_customer_oos WHERE customer_email = '" . pSQL($customer['email']) . "'";
             if (Db::getInstance()->execute($sql)) {
                 return json_encode(true);
             }
-            return json_encode($this->trans('Mail alert: Unable to delete customer using email.', array(), 'Modules.Emailalerts.Admin'));
+
+            return json_encode($this->trans('Mail alert: Unable to delete customer using email.', [], 'Modules.Emailalerts.Admin'));
         }
     }
 
     public function hookActionExportGDPRData($customer)
     {
         if (!Tools::isEmpty($customer['email']) && Validate::isEmail($customer['email'])) {
-            $sql = "SELECT * FROM "._DB_PREFIX_."mailalert_customer_oos WHERE customer_email = '".pSQL($customer['email'])."'";
+            $sql = 'SELECT * FROM ' . _DB_PREFIX_ . "mailalert_customer_oos WHERE customer_email = '" . pSQL($customer['email']) . "'";
             if ($res = Db::getInstance()->ExecuteS($sql)) {
                 return json_encode($res);
             }
-            return json_encode($this->trans('Mail alert: Unable to export customer using email.', array(), 'Modules.Emailalerts.Admin'));
+
+            return json_encode($this->trans('Mail alert: Unable to export customer using email.', [], 'Modules.Emailalerts.Admin'));
         }
     }
 
     public function getConfigFieldsValues()
     {
-        return array(
+        return [
             'MA_CUSTOMER_QTY' => Tools::getValue('MA_CUSTOMER_QTY', Configuration::get('MA_CUSTOMER_QTY')),
             'MA_MERCHANT_ORDER' => Tools::getValue('MA_MERCHANT_ORDER', Configuration::get('MA_MERCHANT_ORDER')),
             'MA_MERCHANT_OOS' => Tools::getValue('MA_MERCHANT_OOS', Configuration::get('MA_MERCHANT_OOS')),
@@ -1176,7 +1184,7 @@ class Ps_EmailAlerts extends Module
             'MA_MERCHANT_MAILS' => Tools::getValue('MA_MERCHANT_MAILS', Configuration::get('MA_MERCHANT_MAILS')),
             'MA_ORDER_EDIT' => Tools::getValue('MA_ORDER_EDIT', Configuration::get('MA_ORDER_EDIT')),
             'MA_RETURN_SLIP' => Tools::getValue('MA_RETURN_SLIP', Configuration::get('MA_RETURN_SLIP')),
-        );
+        ];
     }
 
     public function isUsingNewTranslationSystem()
