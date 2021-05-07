@@ -611,7 +611,7 @@ class Ps_EmailAlerts extends Module
 
         if ($product_has_attributes) {
             $sql = 'SELECT `minimal_quantity`, `id_product_attribute`
-                FROM '._DB_PREFIX_.'product_attribute
+                FROM ' . _DB_PREFIX_ . 'product_attribute
                 WHERE id_product_attribute = '. $id_product_attribute;
 
             $result = Db::getInstance()->getRow($sql);
@@ -630,7 +630,7 @@ class Ps_EmailAlerts extends Module
     {
         $sql = 'SELECT sa.`id_product`, sa.`quantity`, pa.`minimal_quantity`
             FROM `' . _DB_PREFIX_ . 'stock_available` sa
-            LEFT JOIN '._DB_PREFIX_.'product_attribute pa ON sa.id_product_attribute = pa.id_product_attribute
+            LEFT JOIN ' . _DB_PREFIX_ . 'product_attribute pa ON sa.id_product_attribute = pa.id_product_attribute
             WHERE sa.`id_product_attribute` = ' . (int) $params['id_product_attribute'];
 
         $result = Db::getInstance()->getRow($sql);
