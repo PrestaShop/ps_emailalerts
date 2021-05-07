@@ -612,7 +612,7 @@ class Ps_EmailAlerts extends Module
         if ($product_has_attributes) {
             $sql = 'SELECT `minimal_quantity`, `id_product_attribute`
                 FROM ' . _DB_PREFIX_ . 'product_attribute
-                WHERE id_product_attribute = '. $id_product_attribute;
+                WHERE id_product_attribute = '. (int) $id_product_attribute;
 
             $result = Db::getInstance()->getRow($sql);
 
