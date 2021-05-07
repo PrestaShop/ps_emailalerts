@@ -577,6 +577,7 @@ class Ps_EmailAlerts extends Module
             $configuration['PS_STOCK_MANAGEMENT']) {
             $iso = Language::getIsoById($id_lang);
             $product_name = Product::getProductName($id_product, $id_product_attribute, $id_lang);
+            $minimal_quantity = $product->minimal_quantity;
             $template_vars = [
                 '{qty}' => $quantity,
                 '{last_qty}' => $ma_last_qties,
@@ -609,8 +610,20 @@ class Ps_EmailAlerts extends Module
             }
         }
 
-        if ($this->customer_qty && $quantity > 0) {
-            MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+        if ($product_has_attributes) {
+            $sql = ' SELECT `minimal_quantity`, `id_product_attribute`
+                FROM '._DB_PREFIX_.'product_attribute pa
+                WHERE id_product_attribute = '. $id_product_attribute;
+
+            $result = Db::getInstance()->getRow($sql);
+
+            if ($this->customer_qty && $quantity >= $result['minimal_quantity']) {
+                MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+            }
+        } else {
+            if ($this->customer_qty && $quantity >= $minimal_quantity) {
+                MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+            }
         }
     }
 
