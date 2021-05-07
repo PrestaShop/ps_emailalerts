@@ -612,11 +612,11 @@ class Ps_EmailAlerts extends Module
         if ($product_has_attributes) {
             $sql = 'SELECT `minimal_quantity`, `id_product_attribute`
                 FROM ' . _DB_PREFIX_ . 'product_attribute
-                WHERE id_product_attribute = '. (int) $id_product_attribute;
+                WHERE id_product_attribute = ' . (int) $id_product_attribute;
 
             $result = Db::getInstance()->getRow($sql);
 
-            if (isset($result['minimal_quantity']) && $this->customer_qty && $quantity >= $result['minimal_quantity']) {
+            if ($result && $this->customer_qty && $quantity >= $result['minimal_quantity']) {
                 MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
             }
         } else {
@@ -635,7 +635,7 @@ class Ps_EmailAlerts extends Module
 
         $result = Db::getInstance()->getRow($sql);
 
-        if ($this->customer_qty && $result['quantity'] >= $result['minimal_quantity']) {
+        if ($result && $this->customer_qty && $result['quantity'] >= $result['minimal_quantity']) {
             MailAlert::sendCustomerAlert((int) $result['id_product'], (int) $params['id_product_attribute']);
         }
     }
