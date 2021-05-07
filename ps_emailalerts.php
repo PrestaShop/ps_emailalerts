@@ -577,7 +577,6 @@ class Ps_EmailAlerts extends Module
             $configuration['PS_STOCK_MANAGEMENT']) {
             $iso = Language::getIsoById($id_lang);
             $product_name = Product::getProductName($id_product, $id_product_attribute, $id_lang);
-            $minimal_quantity = $product->minimal_quantity;
             $template_vars = [
                 '{qty}' => $quantity,
                 '{last_qty}' => $ma_last_qties,
@@ -611,7 +610,7 @@ class Ps_EmailAlerts extends Module
         }
 
         if ($product_has_attributes) {
-            $sql = ' SELECT `minimal_quantity`, `id_product_attribute`
+            $sql = 'SELECT `minimal_quantity`, `id_product_attribute`
                 FROM '._DB_PREFIX_.'product_attribute
                 WHERE id_product_attribute = '. $id_product_attribute;
 
@@ -621,7 +620,7 @@ class Ps_EmailAlerts extends Module
                 MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
             }
         } else {
-            if ($this->customer_qty && $quantity >= $minimal_quantity) {
+            if ($this->customer_qty && $quantity >= $product->minimal_quantity) {
                 MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
             }
         }
@@ -629,8 +628,7 @@ class Ps_EmailAlerts extends Module
 
     public function hookActionProductAttributeUpdate($params)
     {
-        $sql = '
-            SELECT sa.`id_product`, sa.`quantity`, pa.`minimal_quantity`
+        $sql = 'SELECT sa.`id_product`, sa.`quantity`, pa.`minimal_quantity`
             FROM `' . _DB_PREFIX_ . 'stock_available` sa
             LEFT JOIN '._DB_PREFIX_.'product_attribute pa ON sa.id_product_attribute = pa.id_product_attribute
             WHERE sa.`id_product_attribute` = ' . (int) $params['id_product_attribute'];
