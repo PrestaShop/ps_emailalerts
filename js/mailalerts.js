@@ -33,20 +33,39 @@ function  addNotification() {
     success: function (resp) {
       resp = JSON.parse(resp);
 
-      $('div.js-mailalert > span').html('<article class="alert alert-info" role="alert" data-alert="success">'+resp.message+'</article>').show();
+      const alertProperties = {
+        class: resp.error ? 'danger' : 'success',
+        data: resp.error ? 'error' : 'success'
+      }
+
+      $('div.js-mailalert > span').html('<article class="mt-1 alert alert-' + alertProperties.class + '" role="alert" data-alert="' + alertProperties.data + '">'+resp.message+'</article>').show();
       if (!resp.error) {
         $('div.js-mailalert > button').hide();
         $('div.js-mailalert > input[type=email]').hide();
-        $('div.js-mailalert > #gdpr_consent').hide();
+        $('div.js-mailalert .gdpr_consent_wrapper').hide();
       }
     }
   });
   return false;
 }
 
-$('document').ready(function()
-{
-  $('.js-remove-email-alert').click(function()
+$(document).on('ready', function() {
+  const mailAlertWrapper = $('.js-mailalert');
+  const mailAlertSubmitButton = mailAlertWrapper.find('button');
+
+  if (mailAlertWrapper.find('#gdpr_consent').length) {
+    setTimeout(() => {
+      mailAlertSubmitButton.prop('disabled', true);
+
+      mailAlertWrapper.find('[name="psgdpr_consent_checkbox"]').on('change', function (e) {
+        e.stopPropagation();
+      
+        mailAlertSubmitButton.prop('disabled', !$(this).prop('checked'));
+      });
+    }, 100);
+  }
+
+  $(document).on('click', '.js-remove-email-alert', function()
   {
     var self = $(this);
     var ids = self.attr('rel').replace('js-id-emailalerts-', '');
