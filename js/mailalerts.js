@@ -33,12 +33,8 @@ function  addNotification() {
     success: function (resp) {
       resp = JSON.parse(resp);
 
-      const alertProperties = {
-        class: resp.error ? 'danger' : 'success',
-        data: resp.error ? 'error' : 'success'
-      }
 
-      $('div.js-mailalert > span').html('<article class="mt-1 alert alert-' + alertProperties.class + '" role="alert" data-alert="' + alertProperties.data + '">'+resp.message+'</article>').show();
+      $('div.js-mailalert > span').html('<article class="mt-1 alert alert-' + (resp.error ? 'danger' : 'success') + '" role="alert" data-alert="' + alertProperties.data + '">'+ (resp.error ? 'error' : 'success')+'</article>').show();
       if (!resp.error) {
         $('div.js-mailalert > button').hide();
         $('div.js-mailalert > input[type=email]').hide();
@@ -54,6 +50,7 @@ $(document).on('ready', function() {
   const mailAlertSubmitButton = mailAlertWrapper.find('button');
 
   if (mailAlertWrapper.find('#gdpr_consent').length) {
+    // We use a timeout to put this at the end of the callstack, so it's executed after GPDR module. 
     setTimeout(() => {
       mailAlertSubmitButton.prop('disabled', true);
 
@@ -62,7 +59,7 @@ $(document).on('ready', function() {
       
         mailAlertSubmitButton.prop('disabled', !$(this).prop('checked'));
       });
-    }, 100);
+    }, 0);
   }
 
   $(document).on('click', '.js-remove-email-alert', function()
