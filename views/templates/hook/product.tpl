@@ -24,11 +24,11 @@
 *}
 
 <div class="tabs">
-    <div class="js-mailalert" style="text-align:center;" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
+    <div class="js-mailalert text-center" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
         {if !empty($email)}
             <input class="form-control" type="email" placeholder="{l s='your@email.com' d='Modules.Emailalerts.Shop'}"/>
         {/if}
-        {if isset($id_module)}
+        {if !empty($id_module)}
             {capture name='gdprContent'}{hook h='displayGDPRConsent' id_module=$id_module}{/capture}
             {if $smarty.capture.gdprContent != ''}
              <div class="gdpr_consent_wrapper mt-1">{$smarty.capture.gdprContent nofilter}</div>
