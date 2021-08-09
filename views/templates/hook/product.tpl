@@ -31,7 +31,7 @@
         {if !empty($id_module)}
             {capture name='gdprContent'}{hook h='displayGDPRConsent' id_module=$id_module}{/capture}
             {if $smarty.capture.gdprContent != ''}
-             <div class="gdpr_consent_wrapper mt-1">{$smarty.capture.gdprContent nofilter}</div>
+               <div class="gdpr_consent_wrapper mt-1">{$smarty.capture.gdprContent nofilter}</div>
             {/if}       
         {/if}
         <input type="hidden" value="{$id_product}"/>
