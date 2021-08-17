@@ -571,6 +571,7 @@ class Ps_EmailAlerts extends Module
         $check_oos = ($product_has_attributes && $id_product_attribute) || (!$product_has_attributes && !$id_product_attribute);
 
         if ($check_oos &&
+	    Validate::isLoadedObject($product) &&
             $product->active == 1 &&
             (int) $quantity <= $ma_last_qties &&
             !(!$this->merchant_oos || empty($this->merchant_mails)) &&
