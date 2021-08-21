@@ -551,11 +551,11 @@ class Ps_EmailAlerts extends Module
         $id_product = (int) $params['id_product'];
         $id_product_attribute = (int) $params['id_product_attribute'];
 
-	$context = Context::getContext();
+        $context = Context::getContext();
         $id_shop = (int) $context->shop->id;
         $id_lang = (int) $context->language->id;
         $locale = $context->language->getLocale();
-        $product = new Product($id_product, false, $id_lang, $id_shop, $context);    
+        $product = new Product($id_product, false, $id_lang, $id_shop, $context);
 
         /*
         * We don't want to do anything for products being deleted or inactive products.
