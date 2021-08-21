@@ -551,12 +551,22 @@ class Ps_EmailAlerts extends Module
         $id_product = (int) $params['id_product'];
         $id_product_attribute = (int) $params['id_product_attribute'];
 
-        $quantity = (int) $params['quantity'];
-        $context = Context::getContext();
+	$context = Context::getContext();
         $id_shop = (int) $context->shop->id;
         $id_lang = (int) $context->language->id;
         $locale = $context->language->getLocale();
-        $product = new Product($id_product, false, $id_lang, $id_shop, $context);
+        $product = new Product($id_product, false, $id_lang, $id_shop, $context);    
+
+        /*
+        * We don't want to do anything for products being deleted or inactive products.
+        * Check for active products is not sufficent, because even an empty object is active by default.
+        * Without the Validate check, it used to send nonsense emails when product was deleted.
+        */
+        if (!Validate::isLoadedObject($product) || $product->active != 1) {
+            return;
+        }
+
+        $quantity = (int) $params['quantity'];
         $product_has_attributes = $product->hasAttributes();
         $configuration = Configuration::getMultiple(
             [
@@ -567,12 +577,9 @@ class Ps_EmailAlerts extends Module
             ], null, null, $id_shop
         );
         $ma_last_qties = (int) $configuration['MA_LAST_QTIES'];
-
         $check_oos = ($product_has_attributes && $id_product_attribute) || (!$product_has_attributes && !$id_product_attribute);
 
         if ($check_oos &&
-        Validate::isLoadedObject($product) &&
-            $product->active == 1 &&
             (int) $quantity <= $ma_last_qties &&
             !(!$this->merchant_oos || empty($this->merchant_mails)) &&
             $configuration['PS_STOCK_MANAGEMENT']) {
