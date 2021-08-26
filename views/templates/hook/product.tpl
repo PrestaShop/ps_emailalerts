@@ -34,9 +34,13 @@
                <div class="gdpr_consent_wrapper mt-1">{$smarty.capture.gdprContent nofilter}</div>
             {/if}       
         {/if}
-        <input type="hidden" value="{$id_product}"/>
-        <input type="hidden" value="{$id_product_attribute}"/>
-        <button class="btn btn-primary" el="nofollow" onclick="return addNotification();">{l s='Notify me when available' d='Modules.Emailalerts.Shop'}</button>
-        <span class="d-none"></span>
+        <button
+            data-product="{$product.id_product}"
+            data-product-attribute="{$product.id_product_attribute}"
+            class="btn btn-primary js-mailalert-add mt-1"
+            rel="nofollow">
+            {l s='Notify me when available' d='Modules.Emailalerts.Shop'}
+        </button>
+        <div class="js-mailalert-alerts d-none"></div>
     </div>
 </div>
