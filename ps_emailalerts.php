@@ -557,11 +557,6 @@ class Ps_EmailAlerts extends Module
         $locale = $context->language->getLocale();
         $product = new Product($id_product, false, $id_lang, $id_shop, $context);
 
-        /*
-        * We don't want to do anything for products being deleted or inactive products.
-        * Check for active products is not sufficent, because even an empty object is active by default.
-        * Without the Validate check, it used to send nonsense emails when product was deleted.
-        */
         if (!Validate::isLoadedObject($product) || $product->active != 1) {
             return;
         }
