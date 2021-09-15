@@ -751,11 +751,8 @@ class Ps_EmailAlerts extends Module
 
     public function hookDisplayHeader()
     {
-        $this->page_name = Dispatcher::getInstance()->getController();
-        if (in_array($this->page_name, ['product', 'account'])) {
-            $this->context->controller->addJS($this->_path . 'js/mailalerts.js');
-            $this->context->controller->addCSS($this->_path . 'css/mailalerts.css', 'all');
-        }
+        $this->context->controller->addJS($this->_path . 'js/mailalerts.js');
+        $this->context->controller->addCSS($this->_path . 'css/mailalerts.css', 'all');
     }
 
     /**
