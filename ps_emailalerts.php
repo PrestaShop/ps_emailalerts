@@ -548,11 +548,11 @@ class Ps_EmailAlerts extends Module
 
     public function hookActionUpdateQuantity($params)
     {
-	// Do not send email if stock did not change
+       // Do not send email if stock did not change
         if (isset($params['delta_quantity']) && (int) $params['delta_quantity'] == 0) {
             return;
         }
- 
+
         $id_product = (int) $params['id_product'];
         $id_product_attribute = (int) $params['id_product_attribute'];
 
