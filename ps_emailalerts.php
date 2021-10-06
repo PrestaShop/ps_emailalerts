@@ -61,7 +61,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.3.0';
+        $this->version = '2.3.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -113,7 +113,7 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionDeleteGDPRCustomer') ||
             !$this->registerHook('actionExportGDPRData') ||
             !$this->registerHook('displayProductAdditionalInfo') ||
-            !$this->registerHook('displayHeader')) {
+            !$this->registerHook('actionFrontControllerSetMedia')) {
             return false;
         }
 
@@ -749,10 +749,15 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookDisplayHeader()
-    {
-        $this->context->controller->addJS($this->_path . 'js/mailalerts.js');
-        $this->context->controller->addCSS($this->_path . 'css/mailalerts.css', 'all');
+    public function hookActionFrontControllerSetMedia() {
+        $this->context->controller->registerJavascript(
+            'mailalerts-js',
+            'modules/' . $this->name . '/js/mailalerts.js'
+        );
+        $this->context->controller->registerStylesheet(
+            'mailalerts-css',
+            'modules/' . $this->name . '/css/mailalerts.css'
+        );
     }
 
     /**
