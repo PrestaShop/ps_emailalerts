@@ -752,7 +752,8 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookActionFrontControllerSetMedia() {
+    public function hookActionFrontControllerSetMedia()
+    {
         $this->context->controller->registerJavascript(
             'mailalerts-js',
             'modules/' . $this->name . '/js/mailalerts.js'
