@@ -40,6 +40,10 @@ class Ps_EmailAlertsAccountModuleFrontController extends ModuleFrontController
     {
         $breadcrumb = parent::getBreadcrumbLinks();
         $breadcrumb['links'][] = $this->addMyAccountToBreadcrumb();
+        $breadcrumb['links'][] = [
+            'title' => $this->trans('My alerts', [], 'Modules.Emailalerts.Shop'),
+            'url' => $this->context->link->getModuleLink($this->module->name, 'account', [], true),
+        ];
 
         return $breadcrumb;
     }
