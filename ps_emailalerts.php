@@ -340,7 +340,7 @@ class Ps_EmailAlerts extends Module
                     }
 
                     if (isset($customization[Product::CUSTOMIZE_FILE])) {
-                        $customization_text .= count($customization[Product::CUSTOMIZE_FILE]).' '.$this->trans('image(s)', array(), 'Modules.Mailalerts.Admin').'<br />';
+                        $customization_text .= count($customization[Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Mailalerts.Admin') . '<br />';
                     }
 
                     $customization_text .= '---<br />';
