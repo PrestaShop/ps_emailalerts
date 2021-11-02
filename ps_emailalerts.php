@@ -331,16 +331,16 @@ class Ps_EmailAlerts extends Module
             $unit_price = Product::getTaxCalculationMethod($customer->id) == PS_TAX_EXC ? $product['product_price'] : $product['product_price_wt'];
 
             $customization_text = '';
-            if (isset($customized_datas[$product['product_id']][$product['product_attribute_id']])) {
-                foreach ($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery] as $customization) {
-                    if (isset($customization['datas'][Product::CUSTOMIZE_TEXTFIELD])) {
-                        foreach ($customization['datas'][Product::CUSTOMIZE_TEXTFIELD] as $text) {
+            if (isset($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery][$product['id_customization']])) {
+                foreach ($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery][$product['id_customization']] as $customization) {
+                    if (isset($customization[Product::CUSTOMIZE_TEXTFIELD])) {
+                        foreach ($customization[Product::CUSTOMIZE_TEXTFIELD] as $text) {
                             $customization_text .= $text['name'] . ': ' . $text['value'] . '<br />';
                         }
                     }
 
-                    if (isset($customization['datas'][Product::CUSTOMIZE_FILE])) {
-                        $customization_text .= count($customization['datas'][Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Emailalerts.Admin') . '<br />';
+                    if (isset($customization[Product::CUSTOMIZE_FILE])) {
+                        $customization_text .= count($customization[Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Emailalerts.Admin') . '<br />';
                     }
 
                     $customization_text .= '---<br />';
