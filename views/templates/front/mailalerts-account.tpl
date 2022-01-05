@@ -36,6 +36,6 @@
       {/foreach}
     </ul>
   {else}
-    <p class="alert alert-warning">{l s='No mail alerts yet.' d='Modules.Emailalerts.Shop'}</p>
+    <div class="alert alert-info" role="alert" data-alert="info">{l s='No mail alerts yet.' d='Modules.Emailalerts.Shop'}</div>
   {/if}
 {/block}
