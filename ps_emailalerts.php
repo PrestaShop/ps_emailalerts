@@ -298,14 +298,10 @@ class Ps_EmailAlerts extends Module
      */
     public static function getContextLocale(Context $context)
     {
-        $locale = $context->getCurrentLocale();
-        if (null !== $locale) {
-            return $locale;
-        }
-
         $containerFinder = new \PrestaShop\PrestaShop\Adapter\ContainerFinder($context);
         $container = $containerFinder->getContainer();
         if (null === $context->container) {
+            // @phpstan-ignore-next-line
             $context->container = $container;
         }
 
@@ -315,6 +311,7 @@ class Ps_EmailAlerts extends Module
             $context->language->getLocale()
         );
 
+        // @phpstan-ignore-next-line
         return $locale;
     }
 
