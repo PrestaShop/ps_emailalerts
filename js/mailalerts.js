@@ -23,30 +23,56 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-function  addNotification() {
-  var ids = $('div.js-mailalert > input[type=hidden]');
+function  addNotification(productId, productAttributeId) {
+  // to keep backward compatibility
+  if (typeof productId === 'undefined') {
+    var ids = $('div.js-mailalert > input[type=hidden]');
+    productId = ids.eq(0).val();
+    productIdAttribute = ids.eq(1).val();
+  }
 
   $.ajax({
     type: 'POST',
     url: $('div.js-mailalert').data('url'),
-    data: 'id_product='+ids[0].value+'&id_product_attribute='+ids[1].value+'&customer_email='+$('div.js-mailalert > input[type=email]').val(),
+    data: 'id_product='+productId+'&id_product_attribute='+productAttributeId+'&customer_email='+$('div.js-mailalert > input[type=email]').val(),
     success: function (resp) {
       resp = JSON.parse(resp);
 
-      $('div.js-mailalert > span').html('<article class="alert alert-info" role="alert" data-alert="success">'+resp.message+'</article>').show();
+      $('.js-mailalert-alerts').html('<article class="mt-1 alert alert-' + (resp.error ? 'danger' : 'success') + '" role="alert" data-alert="' + (resp.error ? 'error' : 'success') + '">'+ resp.message +'</article>').show();
       if (!resp.error) {
-        $('div.js-mailalert > button').hide();
-        $('div.js-mailalert > input[type=email]').hide();
-        $('div.js-mailalert > #gdpr_consent').hide();
+        $('div.js-mailalert > .js-mailalert-add, div.js-mailalert > input[type=email], div.js-mailalert .gdpr_consent_wrapper').hide();
       }
     }
   });
   return false;
 }
 
-$('document').ready(function()
-{
-  $('.js-remove-email-alert').click(function()
+$(document).on('ready', function() {
+  const mailAlertSubmitButtonClass = '.js-mailalert-add';
+  const mailAlertWrapper = $('.js-mailalert');
+  const mailAlertSubmitButton = mailAlertWrapper.find(mailAlertSubmitButtonClass);
+
+  if (mailAlertWrapper.find('#gdpr_consent').length) {
+    // We use a timeout to put this at the end of the callstack, so it's executed after GPDR module. 
+    setTimeout(() => {
+      mailAlertSubmitButton.prop('disabled', true);
+
+      mailAlertWrapper.find('[name="psgdpr_consent_checkbox"]').on('change', function (e) {
+        e.stopPropagation();
+      
+        mailAlertSubmitButton.prop('disabled', !$(this).prop('checked'));
+      });
+    }, 0);
+  }
+
+  $(document).on('click', mailAlertSubmitButtonClass, function (e)
+  {
+    e.preventDefault();
+
+    addNotification($(this).data('product'), $(this).data('product-attribute'));
+  });
+
+  $(document).on('click', '.js-remove-email-alert', function()
   {
     var self = $(this);
     var ids = self.attr('rel').replace('js-id-emailalerts-', '');

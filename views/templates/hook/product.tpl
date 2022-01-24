@@ -24,18 +24,23 @@
 *}
 
 <div class="tabs">
-    <form>
-        <div class="js-mailalert" style="text-align:center;" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
-            {if isset($email) AND $email}
-                <input class="form-control" type="email" placeholder="{l s='your@email.com' d='Modules.Emailalerts.Shop'}"/><br />
-            {/if}
-            {if isset($id_module)}
-                {hook h='displayGDPRConsent' id_module=$id_module}
-            {/if}
-            <input type="hidden" value="{$id_product}"/>
-            <input type="hidden" value="{$id_product_attribute}"/>
-            <button class="btn btn-primary" type="submit" rel="nofollow" onclick="return addNotification();">{l s='Notify me when available' d='Modules.Emailalerts.Shop'}</button>
-            <span style="display:none;padding:5px"></span>
-        </div>
-    </form>
+    <div class="js-mailalert text-center" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
+        {if !empty($email)}
+            <input class="form-control" type="email" placeholder="{l s='your@email.com' d='Modules.Emailalerts.Shop'}"/>
+        {/if}
+        {if !empty($id_module)}
+            {capture name='gdprContent'}{hook h='displayGDPRConsent' id_module=$id_module}{/capture}
+            {if $smarty.capture.gdprContent != ''}
+               <div class="gdpr_consent_wrapper mt-1">{$smarty.capture.gdprContent nofilter}</div>
+            {/if}       
+        {/if}
+        <button
+            data-product="{$product.id_product}"
+            data-product-attribute="{$product.id_product_attribute}"
+            class="btn btn-primary js-mailalert-add mt-1"
+            rel="nofollow">
+            {l s='Notify me when available' d='Modules.Emailalerts.Shop'}
+        </button>
+        <div class="js-mailalert-alerts d-none"></div>
+    </div>
 </div>

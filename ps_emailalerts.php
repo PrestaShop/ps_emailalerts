@@ -61,7 +61,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.3.0';
+        $this->version = '2.3.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -113,7 +113,7 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionDeleteGDPRCustomer') ||
             !$this->registerHook('actionExportGDPRData') ||
             !$this->registerHook('displayProductAdditionalInfo') ||
-            !$this->registerHook('displayHeader')) {
+            !$this->registerHook('actionFrontControllerSetMedia')) {
             return false;
         }
 
@@ -287,6 +287,34 @@ class Ps_EmailAlerts extends Module
         return implode('<br/>', $result);
     }
 
+    /**
+     * Return current locale
+     *
+     * @param Context $context
+     *
+     * @return \PrestaShop\PrestaShop\Core\Localization\Locale
+     *
+     * @throws Exception
+     */
+    public static function getContextLocale(Context $context)
+    {
+        $containerFinder = new \PrestaShop\PrestaShop\Adapter\ContainerFinder($context);
+        $container = $containerFinder->getContainer();
+        if (null === $context->container) {
+            // @phpstan-ignore-next-line
+            $context->container = $container;
+        }
+
+        /** @var \PrestaShop\PrestaShop\Core\Localization\CLDR\LocaleRepository $localeRepository */
+        $localeRepository = $container->get(Controller::SERVICE_LOCALE_REPOSITORY);
+        $locale = $localeRepository->getLocale(
+            $context->language->getLocale()
+        );
+
+        // @phpstan-ignore-next-line
+        return $locale;
+    }
+
     public function hookActionValidateOrder($params)
     {
         if (!$this->merchant_order || empty($this->merchant_mails)) {
@@ -297,6 +325,9 @@ class Ps_EmailAlerts extends Module
         $context = Context::getContext();
         $id_lang = (int) $context->language->id;
         $locale = $context->language->getLocale();
+        // We use use static method from current class to prevent retro compatibility issues with PrestaShop < 1.7.7
+        $contextLocale = static::getContextLocale($context);
+
         $id_shop = (int) $context->shop->id;
         $currency = $params['currency'];
         $order = $params['order'];
@@ -331,16 +362,16 @@ class Ps_EmailAlerts extends Module
             $unit_price = Product::getTaxCalculationMethod($customer->id) == PS_TAX_EXC ? $product['product_price'] : $product['product_price_wt'];
 
             $customization_text = '';
-            if (isset($customized_datas[$product['product_id']][$product['product_attribute_id']])) {
-                foreach ($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery] as $customization) {
-                    if (isset($customization['datas'][Product::CUSTOMIZE_TEXTFIELD])) {
-                        foreach ($customization['datas'][Product::CUSTOMIZE_TEXTFIELD] as $text) {
+            if (isset($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery][$product['id_customization']])) {
+                foreach ($customized_datas[$product['product_id']][$product['product_attribute_id']][$order->id_address_delivery][$product['id_customization']] as $customization) {
+                    if (isset($customization[Product::CUSTOMIZE_TEXTFIELD])) {
+                        foreach ($customization[Product::CUSTOMIZE_TEXTFIELD] as $text) {
                             $customization_text .= $text['name'] . ': ' . $text['value'] . '<br />';
                         }
                     }
 
-                    if (isset($customization['datas'][Product::CUSTOMIZE_FILE])) {
-                        $customization_text .= count($customization['datas'][Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Emailalerts.Admin') . '<br />';
+                    if (isset($customization[Product::CUSTOMIZE_FILE])) {
+                        $customization_text .= count($customization[Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Emailalerts.Admin') . '<br />';
                     }
 
                     $customization_text .= '---<br />';
@@ -362,10 +393,10 @@ class Ps_EmailAlerts extends Module
                             . (!empty($customization_text) ? '<br />' . $customization_text : '')
                         . '</strong>
 					</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">' . Tools::displayPrice($unit_price, $currency, false) . '</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">' . $contextLocale->formatPrice($unit_price, $currency->iso_code) . '</td>
 					<td style="padding:0.6em 0.4em; text-align:center;">' . (int) $product['product_quantity'] . '</td>
 					<td style="padding:0.6em 0.4em; text-align:right;">'
-                        . Tools::displayPrice(($unit_price * $product['product_quantity']), $currency, false)
+                        . $contextLocale->formatPrice(($unit_price * $product['product_quantity']), $currency->iso_code)
                     . '</td>
 				</tr>';
         }
@@ -373,7 +404,7 @@ class Ps_EmailAlerts extends Module
             $items_table .=
                 '<tr style="background-color:#EBECEE;">
 						<td colspan="4" style="padding:0.6em 0.4em; text-align:right;">' . $this->trans('Voucher code:', [], 'Modules.Emailalerts.Admin') . ' ' . $discount['name'] . '</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">-' . Tools::displayPrice($discount['value'], $currency, false) . '</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">-' . $contextLocale->formatPrice($discount['value'], $currency->iso_code) . '</td>
 			</tr>';
         }
         if ($delivery->id_state) {
@@ -439,18 +470,17 @@ class Ps_EmailAlerts extends Module
             '{carrier}' => (($carrier->name == '0') ? $configuration['PS_SHOP_NAME'] : $carrier->name),
             '{payment}' => Tools::substr($order->payment, 0, 32),
             '{items}' => $items_table,
-            '{total_paid}' => Tools::displayPrice($order->total_paid, $currency),
-            '{total_products}' => Tools::displayPrice($total_products, $currency),
-            '{total_discounts}' => Tools::displayPrice($order->total_discounts, $currency),
-            '{total_shipping}' => Tools::displayPrice($order->total_shipping, $currency),
-            '{total_shipping_tax_excl}' => Tools::displayPrice($order->total_shipping_tax_excl, $currency, false),
-            '{total_shipping_tax_incl}' => Tools::displayPrice($order->total_shipping_tax_incl, $currency, false),
-            '{total_tax_paid}' => Tools::displayPrice(
+            '{total_paid}' => $contextLocale->formatPrice($order->total_paid, $currency->iso_code),
+            '{total_products}' => $contextLocale->formatPrice($total_products, $currency->iso_code),
+            '{total_discounts}' => $contextLocale->formatPrice($order->total_discounts, $currency->iso_code),
+            '{total_shipping}' => $contextLocale->formatPrice($order->total_shipping, $currency->iso_code),
+            '{total_shipping_tax_excl}' => $contextLocale->formatPrice($order->total_shipping_tax_excl, $currency->iso_code),
+            '{total_shipping_tax_incl}' => $contextLocale->formatPrice($order->total_shipping_tax_incl, $currency->iso_code),
+            '{total_tax_paid}' => $contextLocale->formatPrice(
                 $order->total_paid_tax_incl - $order->total_paid_tax_excl,
-                $currency,
-                false
+                $currency->iso_code
             ),
-            '{total_wrapping}' => Tools::displayPrice($order->total_wrapping, $currency),
+            '{total_wrapping}' => $contextLocale->formatPrice($order->total_wrapping, $currency->iso_code),
             '{currency}' => $currency->sign,
             '{gift}' => (bool) $order->gift,
             '{gift_message}' => $order->gift_message,
@@ -520,7 +550,7 @@ class Ps_EmailAlerts extends Module
 
     public function hookDisplayProductAdditionalInfo($params)
     {
-        if (0 < $params['product']['quantity'] ||
+        if ($params['product']['minimal_quantity'] <= $params['product']['quantity'] ||
             !$this->customer_qty ||
             !Configuration::get('PS_STOCK_MANAGEMENT') ||
             Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
@@ -551,12 +581,17 @@ class Ps_EmailAlerts extends Module
         $id_product = (int) $params['id_product'];
         $id_product_attribute = (int) $params['id_product_attribute'];
 
-        $quantity = (int) $params['quantity'];
         $context = Context::getContext();
         $id_shop = (int) $context->shop->id;
         $id_lang = (int) $context->language->id;
         $locale = $context->language->getLocale();
         $product = new Product($id_product, false, $id_lang, $id_shop, $context);
+
+        if (!Validate::isLoadedObject($product) || $product->active != 1) {
+            return;
+        }
+
+        $quantity = (int) $params['quantity'];
         $product_has_attributes = $product->hasAttributes();
         $configuration = Configuration::getMultiple(
             [
@@ -567,11 +602,9 @@ class Ps_EmailAlerts extends Module
             ], null, null, $id_shop
         );
         $ma_last_qties = (int) $configuration['MA_LAST_QTIES'];
-
         $check_oos = ($product_has_attributes && $id_product_attribute) || (!$product_has_attributes && !$id_product_attribute);
 
         if ($check_oos &&
-            $product->active == 1 &&
             (int) $quantity <= $ma_last_qties &&
             !(!$this->merchant_oos || empty($this->merchant_mails)) &&
             $configuration['PS_STOCK_MANAGEMENT']) {
@@ -609,21 +642,33 @@ class Ps_EmailAlerts extends Module
             }
         }
 
-        if ($this->customer_qty && $quantity > 0) {
-            MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+        if ($product_has_attributes) {
+            $sql = 'SELECT `minimal_quantity`, `id_product_attribute`
+                FROM ' . _DB_PREFIX_ . 'product_attribute
+                WHERE id_product_attribute = ' . (int) $id_product_attribute;
+
+            $result = Db::getInstance()->getRow($sql);
+
+            if ($result && $this->customer_qty && $quantity >= $result['minimal_quantity']) {
+                MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+            }
+        } else {
+            if ($this->customer_qty && $quantity >= $product->minimal_quantity) {
+                MailAlert::sendCustomerAlert((int) $product->id, (int) $params['id_product_attribute']);
+            }
         }
     }
 
     public function hookActionProductAttributeUpdate($params)
     {
-        $sql = '
-			SELECT `id_product`, `quantity`
-			FROM `' . _DB_PREFIX_ . 'stock_available`
-			WHERE `id_product_attribute` = ' . (int) $params['id_product_attribute'];
+        $sql = 'SELECT sa.`id_product`, sa.`quantity`, pa.`minimal_quantity`
+            FROM `' . _DB_PREFIX_ . 'stock_available` sa
+            LEFT JOIN ' . _DB_PREFIX_ . 'product_attribute pa ON sa.id_product_attribute = pa.id_product_attribute
+            WHERE sa.`id_product_attribute` = ' . (int) $params['id_product_attribute'];
 
         $result = Db::getInstance()->getRow($sql);
 
-        if ($this->customer_qty && $result['quantity'] > 0) {
+        if ($result && $this->customer_qty && $result['quantity'] >= $result['minimal_quantity']) {
             MailAlert::sendCustomerAlert((int) $result['id_product'], (int) $params['id_product_attribute']);
         }
     }
@@ -737,13 +782,16 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookDisplayHeader()
+    public function hookActionFrontControllerSetMedia()
     {
-        $this->page_name = Dispatcher::getInstance()->getController();
-        if (in_array($this->page_name, ['product', 'account'])) {
-            $this->context->controller->addJS($this->_path . 'js/mailalerts.js');
-            $this->context->controller->addCSS($this->_path . 'css/mailalerts.css', 'all');
-        }
+        $this->context->controller->registerJavascript(
+            'mailalerts-js',
+            'modules/' . $this->name . '/js/mailalerts.js'
+        );
+        $this->context->controller->registerStylesheet(
+            'mailalerts-css',
+            'modules/' . $this->name . '/css/mailalerts.css'
+        );
     }
 
     /**
@@ -968,12 +1016,12 @@ class Ps_EmailAlerts extends Module
                             [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                                'label' => $this->trans('Yes', [], 'Admin.Global'),
                             ],
                             [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                                'label' => $this->trans('No', [], 'Admin.Global'),
                             ],
                         ],
                     ],
@@ -987,12 +1035,12 @@ class Ps_EmailAlerts extends Module
                             [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                                'label' => $this->trans('Yes', [], 'Admin.Global'),
                             ],
                             [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                                'label' => $this->trans('No', [], 'Admin.Global'),
                             ],
                         ],
                     ],
@@ -1016,12 +1064,12 @@ class Ps_EmailAlerts extends Module
                     [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                        'label' => $this->trans('Yes', [], 'Admin.Global'),
                     ],
                     [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                        'label' => $this->trans('No', [], 'Admin.Global'),
                     ],
                 ],
             ],
@@ -1035,12 +1083,12 @@ class Ps_EmailAlerts extends Module
                     [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                        'label' => $this->trans('Yes', [], 'Admin.Global'),
                     ],
                     [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                        'label' => $this->trans('No', [], 'Admin.Global'),
                     ],
                 ],
             ],
@@ -1064,12 +1112,12 @@ class Ps_EmailAlerts extends Module
                     [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                        'label' => $this->trans('Yes', [], 'Admin.Global'),
                     ],
                     [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                        'label' => $this->trans('No', [], 'Admin.Global'),
                     ],
                 ],
             ];
@@ -1092,12 +1140,12 @@ class Ps_EmailAlerts extends Module
                     [
                         'id' => 'active_on',
                         'value' => 1,
-                        'label' => $this->trans('Enabled', [], 'Admin.Global'),
+                        'label' => $this->trans('Yes', [], 'Admin.Global'),
                     ],
                     [
                         'id' => 'active_off',
                         'value' => 0,
-                        'label' => $this->trans('Disabled', [], 'Admin.Global'),
+                        'label' => $this->trans('No', [], 'Admin.Global'),
                     ],
                 ],
         ];
