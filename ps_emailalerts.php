@@ -287,6 +287,34 @@ class Ps_EmailAlerts extends Module
         return implode('<br/>', $result);
     }
 
+    /**
+     * Return current locale
+     *
+     * @param Context $context
+     *
+     * @return \PrestaShop\PrestaShop\Core\Localization\Locale
+     *
+     * @throws Exception
+     */
+    public static function getContextLocale(Context $context)
+    {
+        $containerFinder = new \PrestaShop\PrestaShop\Adapter\ContainerFinder($context);
+        $container = $containerFinder->getContainer();
+        if (null === $context->container) {
+            // @phpstan-ignore-next-line
+            $context->container = $container;
+        }
+
+        /** @var \PrestaShop\PrestaShop\Core\Localization\CLDR\LocaleRepository $localeRepository */
+        $localeRepository = $container->get(Controller::SERVICE_LOCALE_REPOSITORY);
+        $locale = $localeRepository->getLocale(
+            $context->language->getLocale()
+        );
+
+        // @phpstan-ignore-next-line
+        return $locale;
+    }
+
     public function hookActionValidateOrder($params)
     {
         if (!$this->merchant_order || empty($this->merchant_mails)) {
@@ -297,6 +325,9 @@ class Ps_EmailAlerts extends Module
         $context = Context::getContext();
         $id_lang = (int) $context->language->id;
         $locale = $context->language->getLocale();
+        // We use use static method from current class to prevent retro compatibility issues with PrestaShop < 1.7.7
+        $contextLocale = static::getContextLocale($context);
+
         $id_shop = (int) $context->shop->id;
         $currency = $params['currency'];
         $order = $params['order'];
@@ -362,10 +393,10 @@ class Ps_EmailAlerts extends Module
                             . (!empty($customization_text) ? '<br />' . $customization_text : '')
                         . '</strong>
 					</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">' . $context->getCurrentLocale()->formatPrice($unit_price, $currency->iso_code) . '</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">' . $contextLocale->formatPrice($unit_price, $currency->iso_code) . '</td>
 					<td style="padding:0.6em 0.4em; text-align:center;">' . (int) $product['product_quantity'] . '</td>
 					<td style="padding:0.6em 0.4em; text-align:right;">'
-                        . $context->getCurrentLocale()->formatPrice(($unit_price * $product['product_quantity']), $currency->iso_code)
+                        . $contextLocale->formatPrice(($unit_price * $product['product_quantity']), $currency->iso_code)
                     . '</td>
 				</tr>';
         }
@@ -373,7 +404,7 @@ class Ps_EmailAlerts extends Module
             $items_table .=
                 '<tr style="background-color:#EBECEE;">
 						<td colspan="4" style="padding:0.6em 0.4em; text-align:right;">' . $this->trans('Voucher code:', [], 'Modules.Emailalerts.Admin') . ' ' . $discount['name'] . '</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">-' . $context->getCurrentLocale()->formatPrice($discount['value'], $currency->iso_code) . '</td>
+					<td style="padding:0.6em 0.4em; text-align:right;">-' . $contextLocale->formatPrice($discount['value'], $currency->iso_code) . '</td>
 			</tr>';
         }
         if ($delivery->id_state) {
@@ -439,17 +470,17 @@ class Ps_EmailAlerts extends Module
             '{carrier}' => (($carrier->name == '0') ? $configuration['PS_SHOP_NAME'] : $carrier->name),
             '{payment}' => Tools::substr($order->payment, 0, 32),
             '{items}' => $items_table,
-            '{total_paid}' => $context->getCurrentLocale()->formatPrice($order->total_paid, $currency->iso_code),
-            '{total_products}' => $context->getCurrentLocale()->formatPrice($total_products, $currency->iso_code),
-            '{total_discounts}' => $context->getCurrentLocale()->formatPrice($order->total_discounts, $currency->iso_code),
-            '{total_shipping}' => $context->getCurrentLocale()->formatPrice($order->total_shipping, $currency->iso_code),
-            '{total_shipping_tax_excl}' => $context->getCurrentLocale()->formatPrice($order->total_shipping_tax_excl, $currency->iso_code),
-            '{total_shipping_tax_incl}' => $context->getCurrentLocale()->formatPrice($order->total_shipping_tax_incl, $currency->iso_code),
-            '{total_tax_paid}' => $context->getCurrentLocale()->formatPrice(
+            '{total_paid}' => $contextLocale->formatPrice($order->total_paid, $currency->iso_code),
+            '{total_products}' => $contextLocale->formatPrice($total_products, $currency->iso_code),
+            '{total_discounts}' => $contextLocale->formatPrice($order->total_discounts, $currency->iso_code),
+            '{total_shipping}' => $contextLocale->formatPrice($order->total_shipping, $currency->iso_code),
+            '{total_shipping_tax_excl}' => $contextLocale->formatPrice($order->total_shipping_tax_excl, $currency->iso_code),
+            '{total_shipping_tax_incl}' => $contextLocale->formatPrice($order->total_shipping_tax_incl, $currency->iso_code),
+            '{total_tax_paid}' => $contextLocale->formatPrice(
                 $order->total_paid_tax_incl - $order->total_paid_tax_excl,
                 $currency->iso_code
             ),
-            '{total_wrapping}' => $context->getCurrentLocale()->formatPrice($order->total_wrapping, $currency->iso_code),
+            '{total_wrapping}' => $contextLocale->formatPrice($order->total_wrapping, $currency->iso_code),
             '{currency}' => $currency->sign,
             '{gift}' => (bool) $order->gift,
             '{gift_message}' => $order->gift_message,
