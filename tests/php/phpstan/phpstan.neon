@@ -11,3 +11,4 @@ parameters:
   reportUnmatchedIgnoredErrors: false
   level: 5
   ignoreErrors:
+    - '#Unreachable statement \- code above always terminates\.#'
