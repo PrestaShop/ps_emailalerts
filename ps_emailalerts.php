@@ -61,7 +61,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.3.1';
+        $this->version = '2.3.2';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -292,12 +292,17 @@ class Ps_EmailAlerts extends Module
      *
      * @param Context $context
      *
-     * @return \PrestaShop\PrestaShop\Core\Localization\Locale
+     * @return \PrestaShop\PrestaShop\Core\Localization\Locale|null
      *
      * @throws Exception
      */
     public static function getContextLocale(Context $context)
     {
+        $locale = $context->getCurrentLocale();
+        if (null !== $locale) {
+            return $locale;
+        }
+
         $containerFinder = new \PrestaShop\PrestaShop\Adapter\ContainerFinder($context);
         $container = $containerFinder->getContainer();
         if (null === $context->container) {
