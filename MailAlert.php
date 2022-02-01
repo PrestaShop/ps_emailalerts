@@ -78,7 +78,7 @@ class MailAlert extends ObjectModel
 			AND `id_product_attribute` = ' . (int) $id_product_attribute . '
 			AND `id_shop` = ' . (int) $id_shop;
 
-        return count(Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql));
+        return count(Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql));
     }
 
     public static function deleteAlert($id_customer, $customer_email, $id_product, $id_product_attribute, $id_shop = null)
@@ -280,7 +280,7 @@ class MailAlert extends ObjectModel
 			AND (ma.`id_customer` = ' . (int) $customer->id . ' OR ma.`customer_email` = \'' . pSQL($customer->email) . '\')
 			AND pl.`id_lang` = ' . (int) $id_lang . Shop::addSqlRestriction(false, 'ma');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
     /*
@@ -299,7 +299,7 @@ class MailAlert extends ObjectModel
 			' . Shop::addSqlAssociation('product_attribute', 'pa') . '
 			WHERE pac.`id_product_attribute` = ' . (int) $id_product_attribute;
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
     /*
@@ -312,6 +312,6 @@ class MailAlert extends ObjectModel
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`
 			WHERE `id_product` = ' . (int) $id_product . ' AND `id_product_attribute` = ' . (int) $id_product_attribute;
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 }
