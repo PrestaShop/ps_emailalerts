@@ -11,6 +11,4 @@ parameters:
   reportUnmatchedIgnoredErrors: false
   level: 5
   ignoreErrors:
-    - '~^Parameter #1 \$master of static method DbCore::getInstance\(\) expects bool, int given\.$~'
-    - '~^Parameter #1 \$share of static method ShopCore::getContextListShopID\(\) expects string, false given\.$~'
-    - '~^Parameter #1 \$share of static method ShopCore::addSqlRestriction\(\) expects int, false given\.$~'
+    - '#Unreachable statement \- code above always terminates\.#'
