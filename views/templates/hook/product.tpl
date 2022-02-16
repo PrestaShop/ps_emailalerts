@@ -35,8 +35,8 @@
             {/if}       
         {/if}
         <button
-            data-product="{$product.id_product}"
-            data-product-attribute="{$product.id_product_attribute}"
+            data-product="{$id_product}"
+            data-product-attribute="{$id_product_attribute}"
             class="btn btn-primary js-mailalert-add mt-1"
             rel="nofollow">
             {l s='Notify me when available' d='Modules.Emailalerts.Shop'}
