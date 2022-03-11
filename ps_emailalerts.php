@@ -61,7 +61,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.3.2';
+        $this->version = '2.3.3';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -106,10 +106,8 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionProductAttributeDelete') ||
             !$this->registerHook('actionProductAttributeUpdate') ||
             !$this->registerHook('actionProductCoverage') ||
-            !$this->registerHook('actionProductOutOfStock') ||
             !$this->registerHook('actionOrderReturn') ||
             !$this->registerHook('actionOrderEdited') ||
-            !$this->registerHook('registerGDPRConsent') ||
             !$this->registerHook('actionDeleteGDPRCustomer') ||
             !$this->registerHook('actionExportGDPRData') ||
             !$this->registerHook('displayProductAdditionalInfo') ||
@@ -697,7 +695,7 @@ class Ps_EmailAlerts extends Module
         Db::getInstance()->execute($sql);
     }
 
-    public function hookActionAttributeDelete($params)
+    public function hookActionProductAttributeDelete($params)
     {
         if ($params['deleteAllAttributes']) {
             $sql = '
