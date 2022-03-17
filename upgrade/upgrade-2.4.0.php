@@ -49,9 +49,9 @@ function upgrade_module_2_4_0($object)
         if (Configuration::get('MA_RETURN_SLIP')) {
             $result &= Configuration::updateValue('MA_RETURN_SLIP_EMAILS', $merchants_emails);
         }
-
-        $result &= (bool) $object->registerHook('actionAdminControllerSetMedia');
     }
+
+    $result &= (bool) $object->registerHook('actionAdminControllerSetMedia');
 
     return (bool) $result;
 }
