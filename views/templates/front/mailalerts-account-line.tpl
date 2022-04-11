@@ -27,11 +27,11 @@
   <img src="{$mailAlert.cover_url}" alt=""/>
   {$mailAlert.name}
   <span>{$mailAlert.attributes_small}</span>
-  <a href="#"
-     title="{l s='Remove mail alert' d='Modules.Mailalerts.Shop'}"
-     class="js-remove-email-alert btn btn-link"
-     rel="js-id-emailalerts-{$mailAlert.id_product|intval}-{$mailAlert.id_product_attribute|intval}"
-     data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
-    <i class="material-icons">delete</i>
-  </a>
+</a>
+<a href="#"
+   title="{l s='Remove mail alert' d='Modules.Mailalerts.Shop'}"
+   class="js-remove-email-alert btn btn-link"
+   rel="js-id-emailalerts-{$mailAlert.id_product|intval}-{$mailAlert.id_product_attribute|intval}"
+   data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
+  <i class="material-icons">delete</i>
 </a>
