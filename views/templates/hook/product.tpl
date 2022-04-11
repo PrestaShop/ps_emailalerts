@@ -32,7 +32,7 @@
             {capture name='gdprContent'}{hook h='displayGDPRConsent' id_module=$id_module}{/capture}
             {if $smarty.capture.gdprContent != ''}
                <div class="gdpr_consent_wrapper mt-1">{$smarty.capture.gdprContent nofilter}</div>
-            {/if}       
+            {/if}
         {/if}
         <button
             data-product="{$product.id_product}"
@@ -41,6 +41,6 @@
             rel="nofollow">
             {l s='Notify me when available' d='Modules.Emailalerts.Shop'}
         </button>
-        <div class="js-mailalert-alerts d-none"></div>
+        <div class="js-mailalert-alerts"></div>
     </div>
 </div>
