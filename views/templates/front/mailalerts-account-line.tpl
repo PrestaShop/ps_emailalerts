@@ -23,15 +23,17 @@
 * International Registered Trademark & Property of PrestaShop SA
 *}
 
-<a href="{$mailAlert.link}">
-  <img src="{$mailAlert.cover_url}" alt=""/>
-  {$mailAlert.name}
-  <span>{$mailAlert.attributes_small}</span>
-</a>
 <a href="#"
    title="{l s='Remove mail alert' d='Modules.Mailalerts.Shop'}"
    class="js-remove-email-alert btn btn-link"
    rel="js-id-emailalerts-{$mailAlert.id_product|intval}-{$mailAlert.id_product_attribute|intval}"
-   data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
+   data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}"
+   style="float:right">
   <i class="material-icons">delete</i>
 </a>
+<a href="{$mailAlert.link}">
+  <img src="{$mailAlert.cover_url}" alt="" class="mr-1" style="float:left; height: 98px; width: 98px;"/>
+  <div>{$mailAlert.name}
+    <span>{$mailAlert.attributes_small}</span></div>
+</a>
+<div class="clearfix"></div>
