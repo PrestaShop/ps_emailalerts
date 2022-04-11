@@ -25,6 +25,7 @@
 
 <div class="tabs">
     <div class="js-mailalert text-center" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
+    {if empty($has_notification)}
         {if !empty($email)}
             <input class="form-control" type="email" placeholder="{l s='your@email.com' d='Modules.Emailalerts.Shop'}"/>
         {/if}
@@ -42,5 +43,8 @@
             {l s='Notify me when available' d='Modules.Emailalerts.Shop'}
         </button>
         <div class="js-mailalert-alerts"></div>
+    {else}
+        <article class="mt-1 alert alert-info" role="alert">{l s='You will be notified when available' d='Modules.Emailalerts.Shop'}</article>
+    {/if}
     </div>
 </div>
