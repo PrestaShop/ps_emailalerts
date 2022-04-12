@@ -32,7 +32,7 @@
   {if $mailAlerts}
     <ul>
       {foreach from=$mailAlerts item=mailAlert}
-        <li class="mb-2">{include 'module:ps_emailalerts/views/templates/front/mailalerts-account-line.tpl' mailAlert=$mailAlert}</li>
+        <li class="row mb-2" style="align-items:center;">{include 'module:ps_emailalerts/views/templates/front/mailalerts-account-line.tpl' mailAlert=$mailAlert}</li>
       {/foreach}
     </ul>
   {else}
