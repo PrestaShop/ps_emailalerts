@@ -61,7 +61,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.3.3';
+        $this->version = '2.3.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -99,7 +99,6 @@ class Ps_EmailAlerts extends Module
         if (!parent::install() ||
             !$this->registerHook('actionValidateOrder') ||
             !$this->registerHook('actionUpdateQuantity') ||
-            !$this->registerHook('displayProductButtons') ||
             !$this->registerHook('displayCustomerAccount') ||
             !$this->registerHook('displayMyAccountBlock') ||
             !$this->registerHook('actionProductDelete') ||
