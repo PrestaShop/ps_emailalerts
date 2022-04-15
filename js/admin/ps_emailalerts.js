@@ -24,35 +24,29 @@
  */
 
 $(document).on('ready', function() {
-  let $ma_merchant_order_radio_off = $('#MA_MERCHANT_ORDER_off');
-  let $ma_merchant_oos_radio_off = $('#MA_MERCHANT_OOS_off');
-  let $ma_merchant_return_slip_radio_off = $('#MA_RETURN_SLIP_off');
+  let $ma_merchant_order_radio_on = $('#MA_MERCHANT_ORDER_on');
+  let $ma_merchant_oos_radio_on = $('#MA_MERCHANT_OOS_on');
+  let $ma_merchant_return_slip_radio_on = $('#MA_RETURN_SLIP_on');
 
   let $order_emails_form_group = $('#MA_MERCHANT_ORDER_EMAILS').parents('.form-group');
   let $oos_emails_form_group = $('#MA_MERCHANT_OOS_EMAILS').parents('.form-group');
   let $return_slip_emails_form_group = $('#MA_RETURN_SLIP_EMAILS').parents('.form-group');
 
-  // Check if che options are disabled (hide e-mails text input)
-  if($ma_merchant_order_radio_off.prop('checked')){
-    $order_emails_form_group.hide();
-  }
-  if($ma_merchant_oos_radio_off.prop('checked')){
-    $oos_emails_form_group.hide();
-  }
-  if($ma_merchant_return_slip_radio_off.prop('checked')){
-    $return_slip_emails_form_group.hide();
-  }
-
   // Bind change event
-  $(document).on('change', 'input[id^="MA_MERCHANT_ORDER"]', function(){
-    $order_emails_form_group.toggle($('#MA_MERCHANT_ORDER_on').is(':checked'));
+  $(document).on('change', '#MA_MERCHANT_ORDER_on, #MA_MERCHANT_ORDER_off', function(){
+    $order_emails_form_group.toggle($ma_merchant_order_radio_on.is(':checked') && $ma_merchant_order_radio_on.val() === '1');
   });
 
-  $(document).on('change', 'input[id^="MA_MERCHANT_OOS"]', function(){
-    $oos_emails_form_group.toggle($('#MA_MERCHANT_OOS_on').is(':checked'));
+  $(document).on('change', '#MA_MERCHANT_OOS_on, #MA_MERCHANT_OOS_off', function(){
+    $oos_emails_form_group.toggle($ma_merchant_oos_radio_on.is(':checked') && $ma_merchant_oos_radio_on.val() === '1');
   });
 
-  $(document).on('change', 'input[id^="MA_RETURN_SLIP"]', function(){
-    $return_slip_emails_form_group.toggle($('#MA_RETURN_SLIP_on').is(':checked'));
+  $(document).on('change', '#MA_RETURN_SLIP_on, #MA_RETURN_SLIP_off', function(){
+    $return_slip_emails_form_group.toggle($ma_merchant_return_slip_radio_on.is(':checked') && $ma_merchant_return_slip_radio_on.val() === '1');
   });
+
+  // Check at page load if we need to show or hide the inputs
+  $ma_merchant_order_radio_on.trigger('change');
+  $ma_merchant_oos_radio_on.trigger('change');
+  $ma_merchant_return_slip_radio_on.trigger('change');
 });
