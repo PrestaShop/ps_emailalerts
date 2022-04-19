@@ -28,7 +28,8 @@
 </a>
 <a href="{$mailAlert.link}" class="col-md-8 col-xs-6">
   <div>{$mailAlert.name}
-    <span>{$mailAlert.attributes_small}</span></div>
+    <span>{$mailAlert.attributes_small}</span>
+  </div>
 </a>
 <a href="#"
    title="{l s='Remove mail alert' d='Modules.Emailalerts.Shop'}"
