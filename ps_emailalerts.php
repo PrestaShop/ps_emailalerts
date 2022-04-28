@@ -288,7 +288,7 @@ class Ps_EmailAlerts extends Module
 
             // Check return slip e-mails (if setting is active)
             if ($return_slip_flag && empty($return_slip_emails)) {
-                $errors[] = $this->trans('Please type one (or more) email address for the out of stock notifications', [], 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Please type one (or more) email address for return slip notifications', [], 'Modules.Emailalerts.Admin');
             } else {
                 $return_slip_emails = explode(self::__MA_MAIL_DELIMITER__, $return_slip_emails);
                 foreach ($return_slip_emails as $k => $email) {
