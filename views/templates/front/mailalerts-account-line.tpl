@@ -24,7 +24,7 @@
 *}
 
 <a href="{$mailAlert.link}" class="col-md-2 col-xs-4" style="text-align:center;">
-  <img src="{$mailAlert.cover_url}" alt=""/>
+  <img src="{$mailAlert.cover_url}" alt="" style="max-width: 100%;"/>
 </a>
 <a href="{$mailAlert.link}" class="col-md-8 col-xs-6">
   <div>{$mailAlert.name}
