@@ -52,7 +52,7 @@ $(document).on('ready', function() {
   const mailAlertWrapper = $('.js-mailalert');
   const mailAlertSubmitButton = mailAlertWrapper.find(mailAlertSubmitButtonClass);
 
-  if (mailAlertWrapper.find('#gdpr_consent').length) {
+  if (mailAlertWrapper.find('#gdpr_consent, .gdpr_consent').length) {
     // We use a timeout to put this at the end of the callstack, so it's executed after GPDR module. 
     setTimeout(() => {
       mailAlertSubmitButton.prop('disabled', true);
