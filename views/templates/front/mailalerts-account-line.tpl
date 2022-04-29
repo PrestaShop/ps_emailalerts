@@ -23,15 +23,18 @@
 * International Registered Trademark & Property of PrestaShop SA
 *}
 
-<a href="{$mailAlert.link}">
-  <img src="{$mailAlert.cover_url}" alt=""/>
-  {$mailAlert.name}
-  <span>{$mailAlert.attributes_small}</span>
-  <a href="#"
-     title="{l s='Remove mail alert' d='Modules.Mailalerts.Shop'}"
-     class="js-remove-email-alert btn btn-link"
-     rel="js-id-emailalerts-{$mailAlert.id_product|intval}-{$mailAlert.id_product_attribute|intval}"
-     data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
-    <i class="material-icons">delete</i>
-  </a>
+<a href="{$mailAlert.link}" class="col-md-2 col-xs-4" style="text-align:center;">
+  <img src="{$mailAlert.cover_url}" alt="" style="max-width: 100%;"/>
+</a>
+<a href="{$mailAlert.link}" class="col-md-8 col-xs-6">
+  <div>{$mailAlert.name}
+    <span>{$mailAlert.attributes_small}</span>
+  </div>
+</a>
+<a href="#"
+   title="{l s='Remove mail alert' d='Modules.Emailalerts.Shop'}"
+   class="js-remove-email-alert btn btn-link col-xs-2"
+   rel="js-id-emailalerts-{$mailAlert.id_product|intval}-{$mailAlert.id_product_attribute|intval}"
+   data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
+  <i class="material-icons">delete</i>
 </a>
