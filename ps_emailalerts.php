@@ -565,7 +565,7 @@ class Ps_EmailAlerts extends Module
         if ((int) $context->customer->id <= 0) {
             $this->context->smarty->assign('email', 1);
         } elseif (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int) $context->shop->id)) {
-            return;
+            $this->context->smarty->assign('has_notification', 1);
         }
         $this->context->smarty->assign(
             [
