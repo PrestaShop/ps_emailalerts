@@ -306,7 +306,7 @@ class Ps_EmailAlerts extends Module
                 $return_slip_emails = implode(self::__MA_MAIL_DELIMITER__, $return_slip_emails);
 
                 if (!Configuration::updateValue('MA_RETURN_SLIP_EMAILS', (string) $return_slip_emails)) {
-                    $errors[] = $this->trans('Cannot update return splip emails', [], 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update return slip emails', [], 'Modules.Emailalerts.Admin');
                 }
             }
 
