@@ -56,6 +56,7 @@ class Ps_EmailAlerts extends Module
     protected $product_coverage;
     protected $order_edited;
     protected $return_slip;
+    protected $bcc_emails;
 
     const __MA_MAIL_DELIMITER__ = ',';
 
@@ -96,6 +97,7 @@ class Ps_EmailAlerts extends Module
         $this->product_coverage = (int) Configuration::getGlobalValue('MA_PRODUCT_COVERAGE');
         $this->order_edited = (int) Configuration::getGlobalValue('MA_ORDER_EDIT');
         $this->return_slip = (int) Configuration::getGlobalValue('MA_RETURN_SLIP');
+        $this->bcc_emails = (string) Configuration::get('MA_BCC_EMAILS');
     }
 
     public function install($delete_params = true)
@@ -115,7 +117,8 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionExportGDPRData') ||
             !$this->registerHook('displayProductAdditionalInfo') ||
             !$this->registerHook('actionFrontControllerSetMedia') ||
-            !$this->registerHook('actionAdminControllerSetMedia')) {
+            !$this->registerHook('actionAdminControllerSetMedia') ||
+            !$this->registerHook('actionEmailSendBefore')) {
             return false;
         }
 
@@ -129,6 +132,7 @@ class Ps_EmailAlerts extends Module
             Configuration::updateValue('MA_LAST_QTIES', (int) Configuration::get('PS_LAST_QTIES'));
             Configuration::updateGlobalValue('MA_MERCHANT_COVERAGE', 0);
             Configuration::updateGlobalValue('MA_PRODUCT_COVERAGE', 0);
+            Configuration::updateValue('MA_BCC_EMAILS', '');
 
             $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
 				(
@@ -161,6 +165,7 @@ class Ps_EmailAlerts extends Module
             Configuration::deleteByName('MA_PRODUCT_COVERAGE');
             Configuration::deleteByName('MA_ORDER_EDIT');
             Configuration::deleteByName('MA_RETURN_SLIP');
+            Configuration::deleteByName('MA_BCC_EMAILS');
 
             if (!Db::getInstance()->execute('DROP TABLE IF EXISTS ' . _DB_PREFIX_ . MailAlert::$definition['table'])) {
                 return false;
@@ -323,6 +328,27 @@ class Ps_EmailAlerts extends Module
             } elseif (!Configuration::updateGlobalValue('MA_RETURN_SLIP', (int) Tools::getValue('MA_RETURN_SLIP'))) {
                 $errors[] = $this->trans('Cannot update settings', [], 'Modules.Emailalerts.Admin');
             }
+
+            $new_bcc_emails = (string) Tools::getValue('MA_BCC_EMAILS');
+
+            $new_bcc_emails = explode(self::__MA_MAIL_DELIMITER__, $new_bcc_emails);
+            foreach ($new_bcc_emails as $k => $email) {
+                $email = trim($email);
+                if (!empty($email) && !Validate::isEmail($email)) {
+                    // Add error message and remove it
+                    $errors[] = $this->trans('Invalid bcc email:', [], 'Modules.Emailalerts.Admin') . ' ' . Tools::safeOutput($email);
+                    unset($new_bcc_emails[$k]);
+                } elseif (!empty($email)) {
+                    $new_bcc_emails[$k] = $email;
+                } else {
+                    unset($new_bcc_emails[$k]);
+                }
+            }
+            $new_bcc_emails = implode(self::__MA_MAIL_DELIMITER__, $new_bcc_emails);
+
+            if (!Configuration::updateValue('MA_BCC_EMAILS', (string) $new_bcc_emails)) {
+                $errors[] = $this->trans('Cannot update bcc emails', [], 'Modules.Emailalerts.Admin');
+            }
         }
 
         if (count($errors) > 0) {
@@ -456,15 +482,15 @@ class Ps_EmailAlerts extends Module
 					<td style="padding:0.6em 0.4em;">' . $product['product_reference'] . '</td>
 					<td style="padding:0.6em 0.4em;">
 						<strong><a href="' . $url . '">' . $product['product_name'] . '</a>'
-                            . (isset($product['attributes_small']) ? ' ' . $product['attributes_small'] : '')
-                            . (!empty($customization_text) ? '<br />' . $customization_text : '')
-                        . '</strong>
+                . (isset($product['attributes_small']) ? ' ' . $product['attributes_small'] : '')
+                . (!empty($customization_text) ? '<br />' . $customization_text : '')
+                . '</strong>
 					</td>
 					<td style="padding:0.6em 0.4em; text-align:right;">' . $contextLocale->formatPrice($unit_price, $currency->iso_code) . '</td>
 					<td style="padding:0.6em 0.4em; text-align:center;">' . (int) $product['product_quantity'] . '</td>
 					<td style="padding:0.6em 0.4em; text-align:right;">'
-                        . $contextLocale->formatPrice(($unit_price * $product['product_quantity']), $currency->iso_code)
-                    . '</td>
+                . $contextLocale->formatPrice(($unit_price * $product['product_quantity']), $currency->iso_code)
+                . '</td>
 				</tr>';
         }
         foreach ($params['order']->getCartRules() as $discount) {
@@ -1217,23 +1243,23 @@ class Ps_EmailAlerts extends Module
         }
 
         $inputs[] = [
-                'type' => 'switch',
-                'is_bool' => true, //retro compat 1.5
-                'label' => $this->trans('Returns', [], 'Modules.Emailalerts.Admin'),
-                'name' => 'MA_RETURN_SLIP',
-                'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', [], 'Modules.Emailalerts.Admin'),
-                'values' => [
-                    [
-                        'id' => 'active_on',
-                        'value' => 1,
-                        'label' => $this->trans('Yes', [], 'Admin.Global'),
-                    ],
-                    [
-                        'id' => 'active_off',
-                        'value' => 0,
-                        'label' => $this->trans('No', [], 'Admin.Global'),
-                    ],
+            'type' => 'switch',
+            'is_bool' => true, //retro compat 1.5
+            'label' => $this->trans('Returns', [], 'Modules.Emailalerts.Admin'),
+            'name' => 'MA_RETURN_SLIP',
+            'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', [], 'Modules.Emailalerts.Admin'),
+            'values' => [
+                [
+                    'id' => 'active_on',
+                    'value' => 1,
+                    'label' => $this->trans('Yes', [], 'Admin.Global'),
                 ],
+                [
+                    'id' => 'active_off',
+                    'value' => 0,
+                    'label' => $this->trans('No', [], 'Admin.Global'),
+                ],
+            ],
         ];
         $inputs[] = [
             'type' => 'emailalerts_tags',
@@ -1241,6 +1267,13 @@ class Ps_EmailAlerts extends Module
             'name' => 'MA_RETURN_SLIP_EMAILS',
             'placeholder' => $this->trans('Add e-mail', [], 'Modules.Emailalerts.Admin'),
             'desc' => $this->trans('Write one or more e-mail, use \'Return\' or comma to separate each e-mail', [], 'Modules.Emailalerts.Admin'),
+        ];
+        $inputs[] = [
+            'type' => 'emailalerts_tags',
+            'label' => $this->trans('Send Bcc to:', [], 'Modules.Emailalerts.Admin'),
+            'name' => 'MA_BCC_EMAILS',
+            'placeholder' => $this->trans('Add one or more bcc e-mail', [], 'Modules.Emailalerts.Admin'),
+            'desc' => $this->trans('To send a blind carbon copy of all emails sent by prestashop to the above recipients, write one or more e-mail, use \'Return\' or comma to separate each e-mail', [], 'Modules.Emailalerts.Admin'),
         ];
 
         $fields_form_2 = [
@@ -1305,6 +1338,28 @@ class Ps_EmailAlerts extends Module
         }
     }
 
+    public function hookActionEmailSendBefore(&$params)
+    {
+        if (empty($this->bcc_emails)) {
+            return;
+        }
+        if (key_exists('bcc', $params)) {
+            $bcc_arr = [];
+            $current_bcc = $params['bcc'];
+            if (!is_array($current_bcc) && !is_null($current_bcc)) {
+                $bcc_arr[] = $current_bcc;
+            }
+            $mails = explode(self::__MA_MAIL_DELIMITER__, Configuration::get('MA_BCC_EMAILS'));
+            if (is_array($mails)) {
+                foreach ($mails as $m) {
+                    if (!Validate::isEmail($m))
+                        return;
+                }
+                $params['bcc'] = array_merge($bcc_arr, $mails);
+            }
+        }
+    }
+
     public function getConfigFieldsValues()
     {
         return [
@@ -1320,6 +1375,7 @@ class Ps_EmailAlerts extends Module
             'MA_ORDER_EDIT' => Tools::getValue('MA_ORDER_EDIT', Configuration::get('MA_ORDER_EDIT')),
             'MA_RETURN_SLIP' => Tools::getValue('MA_RETURN_SLIP', Configuration::get('MA_RETURN_SLIP')),
             'MA_RETURN_SLIP_EMAILS' => Tools::getValue('MA_RETURN_SLIP_EMAILS', Configuration::get('MA_RETURN_SLIP_EMAILS')),
+            'MA_BCC_EMAILS' => Tools::getValue('MA_BCC_EMAILS', Configuration::get('MA_BCC_EMAILS')),
         ];
     }
 
