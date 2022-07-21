@@ -1352,8 +1352,9 @@ class Ps_EmailAlerts extends Module
             $mails = explode(self::__MA_MAIL_DELIMITER__, Configuration::get('MA_BCC_EMAILS'));
             if (is_array($mails)) {
                 foreach ($mails as $m) {
-                    if (!Validate::isEmail($m))
+                    if (!Validate::isEmail($m)) {
                         return;
+                    }
                 }
                 $params['bcc'] = array_merge($bcc_arr, $mails);
             }
