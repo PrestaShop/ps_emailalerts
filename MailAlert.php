@@ -31,6 +31,12 @@ class MailAlert extends ObjectModel
 
     public $id_lang;
 
+    /** @var string Object creation date */
+    public $date_add;
+
+    /** @var string Object last modification date */
+    public $date_upd;
+
     /**
      * @see ObjectModel::$definition
      */
@@ -44,6 +50,8 @@ class MailAlert extends ObjectModel
             'id_product_attribute' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
             'id_shop' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
             'id_lang' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
         ],
     ];
 
