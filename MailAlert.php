@@ -89,7 +89,7 @@ class MailAlert extends ObjectModel
         $sql = '
 			UPDATE `' . _DB_PREFIX_ . self::$definition['table'] . '` set `deleted` = 1 ' .
             ($notification_sent ? ', `notification_sent` = NOW()' : '') .
-			' WHERE ' . (($id_customer > 0) ? '(`customer_email` = \'' . pSQL($customer_email) . '\' OR `id_customer` = ' . (int) $id_customer . ')' :
+            ' WHERE ' . (($id_customer > 0) ? '(`customer_email` = \'' . pSQL($customer_email) . '\' OR `id_customer` = ' . (int) $id_customer . ')' :
                 '`customer_email` = \'' . pSQL($customer_email) . '\'') .
             ' AND `id_product` = ' . (int) $id_product . '
 			AND `id_product_attribute` = ' . (int) $id_product_attribute . '
