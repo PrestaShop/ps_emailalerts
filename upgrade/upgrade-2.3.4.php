@@ -26,7 +26,9 @@
 
 function upgrade_module_2_3_4()
 {
-    $result = Db::getInstance()->execute('ALTER TABLE `' . _DB_PREFIX_ . 'mailalert_customer_oos` ADD `date_add` DATETIME NOT NULL AFTER `id_lang`, ADD `date_upd` DATETIME NOT NULL AFTER `date_add`;');
+    $result = true;
+    $result = $result && Db::getInstance()->execute('ALTER TABLE `' . _DB_PREFIX_ . 'mailalert_customer_oos` ADD `date_add` DATETIME NOT NULL, ADD `date_upd` DATETIME NOT NULL;');
+    $result = $result && Db::getInstance()->execute('ALTER TABLE `' . _DB_PREFIX_ . 'mailalert_customer_oos` ADD `deleted` TINYINT NOT NULL DEFAULT 0, ADD `notification_sent` DATETIME NULL DEFAULT NULL, ADD INDEX (`deleted`)');
 
     return $result;
 }

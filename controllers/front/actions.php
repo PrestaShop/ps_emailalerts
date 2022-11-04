@@ -67,7 +67,8 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             (string) $context->customer->email,
             (int) $product->id,
             (int) $this->id_product_attribute,
-            (int) $context->shop->id
+            (int) $context->shop->id,
+            false
         )) {
             exit('0');
         }

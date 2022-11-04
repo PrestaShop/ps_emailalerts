@@ -76,6 +76,7 @@ class MailAlert extends ObjectModel
 			SELECT *
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`
 			WHERE ' . $where . '
+			AND deleted = 0
 			AND `id_product` = ' . (int) $id_product . '
 			AND `id_product_attribute` = ' . (int) $id_product_attribute . '
 			AND `id_shop` = ' . (int) $id_shop;
@@ -83,11 +84,12 @@ class MailAlert extends ObjectModel
         return count(Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql));
     }
 
-    public static function deleteAlert($id_customer, $customer_email, $id_product, $id_product_attribute, $id_shop = null)
+    public static function deleteAlert($id_customer, $customer_email, $id_product, $id_product_attribute, $id_shop, $notification_sent)
     {
         $sql = '
-			DELETE FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`
-			WHERE ' . (($id_customer > 0) ? '(`customer_email` = \'' . pSQL($customer_email) . '\' OR `id_customer` = ' . (int) $id_customer . ')' :
+			UPDATE `' . _DB_PREFIX_ . self::$definition['table'] . '` set `deleted` = 1 ' .
+            ($notification_sent ? ', `notification_sent` = NOW()' : '') .
+			' WHERE ' . (($id_customer > 0) ? '(`customer_email` = \'' . pSQL($customer_email) . '\' OR `id_customer` = ' . (int) $id_customer . ')' :
                 '`customer_email` = \'' . pSQL($customer_email) . '\'') .
             ' AND `id_product` = ' . (int) $id_product . '
 			AND `id_product_attribute` = ' . (int) $id_product_attribute . '
@@ -250,11 +252,12 @@ class MailAlert extends ObjectModel
             );
 
             self::deleteAlert(
-                $customer_id,
-                $customer_email,
-                $id_product,
-                $id_product_attribute,
-                $id_shop
+                (int) $customer_id,
+                (string) $customer_email,
+                (int) $id_product,
+                (int) $id_product_attribute,
+                $id_shop,
+                true
             );
         }
         $context->shop->id = $current_shop;
@@ -278,7 +281,7 @@ class MailAlert extends ObjectModel
         $sql = '
 			SELECT ma.`id_product`, p.`quantity` AS product_quantity, pl.`name`, ma.`id_product_attribute`
 			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '` ma
-			JOIN `' . _DB_PREFIX_ . 'product` p ON (p.`id_product` = ma.`id_product`)
+			JOIN `' . _DB_PREFIX_ . 'product` p ON p.`id_product` = ma.`id_product` and ma.`deleted` = 0
 			' . Shop::addSqlAssociation('product', 'p') . '
 			LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl ON (pl.`id_product` = p.`id_product` AND pl.id_shop IN (' . implode(', ', $list_shop_ids) . '))
 			WHERE product_shop.`active` = 1
@@ -319,7 +322,7 @@ class MailAlert extends ObjectModel
 			INNER JOIN `' . _DB_PREFIX_ . 'shop` s on s.id_shop = mc.id_shop
 			INNER JOIN `' . _DB_PREFIX_ . 'shop_group` sg on s.id_shop_group = sg.id_shop_group and (s.id_shop = ' . (int) $id_shop . ' or sg.share_stock = 1)
 			INNER JOIN `' . _DB_PREFIX_ . 'shop` s2 on s2.id_shop = mc.id_shop and s2.id_shop = ' . (int) $id_shop . '
-			WHERE mc.`id_product` = ' . (int) $id_product . ' AND mc.`id_product_attribute` = ' . (int) $id_product_attribute;
+			WHERE mc.`id_product` = ' . (int) $id_product . ' AND mc.`id_product_attribute` = ' . (int) $id_product_attribute . ' AND `deleted` = 0';
 
         return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
