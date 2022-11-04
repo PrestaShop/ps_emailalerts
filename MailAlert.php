@@ -166,7 +166,7 @@ class MailAlert extends ObjectModel
         $link = new Link();
         $id_product = (int) $id_product;
         $id_product_attribute = (int) $id_product_attribute;
-        $customers = self::getCustomers($id_product, $id_product_attribute);
+        $customers = self::getCustomers($id_product, $id_product_attribute, Context::getContext()->shop->id);
 
         foreach ($customers as $customer) {
             $id_shop = (int) $customer['id_shop'];
@@ -297,13 +297,17 @@ class MailAlert extends ObjectModel
 
     /*
      * Get customers waiting for alert on the specified product/product attribute
+     * in shop `$id_shop` and if the shop group shares the stock in all shops of the shop group
      */
-    public static function getCustomers($id_product, $id_product_attribute)
+    public static function getCustomers($id_product, $id_product_attribute, $id_shop)
     {
         $sql = '
-			SELECT id_customer, customer_email, id_shop, id_lang
-			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`
-			WHERE `id_product` = ' . (int) $id_product . ' AND `id_product_attribute` = ' . (int) $id_product_attribute;
+			SELECT mc.id_customer, mc.customer_email, mc.id_shop, mc.id_lang
+			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '` mc
+			INNER JOIN `' . _DB_PREFIX_ . 'shop` s on s.id_shop = mc.id_shop
+			INNER JOIN `' . _DB_PREFIX_ . 'shop_group` sg on s.id_shop_group = sg.id_shop_group and (s.id_shop = ' . (int) $id_shop . ' or sg.share_stock = 1)
+			INNER JOIN `' . _DB_PREFIX_ . 'shop` s2 on s2.id_shop = mc.id_shop and s2.id_shop = ' . (int) $id_shop . '
+			WHERE mc.`id_product` = ' . (int) $id_product . ' AND mc.`id_product_attribute` = ' . (int) $id_product_attribute;
 
         return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
