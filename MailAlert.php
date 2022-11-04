@@ -164,7 +164,6 @@ class MailAlert extends ObjectModel
     public static function sendCustomerAlert($id_product, $id_product_attribute)
     {
         $link = new Link();
-        $context = Context::getContext()->cloneContext();
         $id_product = (int) $id_product;
         $id_product_attribute = (int) $id_product_attribute;
         $customers = self::getCustomers($id_product, $id_product_attribute);
@@ -172,8 +171,6 @@ class MailAlert extends ObjectModel
         foreach ($customers as $customer) {
             $id_shop = (int) $customer['id_shop'];
             $id_lang = (int) $customer['id_lang'];
-            $context->shop->id = $id_shop;
-            $context->language->id = $id_lang;
 
             $product = new Product($id_product, false, $id_lang, $id_shop);
             $product_name = Product::getProductName($product->id, $id_product_attribute, $id_lang);
