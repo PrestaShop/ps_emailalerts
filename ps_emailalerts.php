@@ -759,7 +759,7 @@ class Ps_EmailAlerts extends Module
     {
         $sql = '
 			UPDATE `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
-			SET `deleted` = 1
+			SET `deleted` = 1, date_upd = NOW()
 			WHERE `id_product` = ' . (int) $params['product']->id;
 
         Db::getInstance()->execute($sql);
@@ -770,12 +770,12 @@ class Ps_EmailAlerts extends Module
         if ($params['deleteAllAttributes']) {
             $sql = '
 				UPDATE `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
-				SET `deleted` = 1
+				SET `deleted` = 1, date_upd = NOW()
 				WHERE `id_product` = ' . (int) $params['id_product'];
         } else {
             $sql = '
 				UPDATE `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
-				SET `deleted` = 1
+				SET `deleted` = 1, date_upd = NOW()
 				WHERE `id_product_attribute` = ' . (int) $params['id_product_attribute'] . '
 				AND `id_product` = ' . (int) $params['id_product'];
         }
@@ -1292,7 +1292,7 @@ class Ps_EmailAlerts extends Module
     public function hookActionDeleteGDPRCustomer($customer)
     {
         if (!empty($customer['email']) && Validate::isEmail($customer['email'])) {
-            $sql = 'UPDATE ' . _DB_PREFIX_ . "mailalert_customer_oos SET deleted = 1, customer_email = 'deleted' WHERE customer_email = '" . pSQL($customer['email']) . "'";
+            $sql = 'UPDATE ' . _DB_PREFIX_ . "mailalert_customer_oos SET deleted = 1, customer_email = 'deleted', date_upd = NOW() WHERE customer_email = '" . pSQL($customer['email']) . "'";
             if (Db::getInstance()->execute($sql)) {
                 return json_encode(true);
             }

@@ -86,8 +86,7 @@ class MailAlert extends ObjectModel
 
     public static function deleteAlert($id_customer, $customer_email, $id_product, $id_product_attribute, $id_shop, $notification_sent)
     {
-        $sql = '
-			UPDATE `' . _DB_PREFIX_ . self::$definition['table'] . '` set `deleted` = 1 ' .
+        $sql = 'UPDATE `' . _DB_PREFIX_ . self::$definition['table'] . '` set `deleted` = 1, date_upd = NOW()' .
             ($notification_sent ? ', `notification_sent` = NOW()' : '') .
             ' WHERE ' . (($id_customer > 0) ? '(`customer_email` = \'' . pSQL($customer_email) . '\' OR `id_customer` = ' . (int) $id_customer . ')' :
                 '`customer_email` = \'' . pSQL($customer_email) . '\'') .
