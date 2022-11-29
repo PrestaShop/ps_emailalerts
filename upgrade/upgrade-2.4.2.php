@@ -23,7 +23,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-function upgrade_module_2_3_4()
+function upgrade_module_2_4_2()
 {
     $result = Db::getInstance()->execute('ALTER TABLE `' . _DB_PREFIX_ . 'mailalert_customer_oos` ADD `date_add` DATETIME NOT NULL, ADD `date_upd` DATETIME NOT NULL;');
     $result = $result && Db::getInstance()->execute('ALTER TABLE `' . _DB_PREFIX_ . 'mailalert_customer_oos` ADD `deleted` TINYINT NOT NULL DEFAULT 0, ADD `notification_sent` DATETIME NULL DEFAULT NULL, ADD INDEX (`deleted`)');

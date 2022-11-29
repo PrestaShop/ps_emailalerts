@@ -84,7 +84,7 @@ class MailAlert extends ObjectModel
         return count(Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql));
     }
 
-    public static function deleteAlert($id_customer, $customer_email, $id_product, $id_product_attribute, $id_shop, $notification_sent)
+    public static function deleteAlert($id_customer, $customer_email, $id_product, $id_product_attribute, $id_shop = null, $notification_sent = true)
     {
         $sql = 'UPDATE `' . _DB_PREFIX_ . self::$definition['table'] . '` set `deleted` = 1, date_upd = NOW()' .
             ($notification_sent ? ', `notification_sent` = NOW()' : '') .
