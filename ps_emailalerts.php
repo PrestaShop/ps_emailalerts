@@ -63,7 +63,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.4.0';
+        $this->version = '2.4.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -111,6 +111,7 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionProductCoverage') ||
             !$this->registerHook('actionOrderReturn') ||
             !$this->registerHook('actionOrderEdited') ||
+            !$this->registerHook('registerGDPRConsent') ||
             !$this->registerHook('actionDeleteGDPRCustomer') ||
             !$this->registerHook('actionExportGDPRData') ||
             !$this->registerHook('displayProductAdditionalInfo') ||
@@ -1321,6 +1322,19 @@ class Ps_EmailAlerts extends Module
             'MA_RETURN_SLIP' => Tools::getValue('MA_RETURN_SLIP', Configuration::get('MA_RETURN_SLIP')),
             'MA_RETURN_SLIP_EMAILS' => Tools::getValue('MA_RETURN_SLIP_EMAILS', Configuration::get('MA_RETURN_SLIP_EMAILS')),
         ];
+    }
+
+    /**
+     * empty listener for registerGDPRConsent hook
+     */
+    public function hookRegisterGDPRConsent()
+    {
+        /*
+         * registerGDPRConsent is a special kind of hook that doesn't need a listener, see :
+         * https://build.prestashop.com/howtos/module/how-to-make-your-module-compliant-with-prestashop-official-gdpr-compliance-module/
+         * However since Prestashop 1.7.8, modules must implement a listener for all the hooks they register:
+         * a check is made at module installation.
+        */
     }
 
     public function isUsingNewTranslationSystem()
