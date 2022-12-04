@@ -131,8 +131,8 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
 
         $mail_alert = new MailAlert();
 
-        $mail_alert->id_customer = (int) $id_customer;
-        $mail_alert->customer_email = (string) $customer_email;
+        $mail_alert->id_customer = $id_customer;
+        $mail_alert->customer_email = $customer_email;
         $mail_alert->id_product = (int) $id_product;
         $mail_alert->id_product_attribute = (int) $id_product_attribute;
         $mail_alert->id_shop = (int) $id_shop;
