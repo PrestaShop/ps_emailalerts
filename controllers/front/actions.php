@@ -172,7 +172,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
 
         $id_product_attribute = (int) Tools::getValue('id_product_attribute');
 
-        if (MailAlert::customerHasNotification((int) $id_customer, (int) $id_product, (int) $id_product_attribute, (int) $this->context->shop->id)) {
+        if (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int) $this->context->shop->id)) {
             exit('1');
         }
 
