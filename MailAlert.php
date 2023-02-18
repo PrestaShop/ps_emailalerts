@@ -171,6 +171,8 @@ class MailAlert extends ObjectModel
     {
         $link = new Link();
         $context = Context::getContext()->cloneContext();
+        $id_product = (int) $id_product;
+        $id_product_attribute = (int) $id_product_attribute;
         $customers = self::getCustomers($id_product, $id_product_attribute);
 
         foreach ($customers as $customer) {
@@ -179,7 +181,7 @@ class MailAlert extends ObjectModel
             $context->shop->id = $id_shop;
             $context->language->id = $id_lang;
 
-            $product = new Product((int) $id_product, false, $id_lang, $id_shop);
+            $product = new Product($id_product, false, $id_lang, $id_shop);
             $product_name = Product::getProductName($product->id, $id_product_attribute, $id_lang);
             $product_link = $link->getProductLink($product, $product->link_rewrite, null, null, $id_lang, $id_shop, $id_product_attribute);
             $template_vars = [
@@ -189,11 +191,11 @@ class MailAlert extends ObjectModel
 
             if ($customer['id_customer']) {
                 $customer = new Customer((int) $customer['id_customer']);
-                $customer_email = $customer->email;
+                $customer_email = (string) $customer->email;
                 $customer_id = (int) $customer->id;
             } else {
                 $customer_id = 0;
-                $customer_email = $customer['customer_email'];
+                $customer_email = (string) $customer['customer_email'];
             }
 
             $iso = Language::getIsoById($id_lang);
@@ -209,7 +211,7 @@ class MailAlert extends ObjectModel
                         'customer_qty',
                         $translator->trans('Product available', [], 'Emails.Subject', $locale),
                         $template_vars,
-                        (string) $customer_email,
+                        $customer_email,
                         null,
                         (string) Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
                         (string) Configuration::get('PS_SHOP_NAME', null, null, $id_shop),
@@ -246,10 +248,10 @@ class MailAlert extends ObjectModel
             );
 
             self::deleteAlert(
-                (int) $customer_id,
-                (string) $customer_email,
-                (int) $id_product,
-                (int) $id_product_attribute,
+                $customer_id,
+                $customer_email,
+                $id_product,
+                $id_product_attribute,
                 $id_shop
             );
         }

@@ -131,12 +131,12 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
 
         $mail_alert = new MailAlert();
 
-        $mail_alert->id_customer = (int) $id_customer;
-        $mail_alert->customer_email = (string) $customer_email;
-        $mail_alert->id_product = (int) $id_product;
-        $mail_alert->id_product_attribute = (int) $id_product_attribute;
-        $mail_alert->id_shop = (int) $id_shop;
-        $mail_alert->id_lang = (int) $id_lang;
+        $mail_alert->id_customer = $id_customer;
+        $mail_alert->customer_email = $customer_email;
+        $mail_alert->id_product = $id_product;
+        $mail_alert->id_product_attribute = $id_product_attribute;
+        $mail_alert->id_shop = $id_shop;
+        $mail_alert->id_lang = $id_lang;
 
         if ($mail_alert->add() !== false) {
             exit(json_encode(
@@ -172,7 +172,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
 
         $id_product_attribute = (int) Tools::getValue('id_product_attribute');
 
-        if (MailAlert::customerHasNotification((int) $id_customer, (int) $id_product, (int) $id_product_attribute, (int) $this->context->shop->id)) {
+        if (MailAlert::customerHasNotification($id_customer, $id_product, $id_product_attribute, (int) $this->context->shop->id)) {
             exit('1');
         }
 
