@@ -100,7 +100,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             exit(json_encode(
                 [
                     'error' => true,
-                    'message' => $this->trans('Your e-mail address is invalid', [], 'Modules.Emailalerts.Shop'),
+                    'message' => $this->trans('Your email address is invalid.', [], 'Modules.Emailalerts.Shop'),
                 ]
             ));
         }
@@ -117,14 +117,14 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
             exit(json_encode(
                 [
                     'error' => true,
-                    'message' => $this->trans('You already have an alert for this product', [], 'Modules.Emailalerts.Shop'),
+                    'message' => $this->trans('You already have set an alert for this product.', [], 'Modules.Emailalerts.Shop'),
                 ]
             ));
         } elseif (!Validate::isLoadedObject($product)) {
             exit(json_encode(
                 [
                     'error' => true,
-                    'message' => $this->trans('Your e-mail address is invalid', [], 'Modules.Emailalerts.Shop'),
+                    'message' => $this->trans('Your email address is invalid.', [], 'Modules.Emailalerts.Shop'),
                 ]
             ));
         }
@@ -150,7 +150,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
         exit(json_encode(
             [
                 'error' => true,
-                'message' => $this->trans('Your e-mail address is invalid', [], 'Modules.Emailalerts.Shop'),
+                'message' => $this->trans('Your email address is invalid.', [], 'Modules.Emailalerts.Shop'),
             ]
         ));
     }

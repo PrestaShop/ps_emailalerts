@@ -32,7 +32,7 @@
   </div>
 </a>
 <a href="#"
-   title="{l s='Remove mail alert' d='Modules.Emailalerts.Shop'}"
+   title="{l s='Delete email alert' d='Modules.Emailalerts.Shop'}"
    class="js-remove-email-alert btn btn-link col-xs-2"
    rel="js-id-emailalerts-{$mailAlert.id_product|intval}-{$mailAlert.id_product_attribute|intval}"
    data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'remove']}">
