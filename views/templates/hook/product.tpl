@@ -44,7 +44,7 @@
         </button>
         <div class="js-mailalert-alerts"></div>
     {else}
-        <article class="mt-1 alert alert-info" role="alert">{l s='You will be notified when available' d='Modules.Emailalerts.Shop'}</article>
+        <article class="mt-1 alert alert-info" role="alert">{l s='You will be notified when this product is available.' d='Modules.Emailalerts.Shop'}</article>
     {/if}
     </div>
 </div>
