@@ -63,7 +63,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.4.0';
+        $this->version = '2.4.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -111,6 +111,7 @@ class Ps_EmailAlerts extends Module
             !$this->registerHook('actionProductCoverage') ||
             !$this->registerHook('actionOrderReturn') ||
             !$this->registerHook('actionOrderEdited') ||
+            !$this->registerHook('registerGDPRConsent') ||
             !$this->registerHook('actionDeleteGDPRCustomer') ||
             !$this->registerHook('actionExportGDPRData') ||
             !$this->registerHook('displayProductAdditionalInfo') ||
@@ -240,7 +241,7 @@ class Ps_EmailAlerts extends Module
 
             // Check new order e-mails (if setting is active)
             if ($new_order_flag && empty($new_order_emails)) {
-                $errors[] = $this->trans('Please type one (or more) email address for the new order notification', [], 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Please enter one (or more) email address for the new order notification.', [], 'Modules.Emailalerts.Admin');
             } else {
                 $new_order_emails = explode(self::__MA_MAIL_DELIMITER__, $new_order_emails);
                 foreach ($new_order_emails as $k => $email) {
@@ -258,13 +259,13 @@ class Ps_EmailAlerts extends Module
                 $new_order_emails = implode(self::__MA_MAIL_DELIMITER__, $new_order_emails);
 
                 if (!Configuration::updateValue('MA_MERCHANT_ORDER_EMAILS', (string) $new_order_emails)) {
-                    $errors[] = $this->trans('Cannot update new order emails', [], 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update new order emails.', [], 'Modules.Emailalerts.Admin');
                 }
             }
 
             // Check out of stock e-mails (if setting is active)
             if ($outofstock_flag && empty($outofstock_emails)) {
-                $errors[] = $this->trans('Please type one (or more) email address for the out of stock notifications', [], 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Please enter one (or more) email address for "out of stock" notifications.', [], 'Modules.Emailalerts.Admin');
             } else {
                 $outofstock_emails = explode(self::__MA_MAIL_DELIMITER__, $outofstock_emails);
                 foreach ($outofstock_emails as $k => $email) {
@@ -282,13 +283,13 @@ class Ps_EmailAlerts extends Module
                 $outofstock_emails = implode(self::__MA_MAIL_DELIMITER__, $outofstock_emails);
 
                 if (!Configuration::updateValue('MA_MERCHANT_OOS_EMAILS', (string) $outofstock_emails)) {
-                    $errors[] = $this->trans('Cannot update out of stock emails', [], 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update email for "out of stock" notifications.', [], 'Modules.Emailalerts.Admin');
                 }
             }
 
             // Check return slip e-mails (if setting is active)
             if ($return_slip_flag && empty($return_slip_emails)) {
-                $errors[] = $this->trans('Please type one (or more) email address for return slip notifications', [], 'Modules.Emailalerts.Admin');
+                $errors[] = $this->trans('Please enter one (or more) email address for "return slip" notifications.', [], 'Modules.Emailalerts.Admin');
             } else {
                 $return_slip_emails = explode(self::__MA_MAIL_DELIMITER__, $return_slip_emails);
                 foreach ($return_slip_emails as $k => $email) {
@@ -306,7 +307,7 @@ class Ps_EmailAlerts extends Module
                 $return_slip_emails = implode(self::__MA_MAIL_DELIMITER__, $return_slip_emails);
 
                 if (!Configuration::updateValue('MA_RETURN_SLIP_EMAILS', (string) $return_slip_emails)) {
-                    $errors[] = $this->trans('Cannot update return slip emails', [], 'Modules.Emailalerts.Admin');
+                    $errors[] = $this->trans('Cannot update "return slip" emails.', [], 'Modules.Emailalerts.Admin');
                 }
             }
 
@@ -645,6 +646,11 @@ class Ps_EmailAlerts extends Module
 
     public function hookActionUpdateQuantity($params)
     {
+        // Do not send email if stock did not change
+        if (isset($params['delta_quantity']) && (int) $params['delta_quantity'] === 0) {
+            return;
+        }
+
         $id_product = (int) $params['id_product'];
         $id_product_attribute = (int) $params['id_product_attribute'];
 
@@ -1149,8 +1155,8 @@ class Ps_EmailAlerts extends Module
                 'type' => 'emailalerts_tags',
                 'label' => $this->trans('Send to:', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_ORDER_EMAILS',
-                'placeholder' => $this->trans('Add e-mail', [], 'Modules.Emailalerts.Admin'),
-                'desc' => $this->trans('Write one or more e-mail, use \'Return\' or comma to separate each e-mail', [], 'Modules.Emailalerts.Admin'),
+                'placeholder' => $this->trans('Add email', [], 'Modules.Emailalerts.Admin'),
+                'desc' => $this->trans('Enter one or more email address. Use \'Return\' or a comma to separate each address.', [], 'Modules.Emailalerts.Admin'),
             ],
             [
                 'type' => 'switch',
@@ -1175,8 +1181,8 @@ class Ps_EmailAlerts extends Module
                 'type' => 'emailalerts_tags',
                 'label' => $this->trans('Send to:', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_OOS_EMAILS',
-                'placeholder' => $this->trans('Add e-mail', [], 'Modules.Emailalerts.Admin'),
-                'desc' => $this->trans('Write one or more e-mail, use \'Return\' or comma to separate each e-mail', [], 'Modules.Emailalerts.Admin'),
+                'placeholder' => $this->trans('Add email', [], 'Modules.Emailalerts.Admin'),
+                'desc' => $this->trans('Enter one or more email address. Use \'Return\' or a comma to separate each address.', [], 'Modules.Emailalerts.Admin'),
             ],
             [
                 'type' => 'text',
@@ -1239,8 +1245,8 @@ class Ps_EmailAlerts extends Module
             'type' => 'emailalerts_tags',
             'label' => $this->trans('Send to:', [], 'Modules.Emailalerts.Admin'),
             'name' => 'MA_RETURN_SLIP_EMAILS',
-            'placeholder' => $this->trans('Add e-mail', [], 'Modules.Emailalerts.Admin'),
-            'desc' => $this->trans('Write one or more e-mail, use \'Return\' or comma to separate each e-mail', [], 'Modules.Emailalerts.Admin'),
+            'placeholder' => $this->trans('Add email', [], 'Modules.Emailalerts.Admin'),
+            'desc' => $this->trans('Enter one or more email address. Use \'Return\' or a comma to separate each address.', [], 'Modules.Emailalerts.Admin'),
         ];
 
         $fields_form_2 = [
@@ -1321,6 +1327,19 @@ class Ps_EmailAlerts extends Module
             'MA_RETURN_SLIP' => Tools::getValue('MA_RETURN_SLIP', Configuration::get('MA_RETURN_SLIP')),
             'MA_RETURN_SLIP_EMAILS' => Tools::getValue('MA_RETURN_SLIP_EMAILS', Configuration::get('MA_RETURN_SLIP_EMAILS')),
         ];
+    }
+
+    /**
+     * empty listener for registerGDPRConsent hook
+     */
+    public function hookRegisterGDPRConsent()
+    {
+        /*
+         * registerGDPRConsent is a special kind of hook that doesn't need a listener, see :
+         * https://build.prestashop.com/howtos/module/how-to-make-your-module-compliant-with-prestashop-official-gdpr-compliance-module/
+         * However since Prestashop 1.7.8, modules must implement a listener for all the hooks they register:
+         * a check is made at module installation.
+        */
     }
 
     public function isUsingNewTranslationSystem()
