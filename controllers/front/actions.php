@@ -89,7 +89,7 @@ class Ps_EmailAlertsActionsModuleFrontController extends ModuleFrontController
         } elseif (Validate::isEmail((string) Tools::getValue('customer_email'))) {
             $customer_email = (string) Tools::getValue('customer_email');
             $customer = $context->customer->getByEmail($customer_email);
-            $id_customer = (isset($customer->id) && ($customer->id != null)) ? (int) $customer->id : null;
+            $id_customer = (isset($customer->id) && ($customer->id != null)) ? (int) $customer->id : 0;
         } else {
             exit(json_encode(
                 [
