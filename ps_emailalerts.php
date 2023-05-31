@@ -1066,7 +1066,7 @@ class Ps_EmailAlerts extends Module
             $data,
             $order->getCustomer()->email,
             $order->getCustomer()->firstname . ' ' . $order->getCustomer()->lastname,
-            null, null, null, null, _PS_MAIL_DIR_, true, (int) $order->id_shop);
+            null, null, null, null, dirname(__FILE__) . '/mails/', true, (int) $order->id_shop);
     }
 
     public function renderForm()
