@@ -4,6 +4,10 @@
 
 Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.
 
+## Compatibility
+
+PrestaShop: `1.7.6.0` or later
+
 ## Multistore compatibility
 
 This module is partially compatible with the multistore feature. Some of its options might not be available.
