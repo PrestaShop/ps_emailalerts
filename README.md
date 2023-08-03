@@ -12,6 +12,13 @@ PrestaShop: `1.7.6.0` or later
 
 This module is partially compatible with the multistore feature. Some of its options might not be available.
 
+## How to test
+
+Link to specs : https://docs.prestashop-project.org/functional-documentation/functional-documentation/ux-ui/back-office/improve/modules/configure-mail-alerts-ps_mailalerts
+
+Configure Customer notifications and Merchant notifications
+Add stock to product, edit an order, place an order, remove stock from product, set threshold for a product.  Check that the emails are well sent
+
 ## Reporting issues
 
 You can report issues with this module in the main PrestaShop repository. [Click here to report an issue][report-issue]. 
