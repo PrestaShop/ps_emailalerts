@@ -430,13 +430,13 @@ class Ps_EmailAlerts extends Module
                         foreach ($customization[Product::CUSTOMIZE_TEXTFIELD] as $text) {
                             $customization_text .= $text['name'] . ': ' . $text['value'] . '<br />';
                         }
+                        $customization_text .= '---<br />';
                     }
 
                     if (isset($customization[Product::CUSTOMIZE_FILE])) {
                         $customization_text .= count($customization[Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Emailalerts.Admin') . '<br />';
+                        $customization_text .= '---<br />';
                     }
-
-                    $customization_text .= '---<br />';
                 }
                 if (method_exists('Tools', 'rtrimString')) {
                     $customization_text = Tools::rtrimString($customization_text, '---<br />');
