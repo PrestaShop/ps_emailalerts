@@ -136,7 +136,7 @@ class Ps_EmailAlerts extends Module
 					`date_add` DATETIME NOT NULL,
 					`date_upd` DATETIME NOT NULL,
 					`deleted` TINYINT NOT NULL DEFAULT 0,
-					`notification_sent` DATETIME NULL DEFAULT NULL
+					`notification_sent` DATETIME NULL DEFAULT NULL,
 					PRIMARY KEY  (`id_customer`,`customer_email`,`id_product`,`id_product_attribute`,`id_shop`),
 					INDEX (`deleted`)
 				) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci';
