@@ -1,27 +1,21 @@
 <?php
 /**
- * 2007-2020 PrestaShop.
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 class MailAlert extends ObjectModel
 {
@@ -170,16 +164,16 @@ class MailAlert extends ObjectModel
     public static function sendCustomerAlert($id_product, $id_product_attribute)
     {
         $link = new Link();
-        $context = Context::getContext()->cloneContext();
+        $context = Context::getContext();
         $id_product = (int) $id_product;
         $id_product_attribute = (int) $id_product_attribute;
-        $customers = self::getCustomers($id_product, $id_product_attribute);
+        $current_shop = $context->shop->id;
+        $customers = self::getCustomers($id_product, $id_product_attribute, $current_shop);
 
         foreach ($customers as $customer) {
             $id_shop = (int) $customer['id_shop'];
             $id_lang = (int) $customer['id_lang'];
             $context->shop->id = $id_shop;
-            $context->language->id = $id_lang;
 
             $product = new Product($id_product, false, $id_lang, $id_shop);
             $product_name = Product::getProductName($product->id, $id_product_attribute, $id_lang);
@@ -255,6 +249,7 @@ class MailAlert extends ObjectModel
                 $id_shop
             );
         }
+        $context->shop->id = $current_shop;
     }
 
     /*
@@ -306,13 +301,17 @@ class MailAlert extends ObjectModel
 
     /*
      * Get customers waiting for alert on the specified product/product attribute
+     * in shop `$id_shop` and if the shop group shares the stock in all shops of the shop group
      */
-    public static function getCustomers($id_product, $id_product_attribute)
+    public static function getCustomers($id_product, $id_product_attribute, $id_shop)
     {
         $sql = '
-			SELECT id_customer, customer_email, id_shop, id_lang
-			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '`
-			WHERE `id_product` = ' . (int) $id_product . ' AND `id_product_attribute` = ' . (int) $id_product_attribute;
+			SELECT mc.id_customer, mc.customer_email, mc.id_shop, mc.id_lang
+			FROM `' . _DB_PREFIX_ . self::$definition['table'] . '` mc
+			INNER JOIN `' . _DB_PREFIX_ . 'shop` s on s.id_shop = mc.id_shop
+			INNER JOIN `' . _DB_PREFIX_ . 'shop_group` sg on s.id_shop_group = sg.id_shop_group and (s.id_shop = ' . (int) $id_shop . ' or sg.share_stock = 1)
+			INNER JOIN `' . _DB_PREFIX_ . 'shop` s2 on s2.id_shop = mc.id_shop and s2.id_shop = ' . (int) $id_shop . '
+			WHERE mc.`id_product` = ' . (int) $id_product . ' AND mc.`id_product_attribute` = ' . (int) $id_product_attribute;
 
         return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }

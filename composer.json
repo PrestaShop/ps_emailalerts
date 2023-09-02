@@ -1,26 +1,27 @@
 {
-  "name": "prestashop/ps_emailalerts",
-  "description": "PrestaShop module ps_emailalerts",
-  "homepage": "https://github.com/PrestaShop/ps_emailalerts",
-  "license": "AFL-3.0",
-  "authors": [
-    {
-      "name": "PrestaShop SA",
-      "email": "contact@prestashop.com"
-    }
-  ],
-  "require": {
-    "php": ">=5.6"
-  },
-  "require-dev": {
-    "prestashop/php-dev-tools": "^3.16"
-  },
-  "config": {
-    "platform": {
-      "php": "5.6.0"
+    "name": "prestashop/ps_emailalerts",
+    "description": "PrestaShop module ps_emailalerts",
+    "homepage": "https://github.com/PrestaShop/ps_emailalerts",
+    "license": "AFL-3.0",
+    "authors": [
+        {
+            "name": "PrestaShop SA",
+            "email": "contact@prestashop.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
     },
-    "preferred-install": "dist",
-    "prepend-autoloader": false
-  },
-  "type": "prestashop-module"
+    "require-dev": {
+        "prestashop/php-dev-tools": "^3.16"
+    },
+    "config": {
+        "platform": {
+            "php": "5.6.0"
+        },
+        "preferred-install": "dist",
+        "prepend-autoloader": false
+    },
+    "type": "prestashop-module",
+    "author": "PrestaShop"
 }
