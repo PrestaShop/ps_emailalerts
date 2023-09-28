@@ -115,8 +115,8 @@ class MailAlert extends ObjectModel
                 continue;
             }
 
-            if (isset($products[$i]['id_product_attribute']) &&
-                Validate::isUnsignedInt($products[$i]['id_product_attribute'])) {
+            if (isset($products[$i]['id_product_attribute'])
+                && Validate::isUnsignedInt($products[$i]['id_product_attribute'])) {
                 $attributes = self::getProductAttributeCombination($products[$i]['id_product_attribute'], $id_lang);
                 $products[$i]['attributes_small'] = '';
 
@@ -197,8 +197,8 @@ class MailAlert extends ObjectModel
 
             $translator = Context::getContext()->getTranslatorFromLocale($locale);
 
-            if (file_exists(dirname(__FILE__) . '/mails/' . $iso . '/customer_qty.txt') &&
-                file_exists(dirname(__FILE__) . '/mails/' . $iso . '/customer_qty.html')) {
+            if (file_exists(dirname(__FILE__) . '/mails/' . $iso . '/customer_qty.txt')
+                && file_exists(dirname(__FILE__) . '/mails/' . $iso . '/customer_qty.html')) {
                 try {
                     Mail::Send(
                         $id_lang,
