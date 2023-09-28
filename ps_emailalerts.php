@@ -57,7 +57,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.4.2';
+        $this->version = '3.0.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -73,7 +73,7 @@ class Ps_EmailAlerts extends Module
         $this->displayName = $this->trans('Mail alerts', [], 'Modules.Emailalerts.Admin');
         $this->description = $this->trans('Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.', [], 'Modules.Emailalerts.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.6.0',
+            'min' => '1.7.7.0',
             'max' => _PS_VERSION_,
         ];
     }
