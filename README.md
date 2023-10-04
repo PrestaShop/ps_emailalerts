@@ -6,7 +6,7 @@ Make your everyday life easier, handle mail alerts about stock and orders, addre
 
 ## Compatibility
 
-PrestaShop: `1.7.6.0` or later
+PrestaShop: `1.7.7.0` or later
 
 ## Multistore compatibility
 
