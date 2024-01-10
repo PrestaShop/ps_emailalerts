@@ -17,7 +17,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-if (!defined('_CAN_LOAD_FILES_')) {
+if (!defined('_PS_VERSION_')) {
     exit;
 }
 
@@ -57,7 +57,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '2.4.2';
+        $this->version = '3.0.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -73,7 +73,7 @@ class Ps_EmailAlerts extends Module
         $this->displayName = $this->trans('Mail alerts', [], 'Modules.Emailalerts.Admin');
         $this->description = $this->trans('Make your everyday life easier, handle mail alerts about stock and orders, addressed to you as well as your customers.', [], 'Modules.Emailalerts.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.6.0',
+            'min' => '1.7.7.0',
             'max' => _PS_VERSION_,
         ];
     }
@@ -94,23 +94,23 @@ class Ps_EmailAlerts extends Module
 
     public function install($delete_params = true)
     {
-        if (!parent::install() ||
-            !$this->registerHook('actionValidateOrder') ||
-            !$this->registerHook('actionUpdateQuantity') ||
-            !$this->registerHook('displayCustomerAccount') ||
-            !$this->registerHook('displayMyAccountBlock') ||
-            !$this->registerHook('actionProductDelete') ||
-            !$this->registerHook('actionProductAttributeDelete') ||
-            !$this->registerHook('actionProductAttributeUpdate') ||
-            !$this->registerHook('actionProductCoverage') ||
-            !$this->registerHook('actionOrderReturn') ||
-            !$this->registerHook('actionOrderEdited') ||
-            !$this->registerHook('registerGDPRConsent') ||
-            !$this->registerHook('actionDeleteGDPRCustomer') ||
-            !$this->registerHook('actionExportGDPRData') ||
-            !$this->registerHook('displayProductAdditionalInfo') ||
-            !$this->registerHook('actionFrontControllerSetMedia') ||
-            !$this->registerHook('actionAdminControllerSetMedia')) {
+        if (!parent::install()
+            || !$this->registerHook('actionValidateOrder')
+            || !$this->registerHook('actionUpdateQuantity')
+            || !$this->registerHook('displayCustomerAccount')
+            || !$this->registerHook('displayMyAccountBlock')
+            || !$this->registerHook('actionProductDelete')
+            || !$this->registerHook('actionProductAttributeDelete')
+            || !$this->registerHook('actionProductAttributeUpdate')
+            || !$this->registerHook('actionProductCoverage')
+            || !$this->registerHook('actionOrderReturn')
+            || !$this->registerHook('actionOrderEdited')
+            || !$this->registerHook('registerGDPRConsent')
+            || !$this->registerHook('actionDeleteGDPRCustomer')
+            || !$this->registerHook('actionExportGDPRData')
+            || !$this->registerHook('displayProductAdditionalInfo')
+            || !$this->registerHook('actionFrontControllerSetMedia')
+            || !$this->registerHook('actionAdminControllerSetMedia')) {
             return false;
         }
 
@@ -458,7 +458,7 @@ class Ps_EmailAlerts extends Module
 					<td style="padding:0.6em 0.4em; text-align:right;">' . $contextLocale->formatPrice($unit_price, $currency->iso_code) . '</td>
 					<td style="padding:0.6em 0.4em; text-align:center;">' . (int) $product['product_quantity'] . '</td>
 					<td style="padding:0.6em 0.4em; text-align:right;">'
-                        . $contextLocale->formatPrice(($unit_price * $product['product_quantity']), $currency->iso_code)
+                        . $contextLocale->formatPrice($unit_price * $product['product_quantity'], $currency->iso_code)
                     . '</td>
 				</tr>';
         }
@@ -573,13 +573,13 @@ class Ps_EmailAlerts extends Module
             }
 
             $dir_mail = false;
-            if (file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/new_order.txt') &&
-                file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/new_order.html')) {
+            if (file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/new_order.txt')
+                && file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/new_order.html')) {
                 $dir_mail = dirname(__FILE__) . '/mails/';
             }
 
-            if (file_exists(_PS_MAIL_DIR_ . $mail_iso . '/new_order.txt') &&
-                file_exists(_PS_MAIL_DIR_ . $mail_iso . '/new_order.html')) {
+            if (file_exists(_PS_MAIL_DIR_ . $mail_iso . '/new_order.txt')
+                && file_exists(_PS_MAIL_DIR_ . $mail_iso . '/new_order.html')) {
                 $dir_mail = _PS_MAIL_DIR_;
             }
 
@@ -612,10 +612,10 @@ class Ps_EmailAlerts extends Module
 
     public function hookDisplayProductAdditionalInfo($params)
     {
-        if ($params['product']['minimal_quantity'] <= $params['product']['quantity'] ||
-            !$this->customer_qty ||
-            !Configuration::get('PS_STOCK_MANAGEMENT') ||
-            Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
+        if ($params['product']['minimal_quantity'] <= $params['product']['quantity']
+            || !$this->customer_qty
+            || !Configuration::get('PS_STOCK_MANAGEMENT')
+            || Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
             return;
         }
         $context = Context::getContext();
@@ -671,10 +671,10 @@ class Ps_EmailAlerts extends Module
         $ma_last_qties = (int) $configuration['MA_LAST_QTIES'];
         $check_oos = ($product_has_attributes && $id_product_attribute) || (!$product_has_attributes && !$id_product_attribute);
 
-        if ($check_oos &&
-            (int) $quantity <= $ma_last_qties &&
-            !(!$this->merchant_oos || empty($this->merchant_oos_emails)) &&
-            $configuration['PS_STOCK_MANAGEMENT']) {
+        if ($check_oos
+            && (int) $quantity <= $ma_last_qties
+            && !(!$this->merchant_oos || empty($this->merchant_oos_emails))
+            && $configuration['PS_STOCK_MANAGEMENT']) {
             $iso = Language::getIsoById($id_lang);
             $product_name = Product::getProductName($id_product, $id_product_attribute, $id_lang);
             $template_vars = [
@@ -684,9 +684,9 @@ class Ps_EmailAlerts extends Module
             ];
 
             // Do not send mail if multiples product are created / imported.
-            if (!defined('PS_MASS_PRODUCT_CREATION') &&
-                file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productoutofstock.txt') &&
-                file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productoutofstock.html')) {
+            if (!defined('PS_MASS_PRODUCT_CREATION')
+                && file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productoutofstock.txt')
+                && file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productoutofstock.html')) {
                 // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
                 $merchant_oos_emails = explode(self::__MA_MAIL_DELIMITER__, $this->merchant_oos_emails);
                 foreach ($merchant_oos_emails as $merchant_mail) {
@@ -809,9 +809,9 @@ class Ps_EmailAlerts extends Module
         $coverage = StockManagerFactory::getManager()->getProductCoverage($id_product, $id_product_attribute, $warning_coverage, $id_warehouse);
 
         // if we need to send a notification
-        if ($product->active == 1 &&
-            ($coverage < $warning_coverage) && !empty($this->merchant_mails) &&
-            Configuration::getGlobalValue('MA_MERCHANT_COVERAGE')) {
+        if ($product->active == 1
+            && ($coverage < $warning_coverage) && !empty($this->merchant_mails)
+            && Configuration::getGlobalValue('MA_MERCHANT_COVERAGE')) {
             $context = Context::getContext();
             $id_lang = (int) $context->language->id;
             $locale = $context->language->getLocale();
@@ -824,8 +824,8 @@ class Ps_EmailAlerts extends Module
                 '{product}' => pSQL($product_name),
             ];
 
-            if (file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.txt') &&
-                file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.html')) {
+            if (file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.txt')
+                && file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.html')) {
                 // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
                 $merchant_oos_emails = explode(self::__MA_MAIL_DELIMITER__, $this->merchant_oos);
                 foreach ($merchant_oos_emails as $merchant_mail) {
@@ -994,13 +994,13 @@ class Ps_EmailAlerts extends Module
             }
 
             $dir_mail = false;
-            if (file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/return_slip.txt') &&
-                file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/return_slip.html')) {
+            if (file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/return_slip.txt')
+                && file_exists(dirname(__FILE__) . '/mails/' . $mail_iso . '/return_slip.html')) {
                 $dir_mail = dirname(__FILE__) . '/mails/';
             }
 
-            if (file_exists(_PS_MAIL_DIR_ . $mail_iso . '/return_slip.txt') &&
-                file_exists(_PS_MAIL_DIR_ . $mail_iso . '/return_slip.html')) {
+            if (file_exists(_PS_MAIL_DIR_ . $mail_iso . '/return_slip.txt')
+                && file_exists(_PS_MAIL_DIR_ . $mail_iso . '/return_slip.html')) {
                 $dir_mail = _PS_MAIL_DIR_;
             }
 
@@ -1080,7 +1080,7 @@ class Ps_EmailAlerts extends Module
                 'input' => [
                     [
                         'type' => 'switch',
-                        'is_bool' => true, //retro compat 1.5
+                        'is_bool' => true, // retro compat 1.5
                         'label' => $this->trans('Product availability', [], 'Modules.Emailalerts.Admin'),
                         'name' => 'MA_CUSTOMER_QTY',
                         'desc' => $this->trans('Give the customer the option of receiving a notification when an out of stock product is available again.', [], 'Modules.Emailalerts.Admin'),
@@ -1099,7 +1099,7 @@ class Ps_EmailAlerts extends Module
                     ],
                     [
                         'type' => 'switch',
-                        'is_bool' => true, //retro compat 1.5
+                        'is_bool' => true, // retro compat 1.5
                         'label' => $this->trans('Order edit', [], 'Modules.Emailalerts.Admin'),
                         'name' => 'MA_ORDER_EDIT',
                         'desc' => $this->trans('Send a notification to the customer when an order is edited.', [], 'Modules.Emailalerts.Admin'),
@@ -1128,7 +1128,7 @@ class Ps_EmailAlerts extends Module
         $inputs = [
             [
                 'type' => 'switch',
-                'is_bool' => true, //retro compat 1.5
+                'is_bool' => true, // retro compat 1.5
                 'label' => $this->trans('New order', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_ORDER',
                 'desc' => $this->trans('Receive a notification when an order is placed.', [], 'Modules.Emailalerts.Admin'),
@@ -1154,7 +1154,7 @@ class Ps_EmailAlerts extends Module
             ],
             [
                 'type' => 'switch',
-                'is_bool' => true, //retro compat 1.5
+                'is_bool' => true, // retro compat 1.5
                 'label' => $this->trans('Out of stock', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_OOS',
                 'desc' => $this->trans('Receive a notification if the available quantity of a product is below the following threshold.', [], 'Modules.Emailalerts.Admin'),
@@ -1190,7 +1190,7 @@ class Ps_EmailAlerts extends Module
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             $inputs[] = [
                 'type' => 'switch',
-                'is_bool' => true, //retro compat 1.5
+                'is_bool' => true, // retro compat 1.5
                 'label' => $this->trans('Coverage warning', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_MERCHANT_COVERAGE',
                 'desc' => $this->trans('Receive a notification when a product has insufficient coverage.', [], 'Modules.Emailalerts.Admin'),
@@ -1218,7 +1218,7 @@ class Ps_EmailAlerts extends Module
 
         $inputs[] = [
                 'type' => 'switch',
-                'is_bool' => true, //retro compat 1.5
+                'is_bool' => true, // retro compat 1.5
                 'label' => $this->trans('Returns', [], 'Modules.Emailalerts.Admin'),
                 'name' => 'MA_RETURN_SLIP',
                 'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', [], 'Modules.Emailalerts.Admin'),
