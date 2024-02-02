@@ -855,10 +855,6 @@ class Ps_EmailAlerts extends Module
             'mailalerts-js',
             'modules/' . $this->name . '/js/mailalerts.js'
         );
-        $this->context->controller->registerStylesheet(
-            'mailalerts-css',
-            'modules/' . $this->name . '/css/mailalerts.css'
-        );
     }
 
     public function hookActionAdminControllerSetMedia()
