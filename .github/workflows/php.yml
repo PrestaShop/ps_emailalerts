@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v3.1.0
 
       - name: PHP syntax checker 7.1
-        uses: prestashop/github-action-php-lint/5.6@master
+        uses: prestashop/github-action-php-lint/7.1@master
 
       - name: PHP syntax checker 7.2
         uses: prestashop/github-action-php-lint/7.2@master
