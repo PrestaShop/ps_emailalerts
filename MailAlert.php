@@ -91,7 +91,7 @@ class MailAlert extends ObjectModel
     /*
      * Get objects that will be viewed on "My alerts" page
      */
-    public static function getMailAlerts($id_customer, $id_lang, Shop $shop = null)
+    public static function getMailAlerts($id_customer, $id_lang, ?Shop $shop = null)
     {
         if (!Validate::isUnsignedId($id_customer) || !Validate::isUnsignedId($id_lang)) {
             exit(Tools::displayError());
