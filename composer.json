@@ -13,7 +13,8 @@
         "php": ">=7.1.3"
     },
     "require-dev": {
-        "prestashop/php-dev-tools": "^4.3"
+        "prestashop/php-dev-tools": "^5",
+        "friendsofphp/php-cs-fixer": "^v3"
     },
     "config": {
         "preferred-install": "dist",
