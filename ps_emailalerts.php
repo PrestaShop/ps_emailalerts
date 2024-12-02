@@ -57,7 +57,7 @@ class Ps_EmailAlerts extends Module
     {
         $this->name = 'ps_emailalerts';
         $this->tab = 'administration';
-        $this->version = '3.0.0';
+        $this->version = '3.0.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -349,7 +349,7 @@ class Ps_EmailAlerts extends Module
      *
      * @param Context $context
      *
-     * @return \PrestaShop\PrestaShop\Core\Localization\Locale|null
+     * @return PrestaShop\PrestaShop\Core\Localization\Locale|null
      *
      * @throws Exception
      */
@@ -360,14 +360,14 @@ class Ps_EmailAlerts extends Module
             return $locale;
         }
 
-        $containerFinder = new \PrestaShop\PrestaShop\Adapter\ContainerFinder($context);
+        $containerFinder = new PrestaShop\PrestaShop\Adapter\ContainerFinder($context);
         $container = $containerFinder->getContainer();
         if (null === $context->container) {
             // @phpstan-ignore-next-line
             $context->container = $container;
         }
 
-        /** @var \PrestaShop\PrestaShop\Core\Localization\CLDR\LocaleRepository $localeRepository */
+        /** @var PrestaShop\PrestaShop\Core\Localization\CLDR\LocaleRepository $localeRepository */
         $localeRepository = $container->get(Controller::SERVICE_LOCALE_REPOSITORY);
         $locale = $localeRepository->getLocale(
             $context->language->getLocale()
@@ -855,10 +855,6 @@ class Ps_EmailAlerts extends Module
             'mailalerts-js',
             'modules/' . $this->name . '/js/mailalerts.js'
         );
-        $this->context->controller->registerStylesheet(
-            'mailalerts-css',
-            'modules/' . $this->name . '/css/mailalerts.css'
-        );
     }
 
     public function hookActionAdminControllerSetMedia()
@@ -1217,23 +1213,23 @@ class Ps_EmailAlerts extends Module
         }
 
         $inputs[] = [
-                'type' => 'switch',
-                'is_bool' => true, // retro compat 1.5
-                'label' => $this->trans('Returns', [], 'Modules.Emailalerts.Admin'),
-                'name' => 'MA_RETURN_SLIP',
-                'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', [], 'Modules.Emailalerts.Admin'),
-                'values' => [
-                    [
-                        'id' => 'active_on',
-                        'value' => 1,
-                        'label' => $this->trans('Yes', [], 'Admin.Global'),
-                    ],
-                    [
-                        'id' => 'active_off',
-                        'value' => 0,
-                        'label' => $this->trans('No', [], 'Admin.Global'),
-                    ],
+            'type' => 'switch',
+            'is_bool' => true, // retro compat 1.5
+            'label' => $this->trans('Returns', [], 'Modules.Emailalerts.Admin'),
+            'name' => 'MA_RETURN_SLIP',
+            'desc' => $this->trans('Receive a notification when a customer requests a merchandise return.', [], 'Modules.Emailalerts.Admin'),
+            'values' => [
+                [
+                    'id' => 'active_on',
+                    'value' => 1,
+                    'label' => $this->trans('Yes', [], 'Admin.Global'),
                 ],
+                [
+                    'id' => 'active_off',
+                    'value' => 0,
+                    'label' => $this->trans('No', [], 'Admin.Global'),
+                ],
+            ],
         ];
         $inputs[] = [
             'type' => 'emailalerts_tags',

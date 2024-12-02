@@ -28,7 +28,7 @@ function  addNotification(productId, productAttributeId) {
   $.ajax({
     type: 'POST',
     url: $('div.js-mailalert').data('url'),
-    data: 'id_product='+productId+'&id_product_attribute='+productAttributeId+'&customer_email='+$('div.js-mailalert > input[type=email]').val(),
+    data: 'id_product='+productId+'&id_product_attribute='+productAttributeId+'&customer_email='+$('div.js-mailalert input[type=email]').val(),
     success: function (resp) {
       resp = JSON.parse(resp);
 
