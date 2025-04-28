@@ -2,7 +2,7 @@
 <module>
 	<name>ps_emailalerts</name>
 	<displayName><![CDATA[Mail alerts]]></displayName>
-	<version><![CDATA[3.0.1]]></version>
+	<version><![CDATA[3.0.2]]></version>
 	<description><![CDATA[Sends e-mail notifications to customers and merchants regarding stock and order modifications.]]></description>
 	<author><![CDATA[PrestaShop]]></author>
 	<tab><![CDATA[administration]]></tab>
