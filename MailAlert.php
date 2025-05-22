@@ -238,7 +238,7 @@ class MailAlert extends ObjectModel
                     'link' => $product_link,
                     'customer' => $customer,
                     'product_obj' => $product,
-		    'mailAlert' => $this,
+		    'id_product_attribute' => $id_product_attribute,
                 ]
             );
 
