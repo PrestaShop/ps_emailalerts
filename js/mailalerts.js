@@ -22,7 +22,7 @@ function  addNotification(productId, productAttributeId) {
   if (typeof productId === 'undefined') {
     var ids = $('div.js-mailalert > input[type=hidden]');
     productId = ids.eq(0).val();
-    productIdAttribute = ids.eq(1).val();
+    productAttributeId = ids.eq(1).val();
   }
 
   $.ajax({
