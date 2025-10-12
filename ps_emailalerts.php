@@ -827,7 +827,7 @@ class Ps_EmailAlerts extends Module
             if (file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.txt')
                 && file_exists(dirname(__FILE__) . '/mails/' . $iso . '/productcoverage.html')) {
                 // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
-                $merchant_oos_emails = explode(self::__MA_MAIL_DELIMITER__, $this->merchant_oos);
+                $merchant_oos_emails = explode(self::__MA_MAIL_DELIMITER__, $this->merchant_oos_emails);
                 foreach ($merchant_oos_emails as $merchant_mail) {
                     Mail::send(
                         $id_lang,
