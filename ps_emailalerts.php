@@ -78,7 +78,7 @@ class Ps_EmailAlerts extends Module
         ];
     }
 
-    protected function init()
+    protected function init(): void
     {
         $this->merchant_new_order_emails = (string) Configuration::get('MA_MERCHANT_ORDER_EMAILS');
         $this->merchant_oos_emails = (string) Configuration::get('MA_MERCHANT_OOS_EMAILS');
@@ -92,7 +92,7 @@ class Ps_EmailAlerts extends Module
         $this->return_slip = (int) Configuration::getGlobalValue('MA_RETURN_SLIP');
     }
 
-    public function install($delete_params = true)
+    public function install($delete_params = true): bool
     {
         if (!parent::install()
             || !$this->registerHook('actionValidateOrder')
@@ -108,9 +108,7 @@ class Ps_EmailAlerts extends Module
             || !$this->registerHook('registerGDPRConsent')
             || !$this->registerHook('actionDeleteGDPRCustomer')
             || !$this->registerHook('actionExportGDPRData')
-            || !$this->registerHook('displayProductAdditionalInfo')
-            || !$this->registerHook('actionFrontControllerSetMedia')
-            || !$this->registerHook('actionAdminControllerSetMedia')) {
+            || !$this->registerHook('displayProductAdditionalInfo')) {
             return false;
         }
 
@@ -144,7 +142,7 @@ class Ps_EmailAlerts extends Module
         return true;
     }
 
-    public function uninstall($delete_params = true)
+    public function uninstall($delete_params = true): bool
     {
         if ($delete_params) {
             Configuration::deleteByName('MA_MERCHANT_ORDER');
@@ -168,7 +166,7 @@ class Ps_EmailAlerts extends Module
     /**
      * Migrate data from 1.6 equivalent module (if applicable), then uninstall
      */
-    public function uninstallPrestaShop16Module()
+    public function uninstallPrestaShop16Module(): bool
     {
         if (!Module::isInstalled(self::PS_16_EQUIVALENT_MODULE)) {
             return true;
@@ -187,7 +185,7 @@ class Ps_EmailAlerts extends Module
         return true;
     }
 
-    public function reset()
+    public function reset(): bool
     {
         if (!$this->uninstall(false)) {
             return false;
@@ -199,10 +197,11 @@ class Ps_EmailAlerts extends Module
         return true;
     }
 
-    public function getContent()
+    public function getContent(): string
     {
         $this->context->controller->addJqueryUi('ui.widget');
         $this->context->controller->addJqueryPlugin('tagify');
+        $this->context->controller->addJS($this->_path . 'js/admin/' . $this->name . '.js');
 
         $this->html = '';
 
@@ -213,7 +212,7 @@ class Ps_EmailAlerts extends Module
         return $this->html;
     }
 
-    protected function postProcess()
+    protected function postProcess(): void
     {
         $errors = [];
 
@@ -329,7 +328,7 @@ class Ps_EmailAlerts extends Module
         $this->init();
     }
 
-    public function getAllMessages($id)
+    public function getAllMessages($id): string
     {
         $messages = Db::getInstance()->executeS('
 			SELECT `message`
@@ -353,7 +352,7 @@ class Ps_EmailAlerts extends Module
      *
      * @throws Exception
      */
-    public static function getContextLocale(Context $context)
+    public static function getContextLocale(Context $context): ?\PrestaShop\PrestaShop\Core\Localization\Locale
     {
         $locale = $context->getCurrentLocale();
         if (null !== $locale) {
@@ -377,7 +376,7 @@ class Ps_EmailAlerts extends Module
         return $locale;
     }
 
-    public function hookActionValidateOrder($params)
+    public function hookActionValidateOrder($params): void
     {
         if (!$this->merchant_order || empty($this->merchant_new_order_emails)) {
             return;
@@ -610,7 +609,7 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookDisplayProductAdditionalInfo($params)
+    public function hookDisplayProductAdditionalInfo($params): void
     {
         if ($params['product']['minimal_quantity'] <= $params['product']['quantity']
             || !$this->customer_qty
@@ -632,13 +631,14 @@ class Ps_EmailAlerts extends Module
                 'id_product' => $id_product,
                 'id_product_attribute' => $id_product_attribute,
                 'id_module' => $this->id,
+                'module_path' => $this->_path,
             ]
         );
 
         return $this->display(__FILE__, 'product.tpl');
     }
 
-    public function hookActionUpdateQuantity($params)
+    public function hookActionUpdateQuantity($params): void
     {
         // Do not send email if stock did not change
         if (isset($params['delta_quantity']) && (int) $params['delta_quantity'] === 0) {
@@ -726,7 +726,7 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookActionProductAttributeUpdate($params)
+    public function hookActionProductAttributeUpdate($params): void
     {
         $sql = 'SELECT sa.`id_product`, sa.`quantity`, pa.`minimal_quantity`
             FROM `' . _DB_PREFIX_ . 'stock_available` sa
@@ -740,17 +740,17 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookDisplayCustomerAccount($params)
+    public function hookDisplayCustomerAccount($params): ?string
     {
         return $this->customer_qty ? $this->display(__FILE__, 'my-account.tpl') : null;
     }
 
-    public function hookDisplayMyAccountBlock($params)
+    public function hookDisplayMyAccountBlock($params): ?string
     {
         return $this->customer_qty ? $this->display(__FILE__, 'my-account-footer.tpl') : null;
     }
 
-    public function hookActionProductDelete($params)
+    public function hookActionProductDelete($params): void
     {
         $sql = '
 			DELETE FROM `' . _DB_PREFIX_ . MailAlert::$definition['table'] . '`
@@ -759,7 +759,7 @@ class Ps_EmailAlerts extends Module
         Db::getInstance()->execute($sql);
     }
 
-    public function hookActionProductAttributeDelete($params)
+    public function hookActionProductAttributeDelete($params): void
     {
         if ($params['deleteAllAttributes']) {
             $sql = '
@@ -775,7 +775,7 @@ class Ps_EmailAlerts extends Module
         Db::getInstance()->execute($sql);
     }
 
-    public function hookActionProductCoverage($params)
+    public function hookActionProductCoverage($params): void
     {
         // if not advanced stock management, nothing to do
         if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
@@ -849,25 +849,12 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function hookActionFrontControllerSetMedia()
-    {
-        $this->context->controller->registerJavascript(
-            'mailalerts-js',
-            'modules/' . $this->name . '/js/mailalerts.js'
-        );
-    }
-
-    public function hookActionAdminControllerSetMedia()
-    {
-        $this->context->controller->addJS($this->_path . 'js/admin/' . $this->name . '.js');
-    }
-
     /**
      * Send a mail when a customer return an order.
      *
      * @param array $params Hook params
      */
-    public function hookActionOrderReturn($params)
+    public function hookActionOrderReturn($params): void
     {
         if (!$this->return_slip || empty($this->merchant_return_slip_emails)) {
             return;
@@ -1033,7 +1020,7 @@ class Ps_EmailAlerts extends Module
      *
      * @param array $params Hook params
      */
-    public function hookActionOrderEdited($params)
+    public function hookActionOrderEdited($params): void
     {
         if (!$this->order_edited || empty($this->order_edited)) {
             return;
@@ -1065,7 +1052,7 @@ class Ps_EmailAlerts extends Module
             null, null, null, null, _PS_MAIL_DIR_, true, (int) $order->id_shop);
     }
 
-    public function renderForm()
+    public function renderForm(): string
     {
         $fields_form_1 = [
             'form' => [
@@ -1301,7 +1288,7 @@ class Ps_EmailAlerts extends Module
         }
     }
 
-    public function getConfigFieldsValues()
+    public function getConfigFieldsValues(): array
     {
         return [
             'MA_CUSTOMER_QTY' => Tools::getValue('MA_CUSTOMER_QTY', Configuration::get('MA_CUSTOMER_QTY')),
@@ -1332,7 +1319,7 @@ class Ps_EmailAlerts extends Module
         */
     }
 
-    public function isUsingNewTranslationSystem()
+    public function isUsingNewTranslationSystem(): bool
     {
         return true;
     }

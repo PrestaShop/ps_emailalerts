@@ -23,14 +23,14 @@
  */
 class Ps_EmailAlertsAccountModuleFrontController extends ModuleFrontController
 {
-    public function init()
+    public function init(): void
     {
         parent::init();
 
         require_once $this->module->getLocalPath() . 'MailAlert.php';
     }
 
-    public function getBreadcrumbLinks()
+    public function getBreadcrumbLinks(): array
     {
         $breadcrumb = parent::getBreadcrumbLinks();
         $breadcrumb['links'][] = $this->addMyAccountToBreadcrumb();
@@ -42,7 +42,7 @@ class Ps_EmailAlertsAccountModuleFrontController extends ModuleFrontController
         return $breadcrumb;
     }
 
-    public function initContent()
+    public function initContent(): void
     {
         parent::initContent();
 
@@ -59,5 +59,18 @@ class Ps_EmailAlertsAccountModuleFrontController extends ModuleFrontController
 
             $this->setTemplate('module:ps_emailalerts/views/templates/front/mailalerts-account.tpl');
         }
+    }
+
+    public function setMedia(): bool
+    {
+        $this->registerJavascript(
+            'mailalerts-js',
+            'modules/' . $this->module->name . '/js/mailalerts.js',
+            [
+                'attributes' => 'defer'
+            ]
+        );
+
+        return parent::setMedia();
     }
 }
