@@ -16,7 +16,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-<script src="{$module_path}js/mailalerts.js" type="text/javascript" defer></script>
+
 <div class="tabs">
     <div class="js-mailalert text-center" data-url="{url entity='module' name='ps_emailalerts' controller='actions' params=['process' => 'add']}">
     {if empty($has_notification)}

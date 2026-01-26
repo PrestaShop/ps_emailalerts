@@ -617,6 +617,13 @@ class Ps_EmailAlerts extends Module
             || Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
             return;
         }
+        $this->context->controller->registerJavascript(
+            'mailalerts-js',
+            'modules/' . $this->name . '/js/mailalerts.js',
+            [
+                'attributes' => 'defer'
+            ]
+        );
         $context = Context::getContext();
         $id_product = (int) $params['product']['id'];
         $id_product_attribute = $params['product']['id_product_attribute'];
@@ -631,7 +638,6 @@ class Ps_EmailAlerts extends Module
                 'id_product' => $id_product,
                 'id_product_attribute' => $id_product_attribute,
                 'id_module' => $this->id,
-                'module_path' => $this->_path,
             ]
         );
 
