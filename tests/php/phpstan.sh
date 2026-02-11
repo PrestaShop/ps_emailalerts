@@ -1,9 +1,29 @@
 #!/bin/bash
-PS_VERSION=$1
 
 set -e
 
-# Docker images prestashop/prestashop may be used, even if the shop remains uninstalled
+if [ $# -le 0 ]; then
+  echo "No version provided. Use:"
+  echo "tests/php/phpstan/phpstan.sh [PrestaShop_version]"
+  exit 1
+fi
+
+PS_VERSION=$1
+
+if [ ! -f $PWD/test/php/phpstan/phpstan-$PS_VERSION.neon ]; then
+  echo "Configuration file for PrestaShop $PS_VERSION does not exist."
+  echo "Please try another version."
+  exit 2
+fi
+
+# Determine the appropriate base image
+if [[ "$PS_VERSION" == 1.7* ]]; then
+  BASE_IMAGE="prestashop/base:7.4-apache"
+else
+  BASE_IMAGE="prestashop/base:8.1-apache"
+fi
+
+# Docker images prestashop/prestashop are used to get source files
 echo "Pull PrestaShop files (Tag ${PS_VERSION})"
 
 docker rm -f temp-ps || true
@@ -14,15 +34,16 @@ docker run -tid --rm -v ps-volume:/var/www/html --name temp-ps prestashop/presta
 # Clear previous instance of the module in the PrestaShop volume
 echo "Clear previous module"
 
-docker exec -t --user root temp-ps sh -c 'if [ -d "/var/www/html/modules/ps_emailalerts" ]; then find /var/www/html/modules/ps_emailalerts -type f -exec rm {} +; fi'
+docker exec -t temp-ps rm -rf /var/www/html/modules/ps_emailalerts
 
-# Run a container for PHPStan, having access to the module content and PrestaShop sources.
-# This tool is outside the composer.json because of the compatibility with PHP 5.6
 echo "Run PHPStan using phpstan-${PS_VERSION}.neon file"
 
 docker run --rm --volumes-from temp-ps \
        -v $PWD:/var/www/html/modules/ps_emailalerts \
        -e _PS_ROOT_DIR_=/var/www/html \
-       --workdir=/var/www/html/modules/ps_emailalerts phpstan/phpstan:0.12 \
+       --workdir=/var/www/html/modules/ps_emailalerts \
+       --entrypoint=/var/www/html/modules/ps_emailalerts/vendor/bin/phpstan \
+       "$BASE_IMAGE" \
        analyse \
-       --configuration=/var/www/html/modules/ps_emailalerts/tests/php/phpstan/phpstan-$PS_VERSION.neon
+       --configuration=/var/www/html/modules/ps_emailalerts/tests/php/phpstan/phpstan-$PS_VERSION.neon \
+       "${@:2}"

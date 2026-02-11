@@ -14,7 +14,8 @@
     },
     "require-dev": {
         "prestashop/php-dev-tools": "^5",
-        "friendsofphp/php-cs-fixer": "^v3"
+        "friendsofphp/php-cs-fixer": "^v3",
+        "phpstan/phpstan": "^2.1"
     },
     "config": {
         "preferred-install": "dist",
