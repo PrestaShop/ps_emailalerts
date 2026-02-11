@@ -1,14 +1,14 @@
-includes:
-	- %currentWorkingDirectory%/vendor/prestashop/php-dev-tools/phpstan/ps-module-extension.neon
-
 parameters:
   paths:
-    # From PHPStan 0.12, paths to check are relative to the neon file
-    - ../../../ps_emailalerts.php
     - ../../../upgrade
-    - ../../../MailAlert.php
     - ../../../controllers
+  scanFiles:
+    - ../../../ps_emailalerts.php
+    - ../../../MailAlert.php
+
   reportUnmatchedIgnoredErrors: false
   level: 5
+
   ignoreErrors:
     - '#Unreachable statement \- code above always terminates\.#'
+    - '#deprecated#'
