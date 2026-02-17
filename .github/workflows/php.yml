@@ -36,58 +36,47 @@ jobs:
       - name: PHP syntax checker 8.4
         uses: prestashop/github-action-php-lint/8.4@master
 
-  # Check the PHP code follow the coding standards
   php-cs-fixer:
     name: PHP-CS-Fixer
     runs-on: ubuntu-latest
     steps:
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: PrestaShop/.github/.github/actions/php-ci/php-cs@master
         with:
           php-version: '8.1'
 
-      - name: Checkout
-        uses: actions/checkout@v3.1.0
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: vendor
-          key: php-${{ hashFiles('composer.lock') }}
-
-      - name: Install dependencies
-        run: composer install
-
-      - name: Run PHP-CS-Fixer
-        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
-
-  # Run PHPStan against the module and a PrestaShop release
   phpstan:
-      name: PHPStan
-      runs-on: ubuntu-latest
-      strategy:
-          matrix:
-              presta-versions: ['1.7.7', '1.7.8', '8.0', 'latest']
-      steps:
-          - name: Checkout
-            uses: actions/checkout@v3.1.0
-
-          # Add vendor folder in cache to make next builds faster
-          - name: Cache vendor folder
-            uses: actions/cache@v3
-            with:
-              path: vendor
-              key: php-${{ hashFiles('composer.lock') }}
-
-          # Add composer local folder in cache to make next builds faster
-          - name: Cache composer folder
-            uses: actions/cache@v3
-            with:
-              path: ~/.composer/cache
-              key: php-composer-cache
-
-          - run: composer install
-
-          # Docker images prestashop/prestashop may be used, even if the shop remains uninstalled
-          - name: Execute PHPStan on PrestaShop (Tag ${{ matrix.presta-versions }})
-            run: ./tests/php/phpstan.sh ${{ matrix.presta-versions }}
+    name: PHPStan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - presta-version: '1.7.7.8'
+            php-version: '7.1'
+            php-stan-version: '^0.12'
+          - presta-version: '1.7.8.11'
+            php-version: '7.4'
+            php-stan-version: '^2.1'
+          - presta-version: '8.0.5'
+            php-version: '7.4'
+            php-stan-version: '^2.1'
+          - presta-version: '9.0.3'
+            php-version: '8.1'
+            php-stan-version: '^2.1'
+          - presta-version: 'develop'
+            php-version: '8.1'
+            php-stan-version: '^2.1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          path: ${{ github.event.repository.name }}
+      
+      - uses: PrestaShop/.github/.github/actions/php-ci/phpstan@master
+        with:
+          php-version: ${{ matrix.php-version }}
+          presta-version: ${{ matrix.presta-version }}
+          module-name: ${{ github.event.repository.name }}
+          phpstan-level: '5'
+          phpstan-config: 'tests/php/phpstan/phpstan-${{ matrix.presta-version }}.neon'
+          phpstan-version: ${{ matrix.php-stan-version }}
+          composer-version: '2.2.18'

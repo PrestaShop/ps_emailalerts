@@ -17,6 +17,9 @@
         "friendsofphp/php-cs-fixer": "^v3"
     },
     "config": {
+        "platform": {
+            "php": "7.4"
+        },
         "preferred-install": "dist",
         "prepend-autoloader": false
     },

@@ -36,7 +36,7 @@ class Ps_EmailAlerts extends Module
     /**
      * @var string Name of the module running on PS 1.6.x. Used for data migration.
      */
-    const PS_16_EQUIVALENT_MODULE = 'mailalerts';
+    public const PS_16_EQUIVALENT_MODULE = 'mailalerts';
 
     protected $html = '';
 
@@ -51,7 +51,7 @@ class Ps_EmailAlerts extends Module
     protected $order_edited;
     protected $return_slip;
 
-    const __MA_MAIL_DELIMITER__ = ',';
+    public const __MA_MAIL_DELIMITER__ = ',';
 
     public function __construct()
     {
@@ -390,6 +390,15 @@ class Ps_EmailAlerts extends Module
         // We use use static method from current class to prevent retro compatibility issues with PrestaShop < 1.7.7
         $contextLocale = static::getContextLocale($context);
 
+        $orderShipmentService = null;
+        if (class_exists(PrestaShop\PrestaShop\Adapter\Shipment\OrderShipmentService::class)) {
+            try {
+                $orderShipmentService = $this->get(PrestaShop\PrestaShop\Adapter\Shipment\OrderShipmentService::class);
+            } catch (Error $e) {
+                // This service is only available in PrestaShop v10; other versions can run without it.
+            }
+        }
+
         $id_shop = (int) $context->shop->id;
         $currency = $params['currency'];
         $order = $params['order'];
@@ -408,7 +417,6 @@ class Ps_EmailAlerts extends Module
         $delivery = new Address((int) $order->id_address_delivery);
         $invoice = new Address((int) $order->id_address_invoice);
         $order_date_text = Tools::displayDate($order->date_add);
-        $carrier = new Carrier((int) $order->id_carrier);
         $message = $this->getAllMessages($order->id);
 
         if (!$message || empty($message)) {
@@ -445,22 +453,53 @@ class Ps_EmailAlerts extends Module
                 }
             }
 
+            $carrierName = null;
+            if ($orderShipmentService && $orderShipmentService->orderHasShipment($order->id)) {
+                $carrierName = $orderShipmentService->getCarrierForProduct($order->id, (int) $product['id_product'])->name;
+            }
+
             $url = $context->link->getProductLink($product['product_id']);
+
+            $itemName = $this->trans(
+                '%product_name%%attributes%%customization%%carrier%',
+                [
+                    '%product_name%' => '<a href="' . $url . '">' . $product['product_name'] . '</a>',
+                    '%attributes%' => !empty($product['attributes_small'])
+                        ? ' ' . $product['attributes_small']
+                        : '',
+                    '%customization%' => !empty($customization_text)
+                        ? '<br />' . $customization_text
+                        : '',
+                    '%carrier%' => !empty($carrierName)
+                        ? '<br />' . $this->trans(
+                            'Carrier: %carrier_name%',
+                            ['%carrier_name%' => $carrierName],
+                            'Emails.Body'
+                        )
+                        : '',
+                ],
+                'Emails.Body'
+            );
+
             $items_table .=
                 '<tr style="background-color:' . ($key % 2 ? '#DDE2E6' : '#EBECEE') . ';">
-					<td style="padding:0.6em 0.4em;">' . $product['product_reference'] . '</td>
-					<td style="padding:0.6em 0.4em;">
-						<strong><a href="' . $url . '">' . $product['product_name'] . '</a>'
-                            . (isset($product['attributes_small']) ? ' ' . $product['attributes_small'] : '')
-                            . (!empty($customization_text) ? '<br />' . $customization_text : '')
-                        . '</strong>
-					</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">' . $contextLocale->formatPrice($unit_price, $currency->iso_code) . '</td>
-					<td style="padding:0.6em 0.4em; text-align:center;">' . (int) $product['product_quantity'] . '</td>
-					<td style="padding:0.6em 0.4em; text-align:right;">'
-                        . $contextLocale->formatPrice($unit_price * $product['product_quantity'], $currency->iso_code)
-                    . '</td>
-				</tr>';
+                    <td style="padding:0.6em 0.4em;">' . $product['product_reference'] . '</td>
+                    <td style="padding:0.6em 0.4em;">
+                        <strong>' . $itemName . '</strong>
+                    </td>
+                    <td style="padding:0.6em 0.4em; text-align:right;">'
+                        . $contextLocale->formatPrice($unit_price, $currency->iso_code) .
+                    '</td>
+                    <td style="padding:0.6em 0.4em; text-align:center;">'
+                        . (int) $product['product_quantity'] .
+                    '</td>
+                    <td style="padding:0.6em 0.4em; text-align:right;">'
+                        . $contextLocale->formatPrice(
+                            $unit_price * $product['product_quantity'],
+                            $currency->iso_code
+                        ) .
+                    '</td>
+                </tr>';
         }
         foreach ($params['order']->getCartRules() as $discount) {
             $items_table .=
@@ -483,6 +522,17 @@ class Ps_EmailAlerts extends Module
         }
 
         $order_state = $params['orderStatus'];
+
+        if ($orderShipmentService && $orderShipmentService->orderHasShipment($order->id)) {
+            $carriers = $orderShipmentService->getAllCarriersForOrder($order->id);
+            $carrierNames = array_map(function ($carrier) {
+                return $carrier->name;
+            }, $carriers);
+            $carrierNames = implode(', ', $carrierNames);
+        } else {
+            $carrier = new Carrier((int) $order->id_carrier);
+            $carrierNames = (($carrier->name == '0') ? $configuration['PS_SHOP_NAME'] : $carrier->name);
+        }
 
         // Filling-in vars for email
         $template_vars = [
@@ -529,7 +579,7 @@ class Ps_EmailAlerts extends Module
             '{order_status}' => $order_state->name,
             '{shop_name}' => $configuration['PS_SHOP_NAME'],
             '{date}' => $order_date_text,
-            '{carrier}' => (($carrier->name == '0') ? $configuration['PS_SHOP_NAME'] : $carrier->name),
+            '{carrier}' => $carrierNames,
             '{payment}' => Tools::substr($order->payment, 0, 32),
             '{items}' => $items_table,
             '{total_paid}' => $contextLocale->formatPrice($order->total_paid, $currency->iso_code),
