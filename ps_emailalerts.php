@@ -792,7 +792,13 @@ class Ps_EmailAlerts extends Module
 
     public function hookDisplayCustomerAccount($params)
     {
-        return $this->customer_qty ? $this->display(__FILE__, 'my-account.tpl') : null;
+        if ($this->customer_qty) {
+          $this->context->smarty->assign('isMainAccount', $params['isMainAccount'] ?? false);
+
+          return $this->display(__FILE__, 'my-account.tpl');
+        }
+
+        return null;
     }
 
     public function hookDisplayMyAccountBlock($params)
