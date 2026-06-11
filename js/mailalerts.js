@@ -41,7 +41,7 @@ function  addNotification(productId, productAttributeId) {
   return false;
 }
 
-$(document).on('ready', function() {
+$(document).ready(function() {
   const mailAlertSubmitButtonClass = '.js-mailalert-add';
   const mailAlertWrapper = $('.js-mailalert');
   const mailAlertSubmitButton = mailAlertWrapper.find(mailAlertSubmitButtonClass);
