@@ -662,7 +662,17 @@ class Ps_EmailAlerts extends Module
 
     public function hookDisplayProductAdditionalInfo($params)
     {
-        if ($params['product']['minimal_quantity'] <= $params['product']['quantity']
+        // Use the real available stock, not $params['product']['quantity'], which is reduced by
+        // the quantity the current customer already has in their cart. Otherwise a customer who
+        // put the whole stock in their cart would see (and could register) a back-in-stock
+        // notification for a product that is actually still in stock.
+        $realQuantity = StockAvailable::getQuantityAvailableByProduct(
+            (int) $params['product']['id'],
+            (int) $params['product']['id_product_attribute'],
+            (int) $this->context->shop->id
+        );
+
+        if ($params['product']['minimal_quantity'] <= $realQuantity
             || !$this->customer_qty
             || !Configuration::get('PS_STOCK_MANAGEMENT')
             || Product::isAvailableWhenOutOfStock($params['product']['out_of_stock'])) {
