@@ -120,7 +120,17 @@ class Ps_EmailAlerts extends Module
             Configuration::updateValue('MA_CUSTOMER_QTY', 1);
             Configuration::updateValue('MA_ORDER_EDIT', 1);
             Configuration::updateValue('MA_RETURN_SLIP', 1);
-            Configuration::updateValue('MA_MERCHANT_MAILS', Configuration::get('PS_SHOP_EMAIL'));
+            // WHY: MA_MERCHANT_MAILS is the 1.6 era key. Since 2.4.0 the configuration form reads and
+            // writes one key per notification instead, and upgrade/upgrade-2.4.0.php migrates the old
+            // value into them - but a fresh install never runs that upgrade. Seeding only the legacy
+            // key therefore leaves the three notifications enabled with no address anywhere, and the
+            // first save answers with three "Please enter one (or more) email address" errors before
+            // the merchant has changed anything.
+            $merchantEmails = (string) Configuration::get('PS_SHOP_EMAIL');
+            Configuration::updateValue('MA_MERCHANT_MAILS', $merchantEmails);
+            Configuration::updateValue('MA_MERCHANT_ORDER_EMAILS', $merchantEmails);
+            Configuration::updateValue('MA_MERCHANT_OOS_EMAILS', $merchantEmails);
+            Configuration::updateValue('MA_RETURN_SLIP_EMAILS', $merchantEmails);
             Configuration::updateValue('MA_LAST_QTIES', (int) Configuration::get('PS_LAST_QTIES'));
             Configuration::updateGlobalValue('MA_MERCHANT_COVERAGE', 0);
             Configuration::updateGlobalValue('MA_PRODUCT_COVERAGE', 0);
@@ -151,6 +161,9 @@ class Ps_EmailAlerts extends Module
             Configuration::deleteByName('MA_MERCHANT_OOS');
             Configuration::deleteByName('MA_CUSTOMER_QTY');
             Configuration::deleteByName('MA_MERCHANT_MAILS');
+            Configuration::deleteByName('MA_MERCHANT_ORDER_EMAILS');
+            Configuration::deleteByName('MA_MERCHANT_OOS_EMAILS');
+            Configuration::deleteByName('MA_RETURN_SLIP_EMAILS');
             Configuration::deleteByName('MA_LAST_QTIES');
             Configuration::deleteByName('MA_MERCHANT_COVERAGE');
             Configuration::deleteByName('MA_PRODUCT_COVERAGE');
