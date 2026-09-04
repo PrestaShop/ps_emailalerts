@@ -183,13 +183,24 @@ class MailAlert extends ObjectModel
                 '{product_link}' => $product_link,
             ];
 
-            if ($customer['id_customer']) {
-                $customer = new Customer((int) $customer['id_customer']);
-                $customer_email = (string) $customer->email;
-                $customer_id = (int) $customer->id;
+            $registeredCustomer = $customer['id_customer'] ? new Customer((int) $customer['id_customer']) : null;
+
+            if ($registeredCustomer !== null && Validate::isLoadedObject($registeredCustomer)) {
+                $customer_id = (int) $registeredCustomer->id;
+                $customer_email = (string) $registeredCustomer->email;
             } else {
+                // The alert row keeps the address it was registered with, so one whose customer has
+                // since been deleted still has somewhere to send to. Without this, Customer::__construct()
+                // hands back an unloaded object, $customer_email ends up empty and Mail::Send() reports
+                // 'Error: parameter "to" is corrupted' - fatally when the shop runs in debug mode.
                 $customer_id = 0;
                 $customer_email = (string) $customer['customer_email'];
+            }
+
+            // A row with no usable address at all cannot be delivered; skip it instead of letting
+            // Mail::Send() fail on it and take the whole stock update down with it.
+            if (!Validate::isEmail($customer_email)) {
+                continue;
             }
 
             $iso = Language::getIsoById($id_lang);
